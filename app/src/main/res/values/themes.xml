@@ -5,5 +5,13 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <style name="Theme.AgriMart" parent="Base.Theme.AgriMart" />
+    <style name="Theme.AgriMart" parent="Base.Theme.AgriMart" >
+
+    </style>
+    
+    <style name="Widget.Material3.SearchView.search">
+        <item name="android:textColorHint">#BDBDBD</item>
+    </style>
+
+
 </resources>

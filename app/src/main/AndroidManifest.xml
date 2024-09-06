@@ -13,7 +13,13 @@
         android:theme="@style/Theme.AgriMart"
         tools:targetApi="31">
         <activity
-            android:name=".ui.Login_Register"
+            android:name=".View.Account.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".View.SplashScreen.SplashCreenActivity"
+            android:exported="false" />
+        <activity
+            android:name=".View.HomeActivity"
             android:exported="false" />
         <activity
             android:name=".ui.MainActivity"

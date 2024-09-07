@@ -11,9 +11,19 @@
         android:roundIcon="@drawable/logo_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.AgriMart"
+        tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
-            android:name=".View.Account.SignInActivity"
+            android:name=".View.Account.EnterOTPActivity"
+            android:exported="false" />
+        <activity
+            android:name=".View.Account.ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".View.Account.SignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".View.MainActivity"
             android:exported="false" />
         <activity
             android:name=".View.SplashScreen.SplashScreenActivity"
@@ -22,7 +32,7 @@
             android:name=".View.Homepage.HomeFragment"
             android:exported="false" />
         <activity
-            android:name=".View.MainActivity"
+            android:name=".View.Account.SignInActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

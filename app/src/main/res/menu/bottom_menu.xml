@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:title="@string/home"
         android:id="@+id/home"
-        android:icon="@drawable/ic_home" />
+        android:icon="@drawable/home"/>
 
-    <item android:title="@string/notify"
-        android:id="@+id/notify"
-        android:icon="@drawable/ic_notification" />
+    <item android:title="@string/cho"
+        android:id="@+id/market"
+        android:icon="@drawable/store" />
 
-    <item android:title=""
+    <item android:title= "@string/ng_b_n"
         android:id="@+id/fab"
-        android:enabled="false" />
+        android:enabled="false"/>
 
-    <item android:title="@string/order"
-        android:id="@+id/order"
-        android:icon="@drawable/ic_order" />
+    <item android:title="@string/cart"
+        android:id="@+id/cart"
+        android:icon="@drawable/shopping_cart" />
 
     <item android:title="@string/profile"
         android:id="@+id/profile"
-        android:icon="@drawable/ic_profile" />
+        android:icon="@drawable/user"/>
 </menu>

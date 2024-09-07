@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
-    <color name="white">#F5F5F5</color>
-    <color name="green">#018241</color>
-    <color name="background_color">#F5F5F5</color>
+    <color name="white">#FFFFFF</color>
+    <color name="green">#006623</color>
+    <color name="background_green">#006623</color>
+    <color name="background_light">#ECECEC</color>
+    <color name="backgound_dark">#0D1F29</color>
+    <color name="color_item_selected">#FF5722</color>
+    <color name="color_item_unselected">#ffffff</color>
+
+    <color name="status_bar_color">#F4F4F4</color>
 </resources>

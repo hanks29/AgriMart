@@ -1,11 +1,28 @@
 <resources>
     <string name="app_name">AgriMart</string>
-    <string name="categories">Categories</string>
-    <string name="see_all">See All</string>
-    <string name="top_selling">Top Selling</string>
-    <string name="home">Home</string>
-    <string name="profile">Profile</string>
+    <string name="categories">Danh mục</string>
+    <string name="see_all">Xem thêm</string>
+    <string name="top_selling">Bán chạy nhất</string>
+    <string name="home">Trang chủ</string>
+    <string name="profile">Tôi</string>
     <string name="order">Order</string>
-    <string name="notify">Notify</string>
-    <string name="add_product">Add product</string>
+    <string name="newsfeed">Tin mới</string>
+    <string name="post">Đăng bài</string>
+    <string name="cart">Giỏ hàng</string>
+    <string name="ng_b_n">Đăng bán</string>
+    <string name="cho">Chợ</string>
+    <string name="search_hint">tim kiem san pham</string>
+    <string name="search">Tìm kiếm sản phẩm</string>
+    <string name="ng_nh_p">Đăng nhập</string>
+    <string name="ch_a_c_t_i_kho_n"><u>Chưa có tài khoản?</u></string>
+    <string name="m_t_kh_u">Mật khẩu</string>
+    <string name="continue_with_google"> Đăng nhập bằng Google</string>
+    <string name="ng_k">Đăng ký</string>
+    <string name="c_t_i_kho_n"><u>Đã có tài khoản?</u></string>
+    <string name="ng_k_b_ng_s_i_n_tho_i">Đăng ký bằng số điện thoại</string>
+    <string name="ng_k_b_ng_email">Đăng ký bằng email</string>
+    <string name="qu_n_m_t_kh_u">Quên mật khẩu?</string>
+    <string name="nh_p_email_ho_c_s_i_n_tho_i">Nhập email hoặc số điện thoại</string>
+    <string name="sodienthoai">Số điện thoại</string>
+    <string name="g_i_l_i"><u>Gửi lại</u></string>
 </resources>

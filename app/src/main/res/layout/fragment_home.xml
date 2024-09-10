@@ -6,11 +6,12 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_light"
     tools:context=".View.Homepage.HomeFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/categories"
@@ -70,7 +71,8 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvProducts"
-            android:layout_width="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/top_selling"
             android:layout_marginTop="10dp"/>

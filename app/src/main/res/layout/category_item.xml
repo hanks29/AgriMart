@@ -4,22 +4,30 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/imgCate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        app:srcCompat="@drawable/fruit" />
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="54dp"
+        android:layout_height="52dp"
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/imgCate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Rau cu"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/fruit" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/imgCate"
+        android:layout_below="@id/frame_layout"
         android:layout_marginTop="8dp"
         android:textSize="12sp"
         android:textColor="#333333"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:text="Rau củ quả" />
+        android:text="@string/rau_c_qu" />
 </RelativeLayout>

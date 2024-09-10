@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="154dp"
+    android:background="@color/white"
+    android:layout_height="177dp">
+
+    <ImageView
+        android:id="@+id/imgPro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/ot" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="129dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imgPro"
+        android:layout_marginTop="12dp"
+        android:textSize="16sp"
+        android:textColor="#333333"
+        android:layout_centerHorizontal="true"
+        android:letterSpacing="-0.01"
+        android:gravity="center"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/s_u_ri_ng_lan_t_a" />
+
+    <TextView
+        android:id="@+id/tvPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvName"
+        android:textSize="13sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:textColor="#FF4848"
+        android:text="@string/_45_000_kg"  />
+
+    <TextView
+        android:id="@+id/tvUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvName"
+        android:textSize="12sp"
+        android:textColor="#8A8A8E"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="4dp"
+        android:layout_alignParentEnd="true"
+        android:text="@string/_200kg" />
+
+    <TextView
+        android:id="@+id/tvActive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvUnit"
+        android:layout_marginStart="4dp"
+        android:textSize="9sp"
+        android:text="@string/_20_ng_i_ang_h_i" />
+</RelativeLayout>

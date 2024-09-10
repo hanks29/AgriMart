@@ -10,4 +10,7 @@
     <color name="color_item_unselected">#ffffff</color>
 
     <color name="status_bar_color">#F4F4F4</color>
+    <color name="background_color">#F5F5F5</color>
+    <color name="transparent">#00000000</color>
+
 </resources>

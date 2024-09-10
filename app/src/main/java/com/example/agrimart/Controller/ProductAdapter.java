@@ -1,4 +1,4 @@
-package com.example.agrimart.Adapter;
+package com.example.agrimart.Controller;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -6,9 +6,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.agrimart.Model.Category;
 import com.example.agrimart.Model.Product;
-import com.example.agrimart.databinding.CategoryItemBinding;
 import com.example.agrimart.databinding.ProductItemBinding;
 
 import java.util.List;

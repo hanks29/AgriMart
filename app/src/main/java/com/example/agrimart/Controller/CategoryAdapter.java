@@ -1,7 +1,6 @@
-package com.example.agrimart.Adapter;
+package com.example.agrimart.Controller;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;

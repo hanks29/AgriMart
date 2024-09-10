@@ -13,13 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.agrimart.Adapter.CategoryAdapter;
-import com.example.agrimart.Adapter.ProductAdapter;
+import com.example.agrimart.Controller.CategoryAdapter;
+import com.example.agrimart.Controller.ProductAdapter;
 import com.example.agrimart.Model.Category;
 import com.example.agrimart.Model.Product;
 import com.example.agrimart.R;
 import com.example.agrimart.SpacesItemDecoration;
-import com.example.agrimart.databinding.CategoryItemBinding;
 import com.example.agrimart.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;

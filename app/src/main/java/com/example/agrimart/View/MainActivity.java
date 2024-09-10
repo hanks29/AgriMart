@@ -1,7 +1,10 @@
 package com.example.agrimart.View;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
@@ -13,12 +16,17 @@ import androidx.fragment.app.Fragment;
 
 import com.example.agrimart.R;
 import com.example.agrimart.View.Homepage.HomeFragment;
+import com.example.agrimart.View.PostProduct.PostProductActivity;
+import com.example.agrimart.View.PostProduct.PostProductPhotosFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
 
+    FloatingActionButton fab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -39,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
             loadFragment(new HomeFragment());
             bottomNavigationView.setSelectedItemId(R.id.home);
         }
+
+        addControls();
+        addEvents();
     }
 
     @Override
@@ -69,5 +80,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    void addControls()
+    {
+        fab = findViewById(R.id.main_fab);
+    }
+    void addEvents()
+    {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PostProductActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

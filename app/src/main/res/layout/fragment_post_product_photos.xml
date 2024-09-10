@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.PostProductPhotosFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="0dp"
+        tools:ignore="UselessParent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="757dp"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/product_photo"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="14dp"
+                android:padding="2dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/product_photo"
+                android:contentDescription="@string/todo" />
+
+            <TextView
+                android:id="@+id/nh_s_n_ph_m_th_c_t"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14.5dp"
+                android:layout_weight="1"
+                android:text="@string/nh_s_n_ph_m_th_c_t"
+                android:textSize="9.5pt"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Container for ImageButton and TextView -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/dashed_border"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <ImageButton
+                android:id="@+id/imageButtonCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/white"
+                android:contentDescription="@string/todo"
+                android:src="@drawable/camera" />
+
+            <TextView
+                android:id="@+id/textViewBelowButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="@string/th_m_nh"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="15dp"
+            android:background="#65424242" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="0dp"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/imageViewProduct_name"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+                android:padding="2dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/product_name"
+                android:contentDescription="@string/todo" />
+
+            <TextView
+                android:id="@+id/textViewT_n_s_n_ph_m"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5.5dp"
+                android:layout_weight="1"
+                android:text="@string/t_n_s_n_ph_m"
+                android:textSize="9.5pt"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Input field with character limit -->
+        <EditText
+            android:id="@+id/editTextInputC_i_t_n_n_i_l_n_t_t_c_s_gi_p_ch_r_t_nhi_u_y"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/dashed_border"
+            android:gravity="top|start"
+            android:hint="@string/c_i_t_n_n_i_l_n_t_t_c_s_gi_p_ch_r_t_nhi_u_y"
+            android:inputType="textMultiLine"
+            android:lines="4"
+            android:maxLength="100"
+            android:padding="10dp"
+            android:autofillHints="" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="15dp"
+            android:background="#65424242" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="0dp"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/imageViewProduct_description"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:padding="2dp"
+                android:src="@drawable/product_description"
+                android:contentDescription="@string/todo" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5.5dp"
+                android:layout_weight="1"
+                android:text="@string/m_t_s_n_ph_m"
+                android:textSize="9.5pt"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Input field with character limit -->
+        <EditText
+            android:id="@+id/editTextInputM_t_o_n_v_n_m_t_y_s_gi_p_s_n_ph_m_c_a_b_n_b_n_d_h_n"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/dashed_border"
+            android:gravity="top|start"
+            android:hint="@string/m_t_o_n_v_n_m_t_y_s_gi_p_s_n_ph_m_c_a_b_n_b_n_d_h_n"
+            android:inputType="textMultiLine"
+            android:lines="4"
+            android:maxLength="1000"
+            android:padding="10dp"
+            android:autofillHints="" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="15dp"
+            android:background="#65424242" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="0dp"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/imageViewProduct_classification"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+                android:padding="2dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/product_classification"
+                android:contentDescription="@string/todo" />
+
+            <TextView
+                android:id="@+id/textViewPh_n_lo_i_s_n_ph_m"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5.5dp"
+                android:layout_weight="1"
+                android:text="@string/ph_n_lo_i_s_n_ph_m"
+                android:textSize="9.5pt"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <GridLayout
+            android:layout_width="390dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="0dp"
+            android:columnCount="5"
+            android:padding="0dp"
+            android:rowCount="2">
+
+            <!-- Image 1 -->
+            <FrameLayout
+                android:layout_width="65.5dp"
+                android:layout_height="90dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/imageViewDesc_vegetable"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/desc_vegetable"
+                    android:focusable="true"
+                    android:src="@drawable/vegetable" />
+
+                <TextView
+                    android:id="@+id/textViewRau_c"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="55dp"
+                    android:background="@color/transparent"
+                    android:gravity="center"
+                    android:text="@string/rau_c"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/overlay1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <!-- Image 2 -->
+            <FrameLayout
+                android:layout_width="65.5dp"
+                android:layout_height="90dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/imageViewDesc_fruit"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/desc_fruit"
+                    android:focusable="true"
+                    android:src="@drawable/fruit" />
+
+                <TextView
+                    android:id="@+id/textViewTr_i_c_y"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="55dp"
+                    android:background="@color/transparent"
+                    android:gravity="center"
+                    android:text="@string/tr_i_c_y"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/overlay2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <!-- Image 3 -->
+            <FrameLayout
+                android:layout_width="65.5dp"
+                android:layout_height="90dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/imageViewMeat_eggs"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/desc_meat_eggs"
+                    android:focusable="true"
+                    android:src="@drawable/meat_eggs" />
+
+                <TextView
+                    android:id="@+id/textViewTh_t_tr_ng"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="55dp"
+                    android:background="@color/transparent"
+                    android:gravity="center"
+                    android:text="@string/th_t_tr_ng"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/overlay3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <!-- Image 4 -->
+            <FrameLayout
+                android:layout_width="65.5dp"
+                android:layout_height="90dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/imageViewKisspng_milk"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/desc_milk"
+                    android:focusable="true"
+                    android:src="@drawable/kisspng_milk" />
+
+                <TextView
+                    android:id="@+id/textViewS_a_b_ph_mai"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="55dp"
+                    android:background="@color/transparent"
+                    android:gravity="center"
+                    android:text="@string/s_a_b_ph_mai"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/overlay4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <!-- Image 5 -->
+            <FrameLayout
+                android:layout_width="65.5dp"
+                android:layout_height="90dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/imageViewKisspng"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/desc_sweets"
+                    android:focusable="true"
+                    android:src="@drawable/kisspng" />
+
+                <TextView
+                    android:id="@+id/textViewNg_t"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="55dp"
+                    android:background="@color/transparent"
+                    android:gravity="center"
+                    android:text="@string/ng_t"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/overlay5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+        </GridLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_post_product_continue"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:background="@drawable/button_product_continue"
+            android:text="@string/ti_p_t_c"
+            android:textColor="@color/black"
+            android:textSize="10pt" />
+
+    </LinearLayout>
+</ScrollView>
+</LinearLayout>

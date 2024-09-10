@@ -23,6 +23,9 @@
             android:name=".View.Account.SignUpActivity"
             android:exported="false" />
         <activity
+            android:name=".View.PostProduct.PostProductActivity"
+            android:exported="false" />
+        <activity
             android:name=".View.MainActivity"
             android:exported="false" />
         <activity

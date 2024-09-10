@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0dp"
+    tools:ignore="UselessParent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="757dp"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="0dp"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/imageViewProduct_selling_price"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="14dp"
+                android:padding="2dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/product_selling_price"
+                android:contentDescription="@string/todo" />
+
+            <TextView
+                android:id="@+id/textViewGi_b_n"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14.5dp"
+                android:layout_weight="1"
+                android:text="@string/gi_b_n"
+                android:textSize="9.5pt"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Container for ImageButton and TextView -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="0dp">
+
+            <!-- Row 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/custom_border"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/textViewPriceLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:text="Giá bán"
+                    android:textSize="9.5pt" />
+
+                <TextView
+                    android:id="@+id/textViewSeparator1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="|"
+                    android:textSize="10pt"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:scaleY="2" />
+
+                <EditText
+                    android:id="@+id/editTextPriceInputNh_p_gi_b_n"
+                    android:layout_width="10dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="3"
+                    android:layout_gravity="center_vertical"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/nh_p_gi_b_n"
+                    android:inputType="number"
+                    android:textSize="9.5pt" />
+
+            </LinearLayout>
+
+            <!-- Row 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/custom_border"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/textViewPriceLabelDonVi"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/n_v"
+                    android:textSize="9.5pt" />
+
+                <TextView
+                    android:id="@+id/textViewSeparator2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="|"
+                    android:textSize="10pt"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:scaleY="2" />
+
+                <EditText
+                    android:id="@+id/editTextPriceInputNh_p_n_v_kg_ch_c_c_i"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="3"
+                    android:layout_gravity="center_vertical"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/nh_p_n_v_kg_ch_c_c_i"
+                    android:inputType="text"
+                    android:textSize="9.5pt" />
+
+            </LinearLayout>
+
+            <!-- Row 3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/custom_border"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/textViewPriceLabelHienCo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/hi_n_c"
+                    android:textSize="9.5pt" />
+
+                <TextView
+                    android:id="@+id/textViewSeparator3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="|"
+                    android:textSize="10pt"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:scaleY="2" />
+
+                <EditText
+                    android:id="@+id/editTextPriceInputNh_p_s_l_ng_c_n_b_n"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="3"
+                    android:layout_gravity="center_vertical"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/nh_p_s_l_ng_c_n_b_n"
+                    android:inputType="number"
+                    android:textSize="9.5pt" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:id="@+id/imageViewHourglasssimplelow"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="14dp"
+                    android:padding="2dp"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/hourglasssimplelow"
+                    android:contentDescription="@string/todo" />
+
+                <TextView
+                    android:id="@+id/textViewTinhTrang"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14.5dp"
+                    android:layout_weight="1"
+                    android:text="Tình Trạng"
+                    android:textSize="9.5pt"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_Dangco"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:background="@drawable/rounded_edittext"
+                    android:text="Đang có"
+                    android:layout_weight="1"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="7pt" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_SapCo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_edittext"
+                    android:text="Sắp có"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="7pt" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:id="@+id/imageViewCalendar"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="14dp"
+                    android:padding="2dp"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/calendar"
+                    android:contentDescription="@string/todo" />
+
+                <TextView
+                    android:id="@+id/textViewNgayHetHang"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14.5dp"
+                    android:layout_weight="1"
+                    android:text="Ngày hết hàng"
+                    android:textSize="9.5pt"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayoutCalendarContainer"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginStart="35dp"
+                android:layout_marginEnd="25dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="horizontal"
+                android:background="@drawable/rounded_calendar"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:id="@+id/imageViewCalendar_Sub"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="14dp"
+                    android:padding="2dp"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/calendar_sub"
+                    android:contentDescription="@string/todo" />
+
+                <TextView
+                    android:id="@+id/textViewDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14.5dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="10dp"
+                    android:text=""
+                    android:textSize="9.5pt"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="15dp"
+            android:background="#65424242" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="0dp"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:id="@+id/imageView5"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="3dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/product_address"
+                android:contentDescription="@string/todo" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5.5dp"
+                android:layout_weight="1"
+                android:text="Địa chỉ"
+                android:textSize="9.5pt"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Input field with character limit -->
+        <EditText
+            android:id="@+id/editTextInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/dashed_border"
+            android:gravity="top|start"
+            android:hint="@string/c_i_t_n_n_i_l_n_t_t_c_s_gi_p_ch_r_t_nhi_u_y"
+            android:inputType="textMultiLine"
+            android:lines="4"
+            android:maxLength="100"
+            android:padding="10dp"
+            android:autofillHints="" />
+
+
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button2"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:background="@drawable/button_product_continue"
+            android:text="Đăng sản phẩm"
+            android:textColor="@color/black"
+            android:textSize="10pt" />
+
+    </LinearLayout>
+</ScrollView>
+</FrameLayout>

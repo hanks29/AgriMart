@@ -1,10 +1,10 @@
-package com.example.agrimart.View.Account;
+package com.example.agrimart.ui.Account;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,21 +13,21 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.agrimart.R;
+import com.example.agrimart.ui.MainActivity;
 
-public class ForgotPasswordActivity extends AppCompatActivity {
-    Button btnContinue;
-    ImageButton btnBack;
+public class SignInActivity extends AppCompatActivity {
+    Button btnDonthaveAccount, btnSignIn;
+    TextView forgotPass;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_forgot_password);
+        setContentView(R.layout.activity_sign_in);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
     }
 
     @Override
@@ -38,26 +38,34 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     public void addControls() {
-        btnContinue = findViewById(R.id.btn_continue);
-        btnBack = findViewById(R.id.btn_back);
+        btnDonthaveAccount = findViewById(R.id.dontHaveAccount);
+        forgotPass = findViewById(R.id.forgotPassword);
+        btnSignIn = findViewById(R.id.btnSignIn);
     }
 
     public void addEvents() {
-        btnContinue.setOnClickListener(new View.OnClickListener() {
+        btnDonthaveAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ForgotPasswordActivity.this, EnterOTPActivity.class);
+                Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
                 startActivity(intent);
             }
         });
-        btnBack.setOnClickListener(new View.OnClickListener() {
+
+        forgotPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                Intent intent = new Intent(SignInActivity.this, ForgotPasswordActivity.class);
+                startActivity(intent);
             }
         });
 
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
     }
-
-
 }

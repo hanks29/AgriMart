@@ -1,4 +1,4 @@
-package com.example.agrimart.View.PostProduct;
+package com.example.agrimart.ui.PostProduct;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;

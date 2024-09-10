@@ -14,28 +14,28 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
-            android:name=".View.Account.EnterOTPActivity"
+            android:name=".ui.Account.EnterOTPActivity"
             android:exported="false" />
         <activity
-            android:name=".View.Account.ForgotPasswordActivity"
+            android:name=".ui.Account.ForgotPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".View.Account.SignUpActivity"
+            android:name=".ui.Account.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".View.PostProduct.PostProductActivity"
+            android:name=".ui.PostProduct.PostProductActivity"
             android:exported="false" />
         <activity
-            android:name=".View.MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".View.SplashScreen.SplashScreenActivity"
+            android:name=".ui.SplashScreen.SplashScreenActivity"
             android:exported="false" />
         <activity
-            android:name=".View.Homepage.HomeFragment"
+            android:name=".ui.Homepage.HomeFragment"
             android:exported="false" />
         <activity
-            android:name=".View.Account.SignInActivity"
+            android:name=".ui.Account.SignInActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

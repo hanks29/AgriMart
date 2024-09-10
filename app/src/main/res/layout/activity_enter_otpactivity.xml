@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_light"
     android:id="@+id/main"
-    tools:context=".View.Account.EnterOTPActivity">
+    tools:context=".ui.Account.EnterOTPActivity">
 
     <ImageButton
         android:id="@+id/btn_back"

@@ -1,12 +1,10 @@
-package com.example.agrimart.View;
+package com.example.agrimart.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsetsController;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,9 +13,8 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.agrimart.R;
-import com.example.agrimart.View.Homepage.HomeFragment;
-import com.example.agrimart.View.PostProduct.PostProductActivity;
-import com.example.agrimart.View.PostProduct.PostProductPhotosFragment;
+import com.example.agrimart.ui.Homepage.HomeFragment;
+import com.example.agrimart.ui.PostProduct.PostProductActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

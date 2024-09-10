@@ -1,4 +1,4 @@
-package com.example.agrimart.Model;
+package com.example.agrimart.data.model;
 
 public class Category {
     private int image;

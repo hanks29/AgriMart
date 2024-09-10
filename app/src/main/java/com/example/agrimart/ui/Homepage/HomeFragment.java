@@ -1,4 +1,4 @@
-package com.example.agrimart.View.Homepage;
+package com.example.agrimart.ui.Homepage;
 
 import android.os.Bundle;
 
@@ -10,13 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.example.agrimart.Controller.CategoryAdapter;
-import com.example.agrimart.Controller.ProductAdapter;
-import com.example.agrimart.Model.Category;
-import com.example.agrimart.Model.Product;
 import com.example.agrimart.R;
 import com.example.agrimart.SpacesItemDecoration;
+import com.example.agrimart.data.adapter.CategoryAdapter;
+import com.example.agrimart.data.adapter.ProductAdapter;
+import com.example.agrimart.data.model.Category;
+import com.example.agrimart.data.model.Product;
 import com.example.agrimart.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;

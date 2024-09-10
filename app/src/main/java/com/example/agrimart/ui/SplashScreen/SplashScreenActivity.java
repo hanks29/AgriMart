@@ -1,4 +1,4 @@
-package com.example.agrimart.View.SplashScreen;
+package com.example.agrimart.ui.SplashScreen;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;

@@ -1,6 +1,5 @@
-package com.example.agrimart.View.PostProduct;
+package com.example.agrimart.ui.PostProduct;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;

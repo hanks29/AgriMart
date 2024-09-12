@@ -16,7 +16,8 @@ import com.example.agrimart.R;
 import com.example.agrimart.ui.MainActivity;
 
 public class SignInActivity extends AppCompatActivity {
-    Button btnDonthaveAccount, btnSignIn;
+    TextView tvDonthaveAccount;
+    Button btnSignIn;
     TextView forgotPass;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +39,13 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     public void addControls() {
-        btnDonthaveAccount = findViewById(R.id.dontHaveAccount);
+        tvDonthaveAccount = findViewById(R.id.dontHaveAccount);
         forgotPass = findViewById(R.id.forgotPassword);
         btnSignIn = findViewById(R.id.btnSignIn);
     }
 
     public void addEvents() {
-        btnDonthaveAccount.setOnClickListener(new View.OnClickListener() {
+        tvDonthaveAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);

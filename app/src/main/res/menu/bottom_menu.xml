@@ -10,12 +10,12 @@
         android:icon="@drawable/store" />
 
     <item android:title= "@string/ng_b_n"
-        android:id="@+id/fab"
-        />
+        android:id="@+id/post"
+        android:icon="@drawable/plus" />
 
     <item android:title="@string/cart"
         android:id="@+id/cart"
-        android:icon="@drawable/shopping_cart" />
+        android:icon="@drawable/bag" />
 
     <item android:title="@string/profile"
         android:id="@+id/profile"

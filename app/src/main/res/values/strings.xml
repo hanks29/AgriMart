@@ -17,7 +17,7 @@
     <string name="ch_a_c_t_i_kho_n"><u>Chưa có tài khoản?</u></string>
     <string name="m_t_kh_u">Mật khẩu</string>
     <string name="continue_with_google"> Đăng nhập bằng Google</string>
-    <string name="ng_k">Đăng ký</string>
+    <string name="dang_ky">Chưa có tài khoản? <b>Đăng ký</b></string>
     <string name="c_t_i_kho_n"><u>Đã có tài khoản?</u></string>
     <string name="ng_k_b_ng_s_i_n_tho_i">Đăng ký bằng số điện thoại</string>
     <string name="ng_k_b_ng_email">Đăng ký bằng email</string>
@@ -58,4 +58,5 @@
     <string name="_200kg">200kg</string>
     <string name="s_u_ri_ng_lan_t_a">Sầu riêng lan tỏa</string>
     <string name="_20_ng_i_ang_h_i">20 người đang hỏi</string>
+    <string name="dang_san_pham">ĐĂNG SẢN PHẨM</string>
 </resources>

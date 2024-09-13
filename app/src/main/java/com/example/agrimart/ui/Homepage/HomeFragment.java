@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.example.agrimart.R;
+import com.example.agrimart.SpaceItemHorizontalDecoration;
 import com.example.agrimart.SpacesItemDecoration;
 import com.example.agrimart.data.adapter.CategoryAdapter;
 import com.example.agrimart.data.adapter.ProductAdapter;
@@ -47,24 +48,26 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        int spacingInPixels=getResources().getDimensionPixelSize(R.dimen.spacing);
         binding= FragmentHomeBinding.inflate(inflater,container,false);
         View view=binding.getRoot();
         List<Category> categories=new ArrayList<>();
+        categories.add(new Category(R.drawable.vegetable,"Rau củ quả"));
         categories.add(new Category(R.drawable.fruit,"Trái cây"));
-        categories.add(new Category(R.drawable.rau_cu,"Rau củ quả"));
         CategoryAdapter categoryAdapter=new CategoryAdapter(categories);
         binding.rvCategories.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
+        binding.rvCategories.addItemDecoration(new SpaceItemHorizontalDecoration(spacingInPixels));
         binding.rvCategories.setAdapter(categoryAdapter);
 
         List<Product> products=new ArrayList<>();
-        products.add(new Product(R.drawable.ot,"Sầu riêng lan tỏa","45.000 đ/kg","200kg","20 người đang hỏi"));
-        products.add(new Product(R.drawable.ot,"Sầu riêng lan tỏa","45.000 đ/kg","200kg","20 người đang hỏi"));
-        products.add(new Product(R.drawable.ot,"Sầu riêng lan tỏa","45.000 đ/kg","200kg","20 người đang hỏi"));
-        products.add(new Product(R.drawable.ot,"Sầu riêng lan tỏa","45.000 đ/kg","200kg","20 người đang hỏi"));
+        products.add(new Product(R.drawable.banana,"Organic Bananas","45.000","200kg","20 người đang hỏi"));
+        products.add(new Product(R.drawable.banana,"Organic Bananas","45.000","200kg","20 người đang hỏi"));
+        products.add(new Product(R.drawable.banana,"Organic Bananas","45.000","200kg","20 người đang hỏi"));
+        products.add(new Product(R.drawable.banana,"Organic Bananas","45.000","200kg","20 người đang hỏi"));
         ProductAdapter productAdapter=new ProductAdapter(products);
         binding.rvProducts.setLayoutManager(new GridLayoutManager(getContext(),2));
-        int spacingInPixels=getResources().getDimensionPixelSize(R.dimen.spacing);
-        binding.rvProducts.addItemDecoration(new SpacesItemDecoration(16));
+
+        binding.rvProducts.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
         binding.rvProducts.setAdapter(productAdapter);
         return view;
     }

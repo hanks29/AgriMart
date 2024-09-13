@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="248dp"
+    android:layout_height="105dp"
+    android:background="@drawable/bg_category">
 
-    <FrameLayout
-        android:id="@+id/frame_layout"
-        android:layout_width="54dp"
-        android:layout_height="52dp"
-        android:layout_centerHorizontal="true">
-
-        <ImageView
-            android:id="@+id/imgCate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="Rau cu"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/fruit" />
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/imgCate"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="17dp"
+        android:clickable="true"
+        android:contentDescription="@string/desc_vegetable"
+        android:focusable="true"
+        android:scaleType="centerCrop"
+        android:layout_centerVertical="true"
+        android:src="@drawable/vegetable" />
 
     <TextView
         android:id="@+id/tvName"
-        android:layout_width="wrap_content"
+        android:layout_width="126dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/frame_layout"
-        android:layout_marginTop="8dp"
-        android:textSize="12sp"
-        android:textColor="#333333"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="@string/rau_c_qu" />
+        android:layout_marginTop="55dp"
+        android:background="@color/transparent"
+        android:text="@string/rau_c"
+        android:textSize="20sp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@id/imgCate"
+        android:textStyle="bold" />
+
 </RelativeLayout>

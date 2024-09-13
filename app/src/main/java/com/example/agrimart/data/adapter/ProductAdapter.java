@@ -47,7 +47,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             binding.tvName.setText(product.getName());
             binding.tvPrice.setText(product.getPrice());
             binding.tvUnit.setText(product.getUnit());
-            binding.tvActive.setText(product.getActive());
         }
     }
 }

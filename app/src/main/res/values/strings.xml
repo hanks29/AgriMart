@@ -62,4 +62,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="frash_fruits_vegetable"><![CDATA[Frash Fruits & Vegetable]]></string>
+    <string name="add_cart">Thêm vào giỏ hàng</string>
+    <string name="product_name">Tên sản phẩm</string>
+    <string name="price">50.000đ</string>
+    <string name="address">123 Lê Trọng Tấn, Quận Tân Phú, TP.HCM</string>
+    <string name="description">Mô tả chi tiết</string>
+    <string name="descriptions">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="user_review">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</string>
+    <string name="my_cart">Giỏ hàng</string>
+    <string name="notification_time">1 phút trước</string>
+    <string name="notification_message">Khánh vừa đặt mua sản phẩm của bạn: Chuối nhà trồng...</string>
 </resources>

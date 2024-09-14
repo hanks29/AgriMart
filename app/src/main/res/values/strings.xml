@@ -59,4 +59,6 @@
     <string name="s_u_ri_ng_lan_t_a">Sầu riêng lan tỏa</string>
     <string name="_20_ng_i_ang_h_i">20 người đang hỏi</string>
     <string name="dang_san_pham">ĐĂNG SẢN PHẨM</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

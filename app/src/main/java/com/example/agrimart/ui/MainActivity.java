@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.agrimart.R;
 import com.example.agrimart.ui.Homepage.HomeFragment;
+import com.example.agrimart.ui.MyProfile.MyProfileFragment;
 import com.example.agrimart.ui.PostProduct.PostProductActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -62,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
         else if (item.getItemId() == R.id.post) {
             Intent intent = new Intent(MainActivity.this, PostProductActivity.class);
             startActivity(intent);
-         }
+        } else if (item.getItemId() == R.id.profile) {
+            selectedFragment = new MyProfileFragment();
+        }
 
         if (selectedFragment != null) {
             loadFragment(selectedFragment);

@@ -8,72 +8,112 @@
     android:layout_height="match_parent"
     tools:context=".ui.Homepage.HomeFragment">
 
-    <RelativeLayout
+    <!-- LinearLayout as the single direct child of ScrollView -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/categories"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:textStyle="bold"
-            android:textColor="#272727"
-            android:fontFamily="@font/circular_std"
-            android:text="@string/categories" />
-
-        <TextView
-            android:id="@+id/see_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="23dp"
-            android:fontFamily="@font/circular_std"
-            android:text="@string/see_all"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvCategories"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/see_all"
-            android:layout_marginTop="10dp"/>
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:id="@+id/header">
 
-        <TextView
-            android:id="@+id/top_selling"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="@string/top_selling"
-            android:layout_marginTop="24dp"
-            android:textColor="#272727"
-            android:fontFamily="@font/gabarito"
-            android:layout_marginStart="24dp"
-            android:layout_below="@id/rvCategories" />
+            <ImageView
+                android:id="@+id/notification_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/searchView"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/bell" />
 
-        <TextView
-            android:id="@+id/see_all1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="24dp"
-            android:layout_marginTop="24dp"
-            android:fontFamily="@font/circular_std"
-            android:layout_below="@id/rvCategories"
-            android:text="@string/see_all"
-            android:textColor="@color/black"/>
+            <SearchView
+                android:id="@+id/searchView"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/search_layout"
+                android:queryHint="@string/search"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/notification_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvProducts"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/top_selling"
-            android:layout_marginTop="10dp"/>
-    </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/categories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:textStyle="bold"
+                android:textColor="#272727"
+                android:fontFamily="@font/circular_std"
+                android:text="@string/categories" />
+
+            <TextView
+                android:id="@+id/see_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="23dp"
+                android:fontFamily="@font/circular_std"
+                android:text="@string/see_all"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/see_all"
+                android:layout_marginTop="10dp" />
+
+            <TextView
+                android:id="@+id/top_selling"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="@string/top_selling"
+                android:layout_marginTop="24dp"
+                android:textColor="#272727"
+                android:fontFamily="@font/gabarito"
+                android:layout_marginStart="24dp"
+                android:layout_below="@id/rvCategories" />
+
+            <TextView
+                android:id="@+id/see_all1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/circular_std"
+                android:layout_below="@id/rvCategories"
+                android:text="@string/see_all"
+                android:textColor="@color/black" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvProducts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/top_selling"
+                android:layout_marginTop="10dp" />
+        </RelativeLayout>
+
+    </LinearLayout>
 </ScrollView>

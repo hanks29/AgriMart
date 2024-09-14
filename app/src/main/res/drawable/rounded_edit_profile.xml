@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/account_my_project"/> <!-- Màu nền xanh dương -->
+    <corners android:radius="10dp"/> <!-- Bán kính bo tròn -->
+    <stroke android:width="2dp" android:color="@color/white"/> <!-- Đường viền màu xám -->
+</shape>

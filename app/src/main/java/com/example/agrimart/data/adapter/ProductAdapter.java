@@ -13,21 +13,29 @@ import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
     private List<Product> products;
+    private OnItemClickListener listener;
 
-    public ProductAdapter(List<Product> products) {
+    public ProductAdapter(List<Product> products, OnItemClickListener listener) {
         this.products = products;
+        this.listener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Product product);
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ProductItemBinding binding=ProductItemBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+        ProductItemBinding binding = ProductItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new MyViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.bindData(products.get(position));
+        Product product = products.get(position);
+        holder.bindData(product);
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(product)); // Sử dụng listener để bắt sự kiện click
     }
 
     @Override
@@ -36,13 +44,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        ProductItemBinding binding;
+        private final ProductItemBinding binding;
+
         public MyViewHolder(@NonNull ProductItemBinding binding) {
             super(binding.getRoot());
-            this.binding=binding;
+            this.binding = binding;
         }
 
-        public void bindData(Product product){
+        public void bindData(Product product) {
             binding.imgPro.setImageResource(product.getImage());
             binding.tvName.setText(product.getName());
             binding.tvPrice.setText(product.getPrice());

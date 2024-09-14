@@ -11,19 +11,22 @@
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        android:id="@+id/header">
+        android:id="@+id/header"
+        android:visibility="visible">
 
-        <ImageView
-            android:id="@+id/notification_icon"
+        <ImageButton
+            android:id="@+id/btnNotification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/searchView"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/bell" />
+            app:srcCompat="@drawable/bell"
+            android:background="@color/white"/>
 
         <SearchView
             android:id="@+id/searchView"
@@ -45,8 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/fragment_container"
-        android:layout_below="@id/header" >
-    </FrameLayout>
+        android:layout_below="@id/header" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:layout_width="wrap_content"

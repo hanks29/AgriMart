@@ -3,22 +3,27 @@ package com.example.agrimart.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.agrimart.R;
+import com.example.agrimart.ui.Cart.CartFragment;
 import com.example.agrimart.ui.Homepage.HomeFragment;
+import com.example.agrimart.ui.Notification.NotificationActivity;
 import com.example.agrimart.ui.PostProduct.PostProductActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
-    FloatingActionButton fab;
+    ImageButton btnNotification;
+    ConstraintLayout header;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,11 +63,19 @@ public class MainActivity extends AppCompatActivity {
 
         if (item.getItemId() == R.id.home) {
             selectedFragment = new HomeFragment();
-        }
-        else if (item.getItemId() == R.id.post) {
+            if (header != null) {
+                header.setVisibility(View.VISIBLE);
+            }
+        } else if (item.getItemId() == R.id.post) {
             Intent intent = new Intent(MainActivity.this, PostProductActivity.class);
             startActivity(intent);
-         }
+            return true;  // No fragment to load for posting
+        } else if (item.getItemId() == R.id.cart) {
+            selectedFragment = new CartFragment();
+            if (header != null) {
+                header.setVisibility(View.GONE);
+            }
+        }
 
         if (selectedFragment != null) {
             loadFragment(selectedFragment);
@@ -71,12 +84,19 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+
+
     void addControls()
     {
+        btnNotification = findViewById(R.id.btnNotification);
+        header = findViewById(R.id.header);
     }
 
     void addEvents()
     {
-
+        btnNotification.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+            startActivity(intent);
+        });
     }
 }

@@ -1,6 +1,7 @@
 package com.example.agrimart.ui.PostProduct;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
 import com.example.agrimart.R;
@@ -42,6 +44,7 @@ public class PostProductPriceFragment extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -50,10 +53,17 @@ public class PostProductPriceFragment extends Fragment {
         // Initialize views
         textViewDate = view.findViewById(R.id.textViewDate);
         LinearLayout calendarContainer = view.findViewById(R.id.linearLayoutCalendarContainer);
-
+        AppCompatButton btnPostProduct = view.findViewById(R.id.btn_postProduct);
         // Set the date 5 days from now to TextView
         setDateFiveDaysLater();
 
+        btnPostProduct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(requireContext(), YourProductListingsActivity.class);
+                startActivity(intent);
+            }
+        });
         // Set click listener for calendar container
         calendarContainer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +71,7 @@ public class PostProductPriceFragment extends Fragment {
                 showCalendarDialog();
             }
         });
+
 
         return view;
     }

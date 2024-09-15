@@ -18,6 +18,7 @@ import com.example.agrimart.R;
 import com.example.agrimart.ui.Cart.CartFragment;
 import com.example.agrimart.ui.Homepage.HomeFragment;
 import com.example.agrimart.ui.Notification.NotificationActivity;
+import com.example.agrimart.ui.MyProfile.MyProfileFragment;
 import com.example.agrimart.ui.PostProduct.PostProductActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -63,18 +64,16 @@ public class MainActivity extends AppCompatActivity {
 
         if (item.getItemId() == R.id.home) {
             selectedFragment = new HomeFragment();
-            if (header != null) {
-                header.setVisibility(View.VISIBLE);
-            }
-        } else if (item.getItemId() == R.id.post) {
+        }
+        else if (item.getItemId() == R.id.post) {
             Intent intent = new Intent(MainActivity.this, PostProductActivity.class);
             startActivity(intent);
-            return true;  // No fragment to load for posting
+        } else if (item.getItemId() == R.id.profile) {
+            selectedFragment = new MyProfileFragment();
+        }
+            return true;
         } else if (item.getItemId() == R.id.cart) {
             selectedFragment = new CartFragment();
-            if (header != null) {
-                header.setVisibility(View.GONE);
-            }
         }
 
         if (selectedFragment != null) {
@@ -84,12 +83,9 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
-
     void addControls()
     {
         btnNotification = findViewById(R.id.btnNotification);
-        header = findViewById(R.id.header);
     }
 
     void addEvents()

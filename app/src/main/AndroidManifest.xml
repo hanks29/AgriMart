@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <application
         android:allowBackup="true"
@@ -23,6 +20,15 @@
             android:name=".ui.ProductPage.ProductDetailActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.MyProfile.MyProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.PostProduct.YourProductListingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.PostProduct.ProductPostList"
+            android:exported="false" />
+        <activity
             android:name=".ui.PostProduct.PostProductActivity"
             android:exported="false" />
         <activity
@@ -38,11 +44,14 @@
             android:name=".ui.Account.SignUpActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.SplashScreen.SplashScreenActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.Homepage.HomeFragment"
             android:exported="false" />
         <activity
             android:name=".ui.Account.SignInActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

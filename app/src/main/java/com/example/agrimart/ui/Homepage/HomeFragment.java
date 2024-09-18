@@ -100,7 +100,8 @@ public class HomeFragment extends Fragment {
 
     private void addEvents() {
         btnSearch.setOnClickListener(View -> {
-            loadFragment(new SearchFragment());
+            Intent intent=new Intent(getActivity(), SearchActivity.class);
+            getActivity().startActivity(intent);
         });
 
         btnNotification.setOnClickListener(View -> {
@@ -109,7 +110,8 @@ public class HomeFragment extends Fragment {
         });
 
         search.setOnClickListener(View -> {
-            loadFragment(new SearchFragment());
+            Intent intent=new Intent(getContext(), SearchActivity.class);
+            startActivity(intent);
         });
     }
 

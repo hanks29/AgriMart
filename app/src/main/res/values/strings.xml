@@ -71,6 +71,7 @@
     <string name="notification_time">1 phút trước</string>
     <string name="notification_message">Khánh vừa đặt mua sản phẩm của bạn: Chuối nhà trồng...</string>
     <string name="explore">explore android:id=</string>
+    <string name="t_m_theo_danh_m_c">Tìm theo danh mục</string>
 
     <string-array name="filter_options">
         <item>Sort by Price</item>

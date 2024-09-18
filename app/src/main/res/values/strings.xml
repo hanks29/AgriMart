@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">AgriMart</string>
-    <string name="categories">Danh mục</string>
+    <string name="categories">Danh mục sản phẩm</string>
     <string name="see_all">Xem thêm</string>
     <string name="top_selling">Bán chạy nhất</string>
     <string name="home">Trang chủ</string>
@@ -59,8 +59,6 @@
     <string name="s_u_ri_ng_lan_t_a">Sầu riêng lan tỏa</string>
     <string name="_20_ng_i_ang_h_i">20 người đang hỏi</string>
     <string name="dang_san_pham">ĐĂNG SẢN PHẨM</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="frash_fruits_vegetable"><![CDATA[Frash Fruits & Vegetable]]></string>
     <string name="add_cart">Thêm vào giỏ hàng</string>
     <string name="product_name">Tên sản phẩm</string>
@@ -72,4 +70,17 @@
     <string name="my_cart">Giỏ hàng</string>
     <string name="notification_time">1 phút trước</string>
     <string name="notification_message">Khánh vừa đặt mua sản phẩm của bạn: Chuối nhà trồng...</string>
+    <string name="explore">explore android:id=</string>
+
+    <string-array name="filter_options">
+        <item>Sort by Price</item>
+        <item>Newest</item>
+        <item>Oldest</item>
+    </string-array>
+
+    <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

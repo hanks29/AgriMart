@@ -38,7 +38,6 @@ android {
         dataBinding=true;
     }
 }
-
 dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.22")
@@ -57,5 +56,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+
+    // ViewModel
+//    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.5")
 
 }

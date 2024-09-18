@@ -5,9 +5,9 @@
         android:id="@+id/home"
         android:icon="@drawable/home"/>
 
-    <item android:title="@string/cho"
-        android:id="@+id/market"
-        android:icon="@drawable/store" />
+    <item android:title="@string/explore"
+        android:id="@+id/explore"
+        android:icon="@drawable/explore" />
 
     <item android:title= "@string/ng_b_n"
         android:id="@+id/post"

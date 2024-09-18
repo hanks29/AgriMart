@@ -1,35 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="248dp"
-    android:layout_height="105dp"
-    android:background="@drawable/bg_category">
+    android:layout_width="100dp"
+    android:layout_height="120dp"
+    android:padding="8dp"
+    android:background="@color/transparent">
 
-    <ImageView
+    <com.denzcoskun.imageslider.ImageSlider
         android:id="@+id/imgCate"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_marginStart="17dp"
-        android:clickable="true"
-        android:contentDescription="@string/desc_vegetable"
-        android:focusable="true"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
         android:scaleType="centerCrop"
-        android:layout_centerVertical="true"
-        android:src="@drawable/vegetable" />
+        android:src="@drawable/vegetable"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@color/black"
+        app:civ_circle_background_color="@color/white" />
 
     <TextView
         android:id="@+id/tvName"
-        android:layout_width="126dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="55dp"
-        android:background="@color/transparent"
+        android:layout_below="@id/imgCate"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="4dp"
         android:text="@string/rau_c"
-        android:textSize="20sp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="15dp"
-        android:layout_toEndOf="@id/imgCate"
-        android:textStyle="bold" />
-
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#181725" />
 </RelativeLayout>

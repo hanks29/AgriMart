@@ -14,6 +14,12 @@
         android:background="@color/green"
         android:orientation="horizontal"
         android:padding="16dp">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/top">
+
+        </RelativeLayout>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/search_card"

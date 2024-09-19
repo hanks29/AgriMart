@@ -76,12 +76,12 @@ public class HomeFragment extends Fragment {
         rvCategories.setAdapter(categoryAdapter);
 
         List<Product> products = new ArrayList<>();
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
 
         ProductAdapter productAdapter = new ProductAdapter(products, product -> {
             Intent intent = new Intent(getContext(), ProductDetailActivity.class);

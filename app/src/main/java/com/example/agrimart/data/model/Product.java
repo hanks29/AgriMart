@@ -4,24 +4,21 @@ public class Product {
     private int image;
     private String name;
     private String price;
-    private String unit;
     private String active;
 
     public Product() {
     }
 
-    public Product(int image, String name, String price, String unit) {
+    public Product(int image, String name, String price) {
         this.image = image;
         this.name = name;
         this.price = price;
-        this.unit = unit;
     }
 
-    public Product(int image, String name, String price, String unit, String active) {
+    public Product(int image, String name, String price, String active) {
         this.image = image;
         this.name = name;
         this.price = price;
-        this.unit = unit;
         this.active = active;
     }
 
@@ -47,14 +44,6 @@ public class Product {
 
     public void setPrice(String price) {
         this.price = price;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
     }
 
     public String getActive() {

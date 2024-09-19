@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.agrimart.data.model.Product;
-import com.example.agrimart.databinding.ProductItemBinding;
+import com.example.agrimart.databinding.ItemProductBinding;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ProductItemBinding binding = ProductItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        ItemProductBinding binding = ItemProductBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new MyViewHolder(binding);
     }
 
@@ -35,7 +35,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Product product = products.get(position);
         holder.bindData(product);
-        holder.itemView.setOnClickListener(v -> listener.onItemClick(product)); // Sử dụng listener để bắt sự kiện click
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(product));
     }
 
     @Override
@@ -44,18 +44,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        private final ProductItemBinding binding;
+        private final ItemProductBinding binding;
 
-        public MyViewHolder(@NonNull ProductItemBinding binding) {
+        public MyViewHolder(@NonNull ItemProductBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
         public void bindData(Product product) {
-            binding.imgPro.setImageResource(product.getImage());
-            binding.tvName.setText(product.getName());
-            binding.tvPrice.setText(product.getPrice());
-            binding.tvUnit.setText(product.getUnit());
+            binding.setProduct(product);
+            binding.executePendingBindings();
         }
     }
 }

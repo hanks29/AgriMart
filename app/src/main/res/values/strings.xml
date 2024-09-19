@@ -28,6 +28,7 @@
 
 
     <!-- PostProduct -->
+    <string name="nh_p_s_l_ng_c_n_b_n">Your desired text here</string>
     <string name="desc_vegetable">Rau củ quả</string>
     <string name="desc_fruit">Trái cây</string>
     <string name="desc_meat_eggs">Trứng, thịt</string>
@@ -52,9 +53,6 @@
     <string name="hi_n_c">Hiện có</string>
     <string name="nh_p_gi_b_n">Nhập giá bán</string>
     <string name="nh_p_n_v_kg_ch_c_c_i">Nhập đơn vị (kg, chục, cái)</string>
-    <string name="nh_p_s_l_ng_c_n_b_n">Nhập số lượng cần bán</string>
-    <string name="rau_c_qu">Rau củ quả</string>
-    <string name="_45_000_kg">45.000</string>
     <string name="_200kg">200kg</string>
     <string name="s_u_ri_ng_lan_t_a">Sầu riêng lan tỏa</string>
     <string name="_20_ng_i_ang_h_i">20 người đang hỏi</string>

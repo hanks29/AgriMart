@@ -69,7 +69,7 @@ public class MyProfileFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getActivity().getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.account_my_project)); // Thay "your_color" bằng màu bạn muốn
+            window.setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.green));
         }
 
         return view;

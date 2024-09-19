@@ -1,0 +1,244 @@
+Index: app/src/main/java/com/example/agrimart/ui/Homepage/SearchActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.Homepage;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\n\r\nimport androidx.activity.EdgeToEdge;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.graphics.Insets;\r\nimport androidx.core.view.ViewCompat;\r\nimport androidx.core.view.WindowInsetsCompat;\r\nimport androidx.databinding.DataBindingUtil;\r\nimport androidx.lifecycle.ViewModelProvider;\r\nimport androidx.recyclerview.widget.GridLayoutManager;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.SpacesItemDecoration;\r\nimport com.example.agrimart.data.adapter.CategoryAdapter;\r\nimport com.example.agrimart.data.adapter.ProductAdapter;\r\nimport com.example.agrimart.data.model.Category;\r\nimport com.example.agrimart.data.model.Product;\r\nimport com.example.agrimart.databinding.ActivitySearchBinding;\r\nimport com.example.agrimart.ui.ProductPage.ProductDetailActivity;\r\nimport com.example.agrimart.viewmodel.SearchViewModel;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class SearchActivity extends AppCompatActivity {\r\n\r\n    SearchViewModel searchViewModel;\r\n    ActivitySearchBinding binding;\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        searchViewModel= new ViewModelProvider(this).get(SearchViewModel.class);\r\n        binding = DataBindingUtil.setContentView(this, R.layout.activity_search);\r\n        binding.setSearch(searchViewModel);\r\n        EdgeToEdge.enable(this);\r\n        setContentView(binding.getRoot());\r\n        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {\r\n            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());\r\n            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);\r\n            return insets;\r\n        });\r\n\r\n\r\n\r\n\r\n\r\n        List<Category> categories = new ArrayList<>();\r\n        categories.add(new Category(R.drawable.vegetable, \"Rau củ quả\"));\r\n        categories.add(new Category(R.drawable.fruit, \"Trái cây\"));\r\n        categories.add(new Category(R.drawable.frash_fruits, \"Ngũ cốc và hạt\"));\r\n        categories.add(new Category(R.drawable.frash_fruits, \"Gia vị\"));\r\n        categories.add(new Category(R.drawable.frash_fruits, \"Mật ong\"));\r\n        categories.add(new Category(R.drawable.frash_fruits, \"Trà\"));\r\n        categories.add(new Category(R.drawable.frash_fruits, \"Cây cảnh\"));\r\n        categories.add(new Category(R.drawable.frash_fruits, \"Khác\"));\r\n\r\n        CategoryAdapter categoryAdapter = new CategoryAdapter(categories);\r\n        binding.rvCategories.setLayoutManager(new GridLayoutManager(this, 4));\r\n        binding.rvCategories.setAdapter(categoryAdapter);\r\n\r\n        List<Product> products = new ArrayList<>();\r\n        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\", \"200kg\", \"20 người đang hỏi\"));\r\n        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\", \"200kg\", \"20 người đang hỏi\"));\r\n        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\", \"200kg\", \"20 người đang hỏi\"));\r\n        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\", \"200kg\", \"20 người đang hỏi\"));\r\n        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\", \"200kg\", \"20 người đang hỏi\"));\r\n        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\", \"200kg\", \"20 người đang hỏi\"));\r\n\r\n        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);\r\n        binding.rvProducts.setLayoutManager(new GridLayoutManager(this, 2));\r\n        binding.rvProducts.addItemDecoration(new SpacesItemDecoration(spacingInPixels));\r\n\r\n        ProductAdapter productAdapter = new ProductAdapter(products, product -> {\r\n            Intent intent = new Intent(this, ProductDetailActivity.class);\r\n            startActivity(intent);\r\n        });\r\n        binding.rvProducts.setAdapter(productAdapter);\r\n        searchViewModel.setProducts(products);\r\n\r\n    }\r\n}
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/Homepage/SearchActivity.java b/app/src/main/java/com/example/agrimart/ui/Homepage/SearchActivity.java
+--- a/app/src/main/java/com/example/agrimart/ui/Homepage/SearchActivity.java	
++++ b/app/src/main/java/com/example/agrimart/ui/Homepage/SearchActivity.java	
+@@ -2,12 +2,15 @@
+ 
+ import android.content.Intent;
+ import android.os.Bundle;
++import android.view.Window;
+ 
+ import androidx.activity.EdgeToEdge;
+ import androidx.appcompat.app.AppCompatActivity;
+ import androidx.core.graphics.Insets;
+ import androidx.core.view.ViewCompat;
++import androidx.core.view.WindowCompat;
+ import androidx.core.view.WindowInsetsCompat;
++import androidx.core.view.WindowInsetsControllerCompat;
+ import androidx.databinding.DataBindingUtil;
+ import androidx.lifecycle.ViewModelProvider;
+ import androidx.recyclerview.widget.GridLayoutManager;
+@@ -37,6 +40,13 @@
+         binding.setSearch(searchViewModel);
+         EdgeToEdge.enable(this);
+         setContentView(binding.getRoot());
++        Window window = getWindow();
++        WindowCompat.setDecorFitsSystemWindows(window, false);
++        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView());
++        window.setStatusBarColor(getResources().getColor(R.color.green));
++        window.setNavigationBarColor(getResources().getColor(R.color.green));
++        windowInsetsController.setAppearanceLightStatusBars(false);
++        windowInsetsController.setAppearanceLightNavigationBars(false);
+         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+@@ -62,12 +72,12 @@
+         binding.rvCategories.setAdapter(categoryAdapter);
+ 
+         List<Product> products = new ArrayList<>();
+-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
+-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
+-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
+-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
+-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
+-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
++        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
++        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
++        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
++        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
++        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
++        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+ 
+         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
+         binding.rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
+Index: app/src/main/res/layout/activity_search.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<layout\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <data>\r\n        <import type=\"android.view.View\"/>\r\n        <variable\r\n            name=\"search\"\r\n            type=\"com.example.agrimart.viewmodel.SearchViewModel\" />\r\n    </data>\r\n\r\n\r\n    <RelativeLayout\r\n\r\n        android:id=\"@+id/main\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\">\r\n\r\n        <LinearLayout\r\n            android:id=\"@+id/header\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:background=\"@color/green\"\r\n            android:orientation=\"horizontal\"\r\n            android:padding=\"16dp\">\r\n\r\n            <androidx.cardview.widget.CardView\r\n                android:id=\"@+id/search_card\"\r\n                android:layout_width=\"0dp\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_weight=\"1\"\r\n                app:cardCornerRadius=\"8dp\"\r\n                app:cardElevation=\"4dp\">\r\n\r\n\r\n                <SearchView\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"match_parent\"\r\n                    android:iconifiedByDefault=\"false\"\r\n                    android:queryHint=\"Search Store\" />\r\n            </androidx.cardview.widget.CardView>\r\n\r\n            <ImageButton\r\n                android:id=\"@+id/filter_icon\"\r\n                android:layout_width=\"32dp\"\r\n                android:layout_height=\"32dp\"\r\n                android:layout_gravity=\"center_vertical\"\r\n                android:layout_marginStart=\"10dp\"\r\n                android:layout_marginEnd=\"4dp\"\r\n                android:background=\"@color/green\"\r\n                android:src=\"@drawable/filter\"\r\n                app:tint=\"@color/black\" />\r\n\r\n        </LinearLayout>\r\n\r\n        <LinearLayout\r\n            android:id=\"@+id/ln1\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_below=\"@id/header\"\r\n            android:layout_marginTop=\"16dp\"\r\n            android:visibility=\"@{search.isProductsEmpty() ? View.VISIBLE : View.GONE}\"\r\n            android:orientation=\"vertical\">\r\n\r\n            <TextView\r\n                android:id=\"@+id/textView3\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:textSize=\"20sp\"\r\n                android:layout_marginStart=\"24dp\"\r\n                android:textStyle=\"bold\"\r\n                android:textColor=\"#272727\"\r\n                android:fontFamily=\"@font/circular_std\"\r\n                android:text=\"@string/t_m_theo_danh_m_c\" />\r\n\r\n            <ScrollView\r\n                android:id=\"@+id/sc\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_marginTop=\"8dp\"\r\n                android:layout_height=\"wrap_content\">\r\n\r\n                <androidx.recyclerview.widget.RecyclerView\r\n                    android:id=\"@+id/rvCategories\"\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    >\r\n\r\n                </androidx.recyclerview.widget.RecyclerView>\r\n            </ScrollView>\r\n        </LinearLayout>\r\n\r\n        <ScrollView\r\n            android:id=\"@+id/sc2\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginTop=\"24dp\"\r\n            android:layout_below=\"@id/ln1\">\r\n\r\n            <androidx.recyclerview.widget.RecyclerView\r\n                android:id=\"@+id/rvProducts\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n            />\r\n        </ScrollView>\r\n\r\n        <TextView\r\n            android:id=\"@+id/tvNotFound\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_below=\"@id/sc2\"\r\n            android:layout_centerHorizontal=\"true\"\r\n            android:layout_marginTop=\"20dp\"\r\n            android:visibility=\"@{search.isProductsEmpty() ? View.VISIBLE : View.GONE}\"\r\n            android:text=\"Không tìm thấy kết quả đã nhập\" />\r\n\r\n\r\n    </RelativeLayout>\r\n</layout>
+===================================================================
+diff --git a/app/src/main/res/layout/activity_search.xml b/app/src/main/res/layout/activity_search.xml
+--- a/app/src/main/res/layout/activity_search.xml	
++++ b/app/src/main/res/layout/activity_search.xml	
+@@ -13,108 +13,94 @@
+ 
+ 
+     <RelativeLayout
+-
+-        android:id="@+id/main"
+-        android:layout_width="match_parent"
+-        android:layout_height="match_parent">
++    android:id="@+id/main"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent">
+ 
+-        <LinearLayout
+-            android:id="@+id/header"
+-            android:layout_width="match_parent"
+-            android:layout_height="wrap_content"
+-            android:background="@color/green"
+-            android:orientation="horizontal"
+-            android:padding="16dp">
++    <LinearLayout
++        android:id="@+id/header"
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:background="@color/green"
++        android:orientation="horizontal"
++        android:padding="16dp">
+ 
+-            <androidx.cardview.widget.CardView
+-                android:id="@+id/search_card"
+-                android:layout_width="0dp"
+-                android:layout_height="wrap_content"
+-                android:layout_weight="1"
+-                app:cardCornerRadius="8dp"
+-                app:cardElevation="4dp">
++        <androidx.cardview.widget.CardView
++            android:id="@+id/search_card"
++            android:layout_width="0dp"
++            android:layout_height="wrap_content"
++            android:layout_weight="1"
++            app:cardCornerRadius="8dp"
++            app:cardElevation="4dp">
+ 
+-
+-                <SearchView
+-                    android:layout_width="match_parent"
+-                    android:layout_height="match_parent"
+-                    android:iconifiedByDefault="false"
+-                    android:queryHint="Search Store" />
+-            </androidx.cardview.widget.CardView>
++            <SearchView
++                android:layout_width="match_parent"
++                android:layout_height="match_parent"
++                android:iconifiedByDefault="false"
++                android:queryHint="Search Store" />
++        </androidx.cardview.widget.CardView>
+ 
+-            <ImageButton
+-                android:id="@+id/filter_icon"
+-                android:layout_width="32dp"
+-                android:layout_height="32dp"
+-                android:layout_gravity="center_vertical"
+-                android:layout_marginStart="10dp"
+-                android:layout_marginEnd="4dp"
+-                android:background="@color/green"
+-                android:src="@drawable/filter"
+-                app:tint="@color/black" />
+-
+-        </LinearLayout>
++        <ImageButton
++            android:id="@+id/filter_icon"
++            android:layout_width="32dp"
++            android:layout_height="32dp"
++            android:layout_gravity="center_vertical"
++            android:layout_marginStart="10dp"
++            android:layout_marginEnd="4dp"
++            android:background="@color/green"
++            android:src="@drawable/filter"
++            app:tint="@color/black" />
++    </LinearLayout>
+ 
+-        <LinearLayout
+-            android:id="@+id/ln1"
+-            android:layout_width="match_parent"
+-            android:layout_height="wrap_content"
+-            android:layout_below="@id/header"
+-            android:layout_marginTop="16dp"
+-            android:visibility="@{search.isProductsEmpty() ? View.VISIBLE : View.GONE}"
+-            android:orientation="vertical">
++    <LinearLayout
++        android:id="@+id/ln1"
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:layout_below="@id/header"
++        android:layout_marginTop="16dp"
++        android:orientation="vertical">
+ 
+-            <TextView
+-                android:id="@+id/textView3"
+-                android:layout_width="wrap_content"
+-                android:layout_height="wrap_content"
+-                android:textSize="20sp"
+-                android:layout_marginStart="24dp"
+-                android:textStyle="bold"
+-                android:textColor="#272727"
+-                android:fontFamily="@font/circular_std"
+-                android:text="@string/t_m_theo_danh_m_c" />
++        <TextView
++            android:id="@+id/textView3"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:textSize="20sp"
++            android:layout_marginStart="24dp"
++            android:textStyle="bold"
++            android:textColor="#272727"
++            android:fontFamily="@font/circular_std"
++            android:text="@string/t_m_theo_danh_m_c" />
+ 
+-            <ScrollView
+-                android:id="@+id/sc"
+-                android:layout_width="match_parent"
+-                android:layout_marginTop="8dp"
+-                android:layout_height="wrap_content">
+-
+-                <androidx.recyclerview.widget.RecyclerView
+-                    android:id="@+id/rvCategories"
+-                    android:layout_width="match_parent"
+-                    android:layout_height="wrap_content"
+-                    >
+-
+-                </androidx.recyclerview.widget.RecyclerView>
+-            </ScrollView>
+-        </LinearLayout>
++        <androidx.recyclerview.widget.RecyclerView
++            android:id="@+id/rvCategories"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content">
++        </androidx.recyclerview.widget.RecyclerView>
++    </LinearLayout>
+ 
+         <ScrollView
+             android:id="@+id/sc2"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
++            android:layout_below="@id/ln1"
+             android:layout_marginTop="24dp"
+-            android:layout_below="@id/ln1">
++            android:scrollbars="none">
+ 
+             <androidx.recyclerview.widget.RecyclerView
+                 android:id="@+id/rvProducts"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+-            />
++                android:visibility="gone"/>
+         </ScrollView>
+ 
+         <TextView
+-            android:id="@+id/tvNotFound"
+-            android:layout_width="wrap_content"
+-            android:layout_height="wrap_content"
+-            android:layout_below="@id/sc2"
+-            android:layout_centerHorizontal="true"
+-            android:layout_marginTop="20dp"
+-            android:visibility="@{search.isProductsEmpty() ? View.VISIBLE : View.GONE}"
+-            android:text="Không tìm thấy kết quả đã nhập" />
+-
+-
+-    </RelativeLayout>
++        android:id="@+id/tvNotFound"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:layout_below="@id/sc2"
++        android:layout_centerHorizontal="true"
++        android:layout_marginTop="20dp"
++        android:visibility="@{search.isProductsEmpty() ? View.VISIBLE : View.GONE}"
++        android:text="Không tìm thấy kết quả đã nhập" />
++</RelativeLayout>
+ </layout>
+\ No newline at end of file

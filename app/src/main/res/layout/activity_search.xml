@@ -61,7 +61,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/header"
             android:layout_marginTop="16dp"
-            android:visibility="@{search.isProductsEmpty() ? View.VISIBLE : View.GONE}"
             android:orientation="vertical">
 
             <TextView
@@ -96,7 +95,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:layout_below="@id/ln1">
+            android:layout_below="@id/ln1"
+            android:visibility="@{search.isProductsEmpty() ? View.VISIBLE : View.GONE}">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvProducts"

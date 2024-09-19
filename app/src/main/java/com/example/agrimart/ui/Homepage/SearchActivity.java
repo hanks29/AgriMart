@@ -62,12 +62,12 @@ public class SearchActivity extends AppCompatActivity {
         binding.rvCategories.setAdapter(categoryAdapter);
 
         List<Product> products = new ArrayList<>();
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
-        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000", "200kg", "20 người đang hỏi"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
 
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
         binding.rvProducts.setLayoutManager(new GridLayoutManager(this, 2));

@@ -16,6 +16,8 @@
         <activity
             android:name=".ui.Homepage.SearchActivity"
             android:exported="false" />
+        <activity android:name=".ui.Cart.CheckoutActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.Notification.NotificationActivity"
             android:exported="false" />
@@ -23,13 +25,7 @@
             android:name=".ui.ProductPage.ProductDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.MyProfile.MyProfileActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.PostProduct.YourProductListingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.PostProduct.ProductPostList"
             android:exported="false" />
         <activity
             android:name=".ui.PostProduct.PostProductActivity"
@@ -45,9 +41,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.Account.SignUpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.SplashScreen.SplashScreenActivity"
             android:exported="false" />
         <activity
             android:name=".ui.Homepage.HomeFragment"

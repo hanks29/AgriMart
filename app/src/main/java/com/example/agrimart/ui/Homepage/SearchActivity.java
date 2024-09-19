@@ -43,10 +43,6 @@ public class SearchActivity extends AppCompatActivity {
             return insets;
         });
 
-
-
-
-
         List<Category> categories = new ArrayList<>();
         categories.add(new Category(R.drawable.vegetable, "Rau củ quả"));
         categories.add(new Category(R.drawable.fruit, "Trái cây"));

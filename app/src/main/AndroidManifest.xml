@@ -14,9 +14,13 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".ui.MyProfile.ShopProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.Homepage.SearchActivity"
             android:exported="false" />
-        <activity android:name=".ui.Cart.CheckoutActivity"
+        <activity
+            android:name=".ui.Cart.CheckoutActivity"
             android:exported="false" />
         <activity
             android:name=".ui.Notification.NotificationActivity"

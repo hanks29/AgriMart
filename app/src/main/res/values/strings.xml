@@ -71,6 +71,11 @@
     <string name="explore">explore android:id=</string>
     <string name="t_m_theo_danh_m_c">Tìm theo danh mục</string>
     <string name="thong_bao">Thông báo</string>
+    <string name="n_h_ng">Đơn hàng</string>
+    <string name="_0">0</string>
+    <string name="ch_l_y_h_ng">Chờ lấy hàng</string>
+    <string name="n_h_y">Đơn hủy</string>
+    <string name="tr_h_ng_ho_n_ti_n">Trả hàng/Hoàn tiền</string>
 
     <string-array name="filter_options">
         <item>Sort by Price</item>

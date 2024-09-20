@@ -2,6 +2,7 @@ package com.example.agrimart.ui.ProductPage;
 
 import android.os.Bundle;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +18,10 @@ import com.example.agrimart.R;
 import java.util.ArrayList;
 
 public class ProductDetailActivity extends AppCompatActivity {
-    ImageButton btn_back;
+    ImageButton btn_back, btnExpand;
+    TextView description;
+    boolean isExpanded = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +32,9 @@ public class ProductDetailActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        description = findViewById(R.id.description);
+        btnExpand = findViewById(R.id.btn_expand);
 
         btn_back = findViewById(R.id.btn_back);
         btn_back.setOnClickListener(v -> finish());
@@ -40,8 +47,18 @@ public class ProductDetailActivity extends AppCompatActivity {
         imgList.add(new SlideModel(R.drawable.banana, "", ScaleTypes.FIT));
         imgList.add(new SlideModel(R.drawable.apple, "", ScaleTypes.FIT));
 
-
         ImageSlider imageSlider = findViewById(R.id.product_image);
         imageSlider.setImageList(imgList, ScaleTypes.FIT);
+
+        btnExpand.setOnClickListener(v -> {
+            if (isExpanded) {
+                description.setMaxLines(3);
+                btnExpand.setImageResource(R.drawable.down);
+            } else {
+                description.setMaxLines(Integer.MAX_VALUE);
+                btnExpand.setImageResource(R.drawable.arrowhead_up);
+            }
+            isExpanded = !isExpanded;
+        });
     }
 }

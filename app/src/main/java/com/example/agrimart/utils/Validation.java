@@ -1,4 +1,4 @@
 package com.example.agrimart.utils;
 
-public class validationUtils {
+public class Validation {
 }

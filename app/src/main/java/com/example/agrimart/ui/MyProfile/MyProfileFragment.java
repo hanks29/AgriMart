@@ -1,18 +1,22 @@
 package com.example.agrimart.ui.MyProfile;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.example.agrimart.R;
+import com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;
+import com.example.agrimart.ui.MyProfile.PurchasedOrders.PurchasedOrdersActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,20 +65,102 @@ public class MyProfileFragment extends Fragment {
         }
     }
 
+    private LinearLayout purchase_order, confirm, goods, logout,
+            delivery, evaluate, my_store, my_address, setting;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getActivity().getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.account_my_project)); // Thay "your_color" bằng màu bạn muốn
-        }
+
+        addControl(view);
+        addEvents();
 
         return view;
     }
 
-    public void onLogoutClick(View view) {
+    @SuppressLint("WrongViewCast")
+    void addControl(View view) {
+        purchase_order = (LinearLayout)view.findViewById(R.id.purchase_order);
+        confirm = (LinearLayout)view.findViewById(R.id.waiting_confirm);
+        goods = (LinearLayout)view.findViewById(R.id.waiting_goods);
+        delivery = (LinearLayout)view.findViewById(R.id.waiting_delivery);
+        evaluate = (LinearLayout)view.findViewById(R.id.evaluate);
+        my_store = (LinearLayout)view.findViewById(R.id.my_store);
+        my_address = (LinearLayout)view.findViewById(R.id.my_address);
+        setting = (LinearLayout)view.findViewById(R.id.setting);
+        logout = (LinearLayout)view.findViewById(R.id.logout);
     }
+
+    void addEvents() {
+        // Thêm sự kiện OnClick cho các view
+        purchase_order.setOnClickListener(v -> navigateToPurchasedOrders());
+
+        confirm.setOnClickListener(v -> navigateToWaitingConfirm());
+
+        goods.setOnClickListener(v -> navigateToWaitingGoods());
+
+        delivery.setOnClickListener(v -> navigateToWaitingDeliverey());
+
+        evaluate.setOnClickListener(v -> navigateToEcaluate());
+
+        my_store.setOnClickListener(v -> navigateToMyStore());
+
+        my_address.setOnClickListener(v -> navigateToAddress());
+
+        setting.setOnClickListener(v -> navigateToSettings());
+
+        logout.setOnClickListener(v -> handleLogout());
+    }
+
+    private void navigateToPurchasedOrders() {
+        Intent intent = new Intent(requireContext(), PurchasedOrdersActivity.class);
+        startActivity(intent);
+    }
+
+    private void navigateToAddress() {
+        Intent intent = new Intent(requireContext(), MyAddressActivity.class);
+        startActivity(intent);
+    }
+
+    private void navigateToWaitingConfirm() {
+        Intent intent = new Intent(requireContext(), PurchasedOrdersActivity.class);
+        intent.putExtra("selectedTab", 0);  // Tab thứ 2 có chỉ số là 1
+        startActivity(intent);
+    }
+
+    private void navigateToWaitingGoods() {
+        Intent intent = new Intent(requireContext(), PurchasedOrdersActivity.class);
+        intent.putExtra("selectedTab", 1);  // Tab thứ 2 có chỉ số là 1
+        startActivity(intent);
+    }
+
+
+    private void navigateToWaitingDeliverey() {
+        Intent intent = new Intent(requireContext(), PurchasedOrdersActivity.class);
+        intent.putExtra("selectedTab", 2);  // Tab thứ 2 có chỉ số là 1
+        startActivity(intent);
+    }
+
+    private void navigateToMyStore() {
+        //Intent intent = new Intent(requireContext(), MyStoreActivity.class);
+        //startActivity(intent);
+    }
+
+    private void navigateToSettings() {
+        //Intent intent = new Intent(requireContext(), SettingsActivity.class);
+        //startActivity(intent);
+    }
+
+    private void handleLogout() {
+        // Xử lý đăng xuất người dùng
+
+    }
+
+    private void navigateToEcaluate() {
+
+    }
+
+
 }

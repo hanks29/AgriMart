@@ -1,0 +1,9 @@
+[33m55622cf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mlongct[m[33m, [m[1;31morigin/longct[m[33m, [m[1;32mmain[m[33m)[m HEAD@{0}: reset: moving to 55622cf
+[33m8ccb703[m HEAD@{1}: checkout: moving from new-branch-name to longct
+[33md9c38d7[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mnew-branch-name[m[33m)[m HEAD@{2}: checkout: moving from d9c38d748f22b2fc97ee738411c01e89a5b72635 to new-branch-name
+[33md9c38d7[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mnew-branch-name[m[33m)[m HEAD@{3}: checkout: moving from longct to d9c38d7
+[33m8ccb703[m HEAD@{4}: commit: Lưu các thay đổi trước khi áp dụng stash
+[33md9c38d7[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mnew-branch-name[m[33m)[m HEAD@{5}: pull origin main: Fast-forward
+[33m55622cf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mlongct[m[33m, [m[1;31morigin/longct[m[33m, [m[1;32mmain[m[33m)[m HEAD@{6}: reset: moving to HEAD
+[33m55622cf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mlongct[m[33m, [m[1;31morigin/longct[m[33m, [m[1;32mmain[m[33m)[m HEAD@{7}: checkout: moving from main to longct
+[33m55622cf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mlongct[m[33m, [m[1;31morigin/longct[m[33m, [m[1;32mmain[m[33m)[m HEAD@{8}: clone: from https://github.com/hanks29/AgriMart.git

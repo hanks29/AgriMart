@@ -23,7 +23,9 @@
         <item name="cornerRadius">8dp</item>
     </style>
 
-
+    <style name="TabTextStyle" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+    </style>
 
     <style name="CircleShape">
         <item name="cornerFamily">rounded</item>

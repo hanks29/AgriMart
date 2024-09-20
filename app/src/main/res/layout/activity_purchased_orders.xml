@@ -1,0 +1,102 @@
+<!-- res/layout/activity_main.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Tiêu đề -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="30dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_left"
+            android:scaleType="fitCenter"
+            android:layout_marginStart="5dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/white" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:layout_marginStart="15dp"
+            android:text="Đơn đã mua"
+            android:textColor="@color/black"
+            android:textSize="11pt" />
+    </LinearLayout>
+
+    <!-- TabLayout -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabIndicatorColor="@color/green"
+        app:tabSelectedTextColor="@color/green"
+        app:tabTextColor="@color/black"
+        app:tabTextAppearance="@style/TabTextStyle"
+        app:tabMode="scrollable"
+        app:tabGravity="fill">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_waiting_confirmation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chờ xác nhận" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_waiting_goods"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chờ lấy hàng" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_waiting_delivery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chờ giao hàng" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_delivered"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đã giao" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_canceled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đã hủy" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_return_goods"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trả hàng" />
+
+
+
+        <!-- Thêm các TabItem khác nếu cần -->
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- ViewPager2 -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

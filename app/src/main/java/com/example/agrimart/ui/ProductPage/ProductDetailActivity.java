@@ -1,7 +1,9 @@
 package com.example.agrimart.ui.ProductPage;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -14,6 +16,7 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.example.agrimart.R;
+import com.example.agrimart.ui.Store.StoreActivity;
 
 import java.util.ArrayList;
 
@@ -21,6 +24,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     ImageButton btn_back, btnExpand;
     TextView description;
     boolean isExpanded = false;
+    LinearLayout store;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         btn_back = findViewById(R.id.btn_back);
         btn_back.setOnClickListener(v -> finish());
+        store = findViewById(R.id.store);
 
         ArrayList<SlideModel> imgList = new ArrayList<>();
         imgList.add(new SlideModel(R.drawable.banana, "", ScaleTypes.FIT));
@@ -59,6 +64,11 @@ public class ProductDetailActivity extends AppCompatActivity {
                 btnExpand.setImageResource(R.drawable.arrowhead_up);
             }
             isExpanded = !isExpanded;
+        });
+
+        store.setOnClickListener(v -> {
+            Intent intent = new Intent(ProductDetailActivity.this, StoreActivity.class);
+            startActivity(intent);
         });
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:allowBackup="true"
@@ -20,13 +20,15 @@
             android:name=".ui.MyProfile.MyAddress.MyAddressActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.Notification.NotificationActivity"
+            android:name=".ui.Store.StoreActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.MyProfile.ShopProfileActivity"
             android:exported="false" />
         <activity
             android:name=".ui.Homepage.SearchActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.Cart.CheckoutActivity"
+        <activity android:name=".ui.Cart.CheckoutActivity"
             android:exported="false" />
         <activity
             android:name=".ui.Notification.NotificationActivity"
@@ -41,7 +43,7 @@
             android:name=".ui.PostProduct.PostProductActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.Account.SignInActivity"
             android:exported="false" />
         <activity
             android:name=".ui.Account.EnterOTPActivity"
@@ -56,7 +58,7 @@
             android:name=".ui.Homepage.HomeFragment"
             android:exported="false" />
         <activity
-            android:name=".ui.Account.SignInActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,4 +1,4 @@
-package com.example.agrimart.ui.MyProfile.state_order;
+package com.example.agrimart.ui.MyProfile.MyStore;
 
 import android.os.Bundle;
 
@@ -41,11 +41,11 @@ public class OrderManagementActivity extends AppCompatActivity {
                     break;
                 }
                 case 2: {
-                    tab.setText("Đã giao");
+                    tab.setText("Đang giao");
                     break;
                 }
                 case 3: {
-                    tab.setText("Đang giao");
+                    tab.setText("Đã giao");
                     break;
                 }
             }

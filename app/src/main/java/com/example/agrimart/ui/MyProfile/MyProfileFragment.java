@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.agrimart.R;
 import com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;
+import com.example.agrimart.ui.MyProfile.MyStore.MyStoreActivity;
 import com.example.agrimart.ui.MyProfile.PurchasedOrders.PurchasedOrdersActivity;
 
 /**
@@ -149,8 +150,8 @@ public class MyProfileFragment extends Fragment {
     }
 
     private void navigateToMyStore() {
-        //Intent intent = new Intent(requireContext(), MyStoreActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(requireContext(), MyStoreActivity.class);
+        startActivity(intent);
     }
 
     private void navigateToSettings() {

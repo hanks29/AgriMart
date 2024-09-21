@@ -1,6 +1,5 @@
 package com.example.agrimart.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.activity.EdgeToEdge;
@@ -14,7 +13,7 @@ import com.example.agrimart.ui.Cart.CartFragment;
 import com.example.agrimart.ui.Explore.ExploreFragment;
 import com.example.agrimart.ui.Homepage.HomeFragment;
 import com.example.agrimart.ui.MyProfile.MyProfileFragment;
-import com.example.agrimart.ui.MyProfile.state_order.OrderManagementActivity;
+import com.example.agrimart.ui.Notification.NotificationFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,13 +49,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (item.getItemId() == R.id.home) {
             selectedFragment = new HomeFragment();
-        } else if (item.getItemId() == R.id.explore) {
+        } else if (item.getItemId() == R.id.category) {
             selectedFragment = new ExploreFragment();
-
-        } else if (item.getItemId() == R.id.post) {
-            Intent intent = new Intent(MainActivity.this, OrderManagementActivity.class);
-            startActivity(intent);
-            return true;
+        } else if (item.getItemId() == R.id.notification) {
+            selectedFragment = new NotificationFragment();
         } else if (item.getItemId() == R.id.profile) {
             selectedFragment = new MyProfileFragment();
         } else if (item.getItemId() == R.id.cart) {

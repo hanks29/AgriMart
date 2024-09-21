@@ -5,18 +5,18 @@
         android:id="@+id/home"
         android:icon="@drawable/home"/>
 
-    <item android:title="@string/explore"
-        android:id="@+id/explore"
-        android:icon="@drawable/explore" />
-
-    <item android:title= "@string/ng_b_n"
-        android:id="@+id/post"
-        android:icon="@drawable/plus"
-        android:visible="true"/>
+    <item android:title="@string/cate"
+        android:id="@+id/category"
+        android:icon="@drawable/category" />
 
     <item android:title="@string/cart"
         android:id="@+id/cart"
-        android:icon="@drawable/bag" />
+        android:icon="@drawable/cart_fast" />
+
+    <item android:title= "@string/thong_bao"
+        android:id="@+id/notification"
+        android:icon="@drawable/bell"
+        android:visible="true"/>
 
     <item android:title="@string/profile"
         android:id="@+id/profile"

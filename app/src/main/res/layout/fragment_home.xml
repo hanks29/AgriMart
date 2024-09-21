@@ -58,17 +58,6 @@
                     android:textColorHint="@android:color/darker_gray" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
-        <ImageButton
-            android:id="@+id/notification_icon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="4dp"
-            android:background="@color/green"
-            android:src="@drawable/bell"
-            android:tint="@color/black" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView

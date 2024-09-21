@@ -22,14 +22,13 @@ import com.example.agrimart.data.adapter.ProductAdapter;
 import com.example.agrimart.data.model.Category;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.databinding.FragmentHomeBinding;
-import com.example.agrimart.ui.Notification.NotificationActivity;
 import com.example.agrimart.ui.ProductPage.ProductDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
-    ImageButton btnSearch, btnNotification;
+    ImageButton btnSearch;
     TextView search;
 
     private FragmentHomeBinding binding;
@@ -104,11 +103,6 @@ public class HomeFragment extends Fragment {
             getActivity().startActivity(intent);
         });
 
-        btnNotification.setOnClickListener(View -> {
-            Intent intent = new Intent(getContext(), NotificationActivity.class);
-            startActivity(intent);
-        });
-
         search.setOnClickListener(View -> {
             Intent intent=new Intent(getContext(), SearchActivity.class);
             startActivity(intent);
@@ -117,7 +111,6 @@ public class HomeFragment extends Fragment {
 
     private void addControls(View view) {
         btnSearch = view.findViewById(R.id.search_icon);
-        btnNotification = view.findViewById(R.id.notification_icon);
         search = view.findViewById(R.id.search_input);
     }
 

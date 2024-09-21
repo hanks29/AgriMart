@@ -14,6 +14,9 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".ui.MyProfile.state_order.StateOrderActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.MyProfile.PurchasedOrders.PurchasedOrdersActivity"
             android:exported="false" />
         <activity
@@ -23,12 +26,13 @@
             android:name=".ui.Store.StoreActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.MyProfile.ShopProfileActivity"
+            android:name=".ui.MyProfile.state_order.OrderManagementActivity"
             android:exported="false" />
         <activity
             android:name=".ui.Homepage.SearchActivity"
             android:exported="false" />
-        <activity android:name=".ui.Cart.CheckoutActivity"
+        <activity
+            android:name=".ui.Cart.CheckoutActivity"
             android:exported="false" />
         <activity
             android:name=".ui.Notification.NotificationActivity"

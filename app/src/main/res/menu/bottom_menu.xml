@@ -12,7 +12,7 @@
     <item android:title= "@string/ng_b_n"
         android:id="@+id/post"
         android:icon="@drawable/plus"
-        android:visible="false"/>
+        android:visible="true"/>
 
     <item android:title="@string/cart"
         android:id="@+id/cart"

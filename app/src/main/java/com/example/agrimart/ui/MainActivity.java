@@ -14,7 +14,7 @@ import com.example.agrimart.ui.Cart.CartFragment;
 import com.example.agrimart.ui.Explore.ExploreFragment;
 import com.example.agrimart.ui.Homepage.HomeFragment;
 import com.example.agrimart.ui.MyProfile.MyProfileFragment;
-import com.example.agrimart.ui.MyProfile.state_order.ShopProfileActivity;
+import com.example.agrimart.ui.MyProfile.state_order.OrderManagementActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             selectedFragment = new ExploreFragment();
 
         } else if (item.getItemId() == R.id.post) {
-            Intent intent = new Intent(MainActivity.this, ShopProfileActivity.class);
+            Intent intent = new Intent(MainActivity.this, OrderManagementActivity.class);
             startActivity(intent);
             return true;
         } else if (item.getItemId() == R.id.profile) {

@@ -1,7 +1,6 @@
 package com.example.agrimart.ui.MyProfile.state_order;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,16 +11,15 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.agrimart.R;
 import com.example.agrimart.data.adapter.StateOrderAdapter;
-import com.example.agrimart.databinding.ActivityShopProfileBinding;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-public class ShopProfileActivity extends AppCompatActivity {
+public class OrderManagementActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_shop_profile);
+        setContentView(R.layout.activity_order_management);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

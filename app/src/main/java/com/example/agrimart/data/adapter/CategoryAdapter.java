@@ -47,7 +47,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
 
         public void bindData(Category category) {
             List<SlideModel> slideModels = new ArrayList<>();
-            slideModels.add(new SlideModel(category.getImage(), null));
+            slideModels.add(new SlideModel(category.getImg(), null));
+
             binding.imgCate.setImageList(slideModels);
             binding.tvName.setText(category.getName());
         }

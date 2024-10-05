@@ -2,6 +2,7 @@ package com.example.agrimart.ui.Homepage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -24,6 +25,7 @@ import com.example.agrimart.data.model.Product;
 import com.example.agrimart.databinding.ActivitySearchBinding;
 import com.example.agrimart.ui.ProductPage.ProductDetailActivity;
 import com.example.agrimart.viewmodel.SearchViewModel;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,8 @@ public class SearchActivity extends AppCompatActivity {
 
     SearchViewModel searchViewModel;
     ActivitySearchBinding binding;
+    List<Category> categories=new ArrayList<>();
+    CategoryAdapter categoryAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,20 +56,11 @@ public class SearchActivity extends AppCompatActivity {
             window.setStatusBarColor(ContextCompat.getColor(this, R.color.green));
         }
 
-        List<Category> categories = new ArrayList<>();
-        categories.add(new Category(R.drawable.vegetable, "Rau củ quả"));
-        categories.add(new Category(R.drawable.fruit, "Trái cây"));
-        categories.add(new Category(R.drawable.frash_fruits, "Ngũ cốc và hạt"));
-        categories.add(new Category(R.drawable.frash_fruits, "Gia vị"));
-        categories.add(new Category(R.drawable.frash_fruits, "Mật ong"));
-        categories.add(new Category(R.drawable.frash_fruits, "Trà"));
-        categories.add(new Category(R.drawable.frash_fruits, "Cây cảnh"));
-        categories.add(new Category(R.drawable.frash_fruits, "Khác"));
 
-        CategoryAdapter categoryAdapter = new CategoryAdapter(categories);
+        categoryAdapter = new CategoryAdapter(categories);
         binding.rvCategories.setLayoutManager(new GridLayoutManager(this, 4));
         binding.rvCategories.setAdapter(categoryAdapter);
-
+        getCategories();
         List<Product> products = new ArrayList<>();
         products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
         products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
@@ -84,6 +79,21 @@ public class SearchActivity extends AppCompatActivity {
         });
         binding.rvProducts.setAdapter(productAdapter);
         searchViewModel.setProducts(products);
+
+    }
+
+    private void getCategories() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        List<Category> categories = new ArrayList<>();
+        db.collection("categories")
+                .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                categories.addAll(task.getResult().toObjects(Category.class));
+                this.categories.addAll(categories);
+                categoryAdapter.notifyDataSetChanged();
+
+            }
+        });
 
     }
 }

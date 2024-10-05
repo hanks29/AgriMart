@@ -5,10 +5,13 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +27,7 @@ import com.example.agrimart.data.model.Product;
 import com.example.agrimart.databinding.FragmentHomeBinding;
 import com.example.agrimart.ui.Notification.NotificationActivity;
 import com.example.agrimart.ui.ProductPage.ProductDetailActivity;
+import com.example.agrimart.viewmodel.HomeFragmentViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +35,8 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     ImageButton btnSearch, btnNotification;
     TextView search;
-
-    private FragmentHomeBinding binding;
+    HomeFragmentViewModel viewModel;
+    FragmentHomeBinding binding;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -50,30 +54,41 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        binding=DataBindingUtil.inflate(inflater,R.layout.fragment_home,container,false);
+        viewModel=new ViewModelProvider(this).get(HomeFragmentViewModel.class);
+
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding.setViewmodel(viewModel);
         View view = binding.getRoot();
 
         if (getActivity() != null) {
             getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.green));
         }
-
-        RecyclerView rvCategories = view.findViewById(R.id.rvCategories);
-        int numberOfColumns = 4;
-        rvCategories.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
-
-        List<Category> categories = new ArrayList<>();
-        categories.add(new Category(R.drawable.vegetable, "Rau củ quả"));
-        categories.add(new Category(R.drawable.fruit, "Trái cây"));
-        categories.add(new Category(R.drawable.frash_fruits, "Ngũ cốc và hạt"));
-        categories.add(new Category(R.drawable.frash_fruits, "Gia vị"));
-        categories.add(new Category(R.drawable.frash_fruits, "Mật ong"));
-        categories.add(new Category(R.drawable.frash_fruits, "Trà"));
-        categories.add(new Category(R.drawable.frash_fruits, "Cây cảnh"));
-        categories.add(new Category(R.drawable.frash_fruits, "Khác"));
-
-        CategoryAdapter categoryAdapter = new CategoryAdapter(categories);
-        rvCategories.setAdapter(categoryAdapter);
+        viewModel.getData();
+        viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
+            if (categories != null) {
+                CategoryAdapter categoryAdapter = new CategoryAdapter(categories);
+                binding.rvCategories.setAdapter(categoryAdapter);
+                binding.rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
+                Log.d("duy1", "onCreateView: " + categories.size());
+            }
+        });
+//        RecyclerView rvCategories = view.findViewById(R.id.rvCategories);
+//        int numberOfColumns = 4;
+//        rvCategories.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
+//
+//        List<Category> categories = new ArrayList<>();
+//        categories.add(new Category(R.drawable.vegetable, "Rau củ quả"));
+//        categories.add(new Category(R.drawable.fruit, "Trái cây"));
+//        categories.add(new Category(R.drawable.frash_fruits, "Ngũ cốc và hạt"));
+//        categories.add(new Category(R.drawable.frash_fruits, "Gia vị"));
+//        categories.add(new Category(R.drawable.frash_fruits, "Mật ong"));
+//        categories.add(new Category(R.drawable.frash_fruits, "Trà"));
+//        categories.add(new Category(R.drawable.frash_fruits, "Cây cảnh"));
+//        categories.add(new Category(R.drawable.frash_fruits, "Khác"));
+//
+//        CategoryAdapter categoryAdapter = new CategoryAdapter(categories);
+//        rvCategories.setAdapter(categoryAdapter);
 
         List<Product> products = new ArrayList<>();
         products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));

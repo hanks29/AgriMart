@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@id/main"
+    android:background="@color/background_light_blur"
+    tools:context=".ui.MyProfile.MyAddress.MyAddressActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="30dp"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_left"
+                android:scaleType="fitCenter"
+                android:layout_marginStart="5dp"
+                android:layout_gravity="center_vertical"
+                android:background="@color/white" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:layout_marginStart="15dp"
+                android:text="Địa chỉ mới"
+                android:textColor="@color/black"
+                android:textSize="11pt" />
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/tvLH"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:gravity="start|center"
+            android:textSize="15sp"
+            android:paddingStart="10dp"
+            android:background="@color/background_light_blur"
+            android:text="Liên hệ" />
+
+
+        <EditText
+            android:id="@+id/edtHoTen"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingStart="10dp"
+            android:background="@color/white"
+            android:ems="10"
+            android:inputType="text"
+            android:hint="Họ và tên" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/background_light_blur_1" />
+
+        <EditText
+            android:id="@+id/edtSDT"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingStart="10dp"
+            android:background="@color/white"
+            android:ems="10"
+            android:inputType="text"
+            android:hint="Số điện thoại" />
+
+        <TextView
+            android:id="@+id/tvDC"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:gravity="start|center"
+            android:textSize="15sp"
+            android:paddingStart="10dp"
+            android:background="@color/background_light_blur"
+            android:text="Địa chỉ" />
+
+        <EditText
+            android:id="@+id/edtTinh"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingStart="10dp"
+            android:background="@color/white"
+            android:ems="10"
+            android:inputType="text"
+            android:hint="Tỉnh/Thành phố, Quận/Huyện, Phường/Xã" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/background_light_blur_1" />
+
+        <EditText
+            android:id="@+id/edtTenDuong"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingStart="10dp"
+            android:background="@color/white"
+            android:ems="10"
+            android:inputType="text"
+            android:hint="Tên đường, Tòa nhà, Số nhà" />
+
+        <TextView
+            android:id="@+id/tvCD"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:gravity="start|center"
+            android:textSize="15sp"
+            android:paddingStart="10dp"
+            android:background="@color/background_light_blur"
+            android:text="Cài đặt" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+
+            <Switch
+                android:id="@+id/switch1"
+                android:layout_width="wrap_content"
+                android:background="@color/white"
+                android:layout_height="50dp"
+                android:paddingStart="10dp"
+                android:textSize="18sp"
+                android:layout_weight="1"
+                android:text="Đặt làm địa chỉ mặc định"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/id_add_address"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_marginTop="30dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/white"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/green"
+                android:textSize="18sp"
+                android:text="HOÀN THÀNH" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

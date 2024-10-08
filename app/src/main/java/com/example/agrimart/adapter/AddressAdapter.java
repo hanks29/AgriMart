@@ -14,14 +14,25 @@ import com.example.agrimart.data.model.Address;
 
 import java.util.List;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressViewHolder> {
 
     private List<Address> addressList;
-    private float density; // Thêm biến density
+    private float density;
 
     public AddressAdapter(Context context, List<Address> addressList) {
+        // Sắp xếp danh sách địa chỉ theo isDefault = true lên đầu
+        Collections.sort(addressList, new Comparator<Address>() {
+            @Override
+            public int compare(Address a1, Address a2) {
+                return Boolean.compare(a2.isDefault(), a1.isDefault()); // isDefault = true lên trước
+            }
+        });
+
         this.addressList = addressList;
-        this.density = context.getResources().getDisplayMetrics().density; // Lấy density từ context
+        this.density = context.getResources().getDisplayMetrics().density;
     }
 
     @NonNull
@@ -50,7 +61,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
         } else {
             params.setMargins((int) (20 * density), (int) (20 * density), 0, 0); // Margin cho các item khác
         }
-        holder.divider.setLayoutParams(params); // Áp dụng layout params cho divider
+        holder.divider.setLayoutParams(params);
     }
 
     @Override

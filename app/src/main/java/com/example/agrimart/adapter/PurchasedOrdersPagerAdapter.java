@@ -1,4 +1,4 @@
-package com.example.agrimart.data.adapter;
+package com.example.agrimart.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

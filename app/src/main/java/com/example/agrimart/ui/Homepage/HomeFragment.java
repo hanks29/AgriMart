@@ -20,12 +20,11 @@ import android.widget.TextView;
 
 import com.example.agrimart.R;
 import com.example.agrimart.SpacesItemDecoration;
-import com.example.agrimart.data.adapter.CategoryAdapter;
-import com.example.agrimart.data.adapter.ProductAdapter;
+import com.example.agrimart.adapter.CategoryAdapter;
+import com.example.agrimart.adapter.ProductAdapter;
 import com.example.agrimart.data.model.Category;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.databinding.FragmentHomeBinding;
-import com.example.agrimart.ui.Notification.NotificationActivity;
 import com.example.agrimart.ui.ProductPage.ProductDetailActivity;
 import com.example.agrimart.viewmodel.HomeFragmentViewModel;
 
@@ -33,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
-    ImageButton btnSearch, btnNotification;
+    ImageButton btnSearch;
     TextView search;
     HomeFragmentViewModel viewModel;
     FragmentHomeBinding binding;
@@ -119,11 +118,6 @@ public class HomeFragment extends Fragment {
             getActivity().startActivity(intent);
         });
 
-        btnNotification.setOnClickListener(View -> {
-            Intent intent = new Intent(getContext(), NotificationActivity.class);
-            startActivity(intent);
-        });
-
         search.setOnClickListener(View -> {
             Intent intent=new Intent(getContext(), SearchActivity.class);
             startActivity(intent);
@@ -132,7 +126,6 @@ public class HomeFragment extends Fragment {
 
     private void addControls(View view) {
         btnSearch = view.findViewById(R.id.search_icon);
-        btnNotification = view.findViewById(R.id.notification_icon);
         search = view.findViewById(R.id.search_input);
     }
 

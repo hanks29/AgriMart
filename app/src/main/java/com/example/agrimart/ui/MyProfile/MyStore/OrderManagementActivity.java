@@ -1,4 +1,4 @@
-package com.example.agrimart.ui.MyProfile.state_order;
+package com.example.agrimart.ui.MyProfile.MyStore;
 
 import android.os.Bundle;
 
@@ -10,7 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.agrimart.R;
-import com.example.agrimart.data.adapter.StateOrderAdapter;
+import com.example.agrimart.adapter.StateOrderAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -41,11 +41,11 @@ public class OrderManagementActivity extends AppCompatActivity {
                     break;
                 }
                 case 2: {
-                    tab.setText("Đã giao");
+                    tab.setText("Đang giao");
                     break;
                 }
                 case 3: {
-                    tab.setText("Đang giao");
+                    tab.setText("Đã giao");
                     break;
                 }
             }

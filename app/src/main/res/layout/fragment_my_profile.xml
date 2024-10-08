@@ -15,7 +15,6 @@
         android:orientation="horizontal"
         android:padding="16dp">
 
-        <!-- ImageView for the banana icon -->
         <ImageView
             android:id="@+id/user_image"
             android:layout_width="48dp"
@@ -24,15 +23,15 @@
             android:contentDescription="User Image"
             android:src="@drawable/banana" />
 
-        <!-- TextView for User's Name -->
         <TextView
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hoàng Huy Long"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/gabarito"/>
 
     </LinearLayout>
 
@@ -245,8 +244,6 @@
                     android:layout_gravity="center"
                     android:src="@drawable/next" />
             </LinearLayout>
-
-            <!-- My Address Section -->
             <LinearLayout
                 android:id="@+id/my_address"
                 android:layout_width="match_parent"

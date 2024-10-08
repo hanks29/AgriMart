@@ -2,6 +2,7 @@ package com.example.agrimart.ui.MyProfile;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,8 +16,14 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.agrimart.R;
+import com.example.agrimart.ui.Account.SignInActivity;
 import com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;
+import com.example.agrimart.ui.MyProfile.MyStore.MyStoreActivity;
 import com.example.agrimart.ui.MyProfile.PurchasedOrders.PurchasedOrdersActivity;
+import android.content.Context;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -149,8 +156,8 @@ public class MyProfileFragment extends Fragment {
     }
 
     private void navigateToMyStore() {
-        //Intent intent = new Intent(requireContext(), MyStoreActivity.class);
-        //startActivity(intent);
+        Intent intent = new Intent(requireContext(), MyStoreActivity.class);
+        startActivity(intent);
     }
 
     private void navigateToSettings() {
@@ -159,8 +166,16 @@ public class MyProfileFragment extends Fragment {
     }
 
     private void handleLogout() {
-        // Xử lý đăng xuất người dùng
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
 
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(requireContext(), SignInActivity.class);
+        startActivity(intent);
+        requireActivity().finish();
+        Toast.makeText(requireContext(), "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
     }
 
     private void navigateToEcaluate() {

@@ -68,7 +68,7 @@
     <string name="my_cart">Giỏ hàng</string>
     <string name="notification_time">1 phút trước</string>
     <string name="notification_message">Khánh vừa đặt mua sản phẩm của bạn: Chuối nhà trồng...</string>
-    <string name="explore">explore android:id=</string>
+    <string name="cate">Gian hàng</string>
     <string name="t_m_theo_danh_m_c">Tìm theo danh mục</string>
     <string name="thong_bao">Thông báo</string>
     <string name="n_h_ng">Đơn hàng</string>
@@ -88,6 +88,8 @@
         <item name="android:textColor">@color/black</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <string name="default_web_client_id">689266518488-dggpokj3cbc4t7hoa53j2vsa6vt59qi4.apps.googleusercontent.com</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

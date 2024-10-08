@@ -1,6 +1,7 @@
 package com.example.agrimart.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.activity.EdgeToEdge;
@@ -10,14 +11,20 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import com.example.agrimart.R;
+import com.example.agrimart.ui.Account.SignInActivity;
 import com.example.agrimart.ui.Cart.CartFragment;
 import com.example.agrimart.ui.Explore.ExploreFragment;
 import com.example.agrimart.ui.Homepage.HomeFragment;
 import com.example.agrimart.ui.MyProfile.MyProfileFragment;
-import com.example.agrimart.ui.MyProfile.state_order.OrderManagementActivity;
+import com.example.agrimart.ui.Notification.NotificationFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
+
+    private SharedPreferences sharedPreferences;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +37,21 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        mAuth = FirebaseAuth.getInstance();
+
+        if (sharedPreferences.getBoolean("is_logged_in", false)) {
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser != null) {
+                navigateToHome();
+            } else {
+                clearLoginState();
+                navigateToLogin();
+            }
+        } else {
+            navigateToLogin();
+        }
+
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
 
@@ -37,6 +59,22 @@ public class MainActivity extends AppCompatActivity {
             loadFragment(new HomeFragment());
             bottomNavigationView.setSelectedItemId(R.id.home);
         }
+    }
+
+    private void navigateToHome() {
+        loadFragment(new HomeFragment());
+    }
+
+    private void navigateToLogin() {
+        Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void clearLoginState() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
     }
 
     private void loadFragment(Fragment fragment) {
@@ -50,13 +88,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (item.getItemId() == R.id.home) {
             selectedFragment = new HomeFragment();
-        } else if (item.getItemId() == R.id.explore) {
+        } else if (item.getItemId() == R.id.category) {
             selectedFragment = new ExploreFragment();
-
-        } else if (item.getItemId() == R.id.post) {
-            Intent intent = new Intent(MainActivity.this, OrderManagementActivity.class);
-            startActivity(intent);
-            return true;
+        } else if (item.getItemId() == R.id.notification) {
+            selectedFragment = new NotificationFragment();
         } else if (item.getItemId() == R.id.profile) {
             selectedFragment = new MyProfileFragment();
         } else if (item.getItemId() == R.id.cart) {

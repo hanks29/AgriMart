@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.agrimart.data.model.Category;
 import com.example.agrimart.databinding.CategoryItemBinding;
 import com.denzcoskun.imageslider.models.SlideModel;
@@ -46,9 +47,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
         }
 
         public void bindData(Category category) {
-            List<SlideModel> slideModels = new ArrayList<>();
-            slideModels.add(new SlideModel(category.getImage(), null));
-            binding.imgCate.setImageList(slideModels);
+            Glide.with(binding.getRoot())
+                    .load(category.getImg())
+                    .into(binding.imgCate);
+
             binding.tvName.setText(category.getName());
         }
     }

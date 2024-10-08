@@ -1,23 +1,23 @@
 package com.example.agrimart.data.model;
 
 public class Category {
-    private int image;
+    private String img;
     private String name;
 
     public Category() {
     }
 
-    public Category(int image, String name) {
-        this.image = image;
+    public Category(String img, String name) {
+        this.img = img;
         this.name = name;
     }
 
-    public int getImage() {
-        return image;
+    public String getImg() {
+        return img;
     }
 
-    public void setImage(int image) {
-        this.image = image;
+    public void setImg(String img) {
+        this.img = img;
     }
 
     public String getName() {

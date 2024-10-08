@@ -66,7 +66,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.2.0")
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation ("com.google.code.gson:gson:2.8.9")
-
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
     // ViewModel
 //    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.5")
 

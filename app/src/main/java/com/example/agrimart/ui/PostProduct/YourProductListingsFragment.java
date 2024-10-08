@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.agrimart.R;
-import com.example.agrimart.data.adapter.PostProductsAdapter;
+import com.example.agrimart.adapter.PostProductsAdapter;
 import com.example.agrimart.data.model.PostProduct;
 
 import java.util.ArrayList;

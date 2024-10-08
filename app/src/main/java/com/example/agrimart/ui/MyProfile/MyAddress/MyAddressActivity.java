@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.agrimart.R;
-import com.example.agrimart.data.adapter.AddressAdapter;
+import com.example.agrimart.adapter.AddressAdapter;
 import com.example.agrimart.data.model.Address;
 
 import java.util.ArrayList;

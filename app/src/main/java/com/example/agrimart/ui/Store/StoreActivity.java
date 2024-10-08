@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.agrimart.R;
-import com.example.agrimart.data.adapter.ProductAdapter;
+import com.example.agrimart.adapter.ProductAdapter;
 import com.example.agrimart.data.model.Product;
 
 import java.util.ArrayList;

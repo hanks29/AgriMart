@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.agrimart.R;
 import com.example.agrimart.SpacesItemDecoration;
-import com.example.agrimart.data.adapter.CategoryAdapter;
-import com.example.agrimart.data.adapter.ProductAdapter;
+import com.example.agrimart.adapter.CategoryAdapter;
+import com.example.agrimart.adapter.ProductAdapter;
 import com.example.agrimart.data.model.Category;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.databinding.ActivitySearchBinding;

@@ -45,16 +45,13 @@
                 android:textSize="11pt" />
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@color/background_light_blur_1" />
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="9pt"
+            android:layout_height="37dp"
+            android:gravity="start|center"
+            android:textSize="15sp"
             android:paddingStart="10dp"
             android:background="@color/background_light_blur"
             android:text="Địa chỉ" />
@@ -67,18 +64,19 @@
             android:nestedScrollingEnabled="false"/>
 
         <LinearLayout
+            android:id="@+id/id_add_address"
             android:layout_width="match_parent"
             android:gravity="center"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:layout_marginBottom="20dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:layout_marginBottom="10dp"
             android:background="@color/white"
             android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="22dp"
                 android:layout_marginEnd="10dp"
                 app:srcCompat="@drawable/plus" />
 
@@ -87,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/green"
-                android:textSize="10pt"
+                android:textSize="16sp"
                 android:text="Thêm địa chỉ" />
         </LinearLayout>
 

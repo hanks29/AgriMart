@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
@@ -7,12 +9,10 @@
             type="com.example.agrimart.viewmodel.HomeFragmentViewModel" />
     </data>
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/main1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
         tools:context=".ui.Homepage.HomeFragment">
 
         <LinearLayout
@@ -82,27 +82,28 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/header"
-            android:scrollbars="none">
+            android:layout_below="@id/header">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="10dp">
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/categories"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="20sp"
                         android:layout_marginStart="24dp"
-                        android:textStyle="bold"
-                        android:textColor="#272727"
                         android:fontFamily="@font/circular_std"
-                        android:text="@string/categories" />
+                        android:text="@string/categories"
+                        android:textColor="#272727"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/see_all"
@@ -113,7 +114,7 @@
                         android:fontFamily="@font/circular_std"
                         android:text="@string/see_all"
                         android:textColor="@color/black"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -155,8 +156,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="15dp"
                     android:nestedScrollingEnabled="false"/>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

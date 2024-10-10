@@ -60,9 +60,9 @@ public class HomeFragment extends Fragment {
         binding.setViewmodel(viewModel);
         View view = binding.getRoot();
 
-        if (getActivity() != null) {
-            getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.green));
-        }
+//        if (getActivity() != null) {
+//            getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.green));
+//        }
         viewModel.getData();
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
             if (categories != null) {
@@ -72,22 +72,7 @@ public class HomeFragment extends Fragment {
                 Log.d("duy1", "onCreateView: " + categories.size());
             }
         });
-//        RecyclerView rvCategories = view.findViewById(R.id.rvCategories);
-//        int numberOfColumns = 4;
-//        rvCategories.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
-//
-//        List<Category> categories = new ArrayList<>();
-//        categories.add(new Category(R.drawable.vegetable, "Rau củ quả"));
-//        categories.add(new Category(R.drawable.fruit, "Trái cây"));
-//        categories.add(new Category(R.drawable.frash_fruits, "Ngũ cốc và hạt"));
-//        categories.add(new Category(R.drawable.frash_fruits, "Gia vị"));
-//        categories.add(new Category(R.drawable.frash_fruits, "Mật ong"));
-//        categories.add(new Category(R.drawable.frash_fruits, "Trà"));
-//        categories.add(new Category(R.drawable.frash_fruits, "Cây cảnh"));
-//        categories.add(new Category(R.drawable.frash_fruits, "Khác"));
-//
-//        CategoryAdapter categoryAdapter = new CategoryAdapter(categories);
-//        rvCategories.setAdapter(categoryAdapter);
+
 
         List<Product> products = new ArrayList<>();
         products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));

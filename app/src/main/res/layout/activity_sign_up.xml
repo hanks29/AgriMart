@@ -60,7 +60,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
-        android:id="@+id/tvUsernameError"
+        android:id="@+id/tvNameError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/holo_red_dark"
@@ -83,20 +83,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvUsernameError"
-        app:startIconDrawable="@drawable/telephone">
+        app:layout_constraintTop_toBottomOf="@+id/tvNameError"
+        app:startIconDrawable="@drawable/user">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtPhoneNumber"
+            android:id="@+id/edtEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:hint="Số điện thoại"
-            android:inputType="phone" />
+            android:hint="@string/email"
+            android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
-        android:id="@+id/tvPhoneNumberError"
+        android:id="@+id/tvEmailError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/holo_red_dark"
@@ -118,7 +118,7 @@
         app:boxBackgroundMode="outline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvPhoneNumberError"
+        app:layout_constraintTop_toBottomOf="@+id/tvEmailError"
         app:passwordToggleEnabled="true"
         app:startIconDrawable="@drawable/key">
 
@@ -220,6 +220,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

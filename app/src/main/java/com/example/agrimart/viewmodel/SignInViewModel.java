@@ -3,16 +3,14 @@ package com.example.agrimart.viewmodel;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.MutableLiveData;
-import com.example.agrimart.data.model.User;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
@@ -23,31 +21,76 @@ public class SignInViewModel extends AndroidViewModel {
     private static final String TAG = "SignInViewModel";
     private FirebaseAuth mAuth;
     private FirebaseFirestore firestore;
-    public MutableLiveData<FirebaseUser> userLiveData;
     private SharedPreferences sharedPreferences;
 
     public SignInViewModel(@NonNull Application application) {
         super(application);
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
-        userLiveData = new MutableLiveData<>();
         sharedPreferences = application.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
     }
 
-    public void signInWithPhoneNumber(String phoneNumber) {
-        firestore.collection("users")
-                .whereEqualTo("phoneNumber", phoneNumber)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                        userLiveData.setValue(firebaseUser);
-                    } else {
-                        userLiveData.setValue(null);
+    public void signInWithEmail(String email, String password, Runnable onSuccess) {
+        mAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                    if (firebaseUser != null) {
+                        saveUserToFirestore(firebaseUser, onSuccess);
                     }
-                });
+                }
+            });
     }
 
+    public void signInWithGoogle(AuthCredential credential, Runnable onSuccess) {
+        mAuth.signInWithCredential(credential)
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                    if (firebaseUser != null) {
+                        saveUserToFirestore(firebaseUser, onSuccess);
+                    }
+                }
+            });
+    }
+
+    public void signInWithFacebook(AuthCredential credential, Runnable onSuccess) {
+        mAuth.signInWithCredential(credential)
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                    if (firebaseUser != null) {
+                        saveUserToFirestore(firebaseUser, onSuccess);
+                    }
+                }
+            });
+    }
+
+
+
+    private void saveUserToFirestore(FirebaseUser firebaseUser, Runnable onSuccess) {
+        firestore.collection("users").document(firebaseUser.getUid())
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                String role = "customer";
+                if (documentSnapshot.exists() && documentSnapshot.contains("role")) {
+                    role = documentSnapshot.getString("role");
+                }
+
+                Map<String, Object> userMap = new HashMap<>();
+                userMap.put("userId", firebaseUser.getUid());
+                userMap.put("role", role);
+                if (firebaseUser.getDisplayName() != null) {
+                    userMap.put("fullName", firebaseUser.getDisplayName());
+                }
+                if (firebaseUser.getEmail() != null) {
+                    userMap.put("email", firebaseUser.getEmail());
+                }
+                if (firebaseUser.getPhoneNumber() != null) {
+                    userMap.put("phoneNumber", firebaseUser.getPhoneNumber());
+                }
+                userMap.put("createdAt", new Date());
+                userMap.put("updatedAt", new Date());
     public void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         mAuth.signInWithCredential(GoogleAuthProvider.getCredential(acct.getIdToken(), null))
                 .addOnCompleteListener(task -> {
@@ -86,6 +129,13 @@ public class SignInViewModel extends AndroidViewModel {
                         userLiveData.setValue(null);
                     }
                 });
+                firestore.collection("users").document(firebaseUser.getUid())
+                    .set(userMap)
+                    .addOnSuccessListener(aVoid -> {
+                        saveUserToPreferences(firebaseUser);
+                        onSuccess.run();
+                    });
+            });
     }
 
     private void saveUserToPreferences(FirebaseUser user) {
@@ -94,6 +144,7 @@ public class SignInViewModel extends AndroidViewModel {
         editor.putString("user_name", user.getDisplayName());
         editor.putString("user_email", user.getEmail());
         editor.putBoolean("is_logged_in", true);
+        editor.putString("user_role", "customer");
         editor.apply();
     }
 }

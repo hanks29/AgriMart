@@ -247,6 +247,45 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/my_account"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:id="@+id/my_account_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/account" />
+
+                <TextView
+                    android:id="@+id/my_account_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:text="Tài khoản &amp; Bảo mật"
+                    android:textColor="@color/black"
+                    android:textSize="8pt" />
+
+                <ImageView
+                    android:id="@+id/my_account_next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/next" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginStart="15dp"
+                android:background="@color/background_light_blur_1" />
+
+            <LinearLayout
                 android:id="@+id/my_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

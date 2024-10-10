@@ -1,10 +1,17 @@
 package com.example.agrimart.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Address {
+    @SerializedName("name")
     private String name;
+    @SerializedName("phone_address")
     private String phone;
+    @SerializedName("street")
     private String street;
+    @SerializedName("detailedAddress")
     private String detailedAddress;
+    @SerializedName("default")
     private boolean isDefault;
 
     // Constructor

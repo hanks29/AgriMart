@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.MyProfile.MyAccount.MyAccountActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="30dp"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_left"
+                android:scaleType="fitCenter"
+                android:layout_marginStart="5dp"
+                android:layout_gravity="center_vertical"
+                android:background="@color/white" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:layout_marginStart="15dp"
+                android:text="Tài khoản &amp; Bảo mật"
+                android:textColor="@color/black"
+                android:textSize="11pt" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/background_light_blur_1" />
+        <LinearLayout
+            android:id="@+id/my_account"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:layout_marginStart="20dp"
+            android:paddingBottom="10dp">
+
+
+            <TextView
+                android:id="@+id/my_profile_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="2"
+                android:text="Hồ sơ của tôi"
+                android:textColor="@color/black"
+                android:textSize="8pt" />
+
+            <ImageView
+                android:id="@+id/my_profile_next"
+                android:layout_width="40dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/next" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginStart="15dp"
+            android:background="@color/background_light_blur_1" />
+
+        <LinearLayout
+            android:id="@+id/my_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:layout_marginStart="20dp"
+            android:paddingBottom="10dp">
+
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="Tên người dùng"
+                android:textColor="@color/black"
+                android:textSize="8pt" />
+
+            <TextView
+                android:id="@+id/user_name_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginEnd="40dp"
+                android:layout_weight="1"
+                android:text="longct29"
+                android:textColor="@color/black"
+                android:textSize="8pt" />
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginStart="15dp"
+            android:background="@color/background_light_blur_1" />
+        <LinearLayout
+            android:id="@+id/my_phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:layout_marginStart="20dp"
+            android:paddingBottom="10dp">
+
+
+            <TextView
+                android:id="@+id/my_phone_number_text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="Điện thoại"
+                android:textColor="@color/black"
+                android:textSize="8pt" />
+
+            <TextView
+                android:id="@+id/my_phone_number_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_weight="1"
+                android:text="******67"
+                android:textColor="@color/black"
+                android:textSize="8pt" />
+
+            <ImageView
+                android:id="@+id/my_phone_number_next"
+                android:layout_width="40dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/next" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginStart="15dp"
+            android:background="@color/background_light_blur_1" />
+
+        <LinearLayout
+            android:id="@+id/my_email"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:layout_marginStart="20dp"
+            android:paddingBottom="10dp">
+
+
+            <TextView
+                android:id="@+id/email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="Email"
+                android:textColor="@color/black"
+                android:textSize="8pt" />
+
+            <TextView
+                android:id="@+id/email_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginEnd="40dp"
+                android:layout_weight="1"
+                android:text="h*******3@gmail.com"
+                android:textColor="@color/black"
+                android:textSize="8pt" />
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginStart="15dp"
+            android:background="@color/background_light_blur_1" />
+        <LinearLayout
+            android:id="@+id/change_password"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:layout_marginStart="20dp"
+            android:paddingBottom="10dp">
+
+
+            <TextView
+                android:id="@+id/change_password_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="2"
+                android:text="Đổi mật khẩu"
+                android:textColor="@color/black"
+                android:textSize="8pt" />
+
+            <ImageView
+                android:id="@+id/change_password_next"
+                android:layout_width="40dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/next" />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginStart="15dp"
+            android:background="@color/background_light_blur_1" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

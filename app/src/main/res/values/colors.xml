@@ -12,5 +12,5 @@
     <color name="background_color">#F5F5F5</color>
     <color name="transparent">#00000000</color>
     <color name="background_light_blur">#0D424242</color>
-    <color name="background_light_blur_1">#1A424242</color>
+    <color name="background_light_blur_1">#0D424242</color>
 </resources>

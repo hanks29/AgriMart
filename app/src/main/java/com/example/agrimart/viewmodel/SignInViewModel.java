@@ -66,14 +66,13 @@ public class SignInViewModel extends AndroidViewModel {
             });
     }
 
-
-
     private void saveUserToFirestore(FirebaseUser firebaseUser, Runnable onSuccess) {
         firestore.collection("users").document(firebaseUser.getUid())
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                if (!documentSnapshot.exists()) {
                     String role = "customer";
-                    if (documentSnapshot.exists() && documentSnapshot.contains("role")) {
+                    if (documentSnapshot.contains("role")) {
                         role = documentSnapshot.getString("role");
                     }
 
@@ -93,12 +92,16 @@ public class SignInViewModel extends AndroidViewModel {
                     userMap.put("updatedAt", new Date());
 
                     firestore.collection("users").document(firebaseUser.getUid())
-                            .set(userMap)
-                            .addOnSuccessListener(aVoid -> {
-                                saveUserToPreferences(firebaseUser);
-                                onSuccess.run();
-                            });
-                });
+                        .set(userMap)
+                        .addOnSuccessListener(aVoid -> {
+                            saveUserToPreferences(firebaseUser);
+                            onSuccess.run();
+                        });
+                } else {
+                    saveUserToPreferences(firebaseUser);
+                    onSuccess.run();
+                }
+            });
     }
 
     private void saveUserToPreferences(FirebaseUser user) {

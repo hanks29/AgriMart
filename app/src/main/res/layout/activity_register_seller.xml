@@ -27,12 +27,39 @@
         android:layout_centerHorizontal="true"
         android:textSize="34sp" />
 
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_below="@id/textView2"
+        android:layout_centerHorizontal="true">
+
+
+        <ImageView
+            android:id="@+id/imgAvt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/avt"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_gravity="bottom|end"
+            android:contentDescription="TODO"
+            android:tint="@color/white"
+            android:background="#000080"
+            android:src="@drawable/ic_camera"/>
+    </FrameLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tenCuaHang"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Ten cua hang"
-        android:layout_below="@id/textView2"
+        android:layout_below="@id/frame_layout"
         android:layout_marginHorizontal="24dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"        >
 
@@ -133,12 +160,5 @@
         android:layout_marginBottom="24dp"
         style="@style/Widget.Material3.Button.TonalButton"
         />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/street"
-        android:text="Button" />
 
 </RelativeLayout>

@@ -38,6 +38,7 @@ public class SignInActivity extends AppCompatActivity {
     private TextView forgotPass;
     private Button btnSignIn;
     private Button btnSignInGoogle;
+    private TextView edtPhoneNumber, edtPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +108,8 @@ public class SignInActivity extends AppCompatActivity {
         forgotPass = findViewById(R.id.forgotPassword);
         btnSignIn = findViewById(R.id.btnSignIn);
         btnSignInGoogle = findViewById(R.id.btnSignInGoogle);
+        edtPhoneNumber = findViewById(R.id.edtPhoneNumber);
+        edtPassword = findViewById(R.id.edtPassword);
     }
 
     public void addEvents() {
@@ -121,7 +124,12 @@ public class SignInActivity extends AppCompatActivity {
         });
 
         btnSignIn.setOnClickListener(v -> {
-            // Handle sign-in logic here
+            String phoneNumber = edtPhoneNumber.getText().toString().trim();
+            if (!phoneNumber.isEmpty()) {
+                signInViewModel.signInWithPhoneNumber(phoneNumber);
+            } else {
+                Toast.makeText(SignInActivity.this, "Vui lòng nhập số điện thoại", Toast.LENGTH_SHORT).show();
+            }
         });
 
         btnSignInGoogle.setOnClickListener(v -> {

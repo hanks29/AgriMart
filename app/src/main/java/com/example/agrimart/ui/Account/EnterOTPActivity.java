@@ -1,42 +1,34 @@
 package com.example.agrimart.ui.Account;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ImageButton;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.agrimart.R;
+import com.example.agrimart.ui.MainActivity;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class EnterOTPActivity extends AppCompatActivity {
-    ImageButton btnBack;
+    private TextInputEditText edtOtp;
+    private Button btnConfirm;
+    private TextView tvResend;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_enter_otpactivity);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main1), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        addControls();
-        addEvents();
-    }
+        edtOtp = findViewById(R.id.edtOtp);
+        btnConfirm = findViewById(R.id.btn_confirm);
+        tvResend = findViewById(R.id.tvResend);
+        TextView tvDescription = findViewById(R.id.tv_description);
 
-    public void addControls() {
-        btnBack = findViewById(R.id.btn_back);
-    }
+        String phoneNumber = getIntent().getStringExtra("phoneNumber");
+        String otp = getIntent().getStringExtra("otp");
 
-    public void addEvents() {
-        btnBack.setOnClickListener(v -> finish());
     }
 }

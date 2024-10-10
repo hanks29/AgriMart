@@ -28,6 +28,10 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".ui.MyProfile.MyStore.RegisterSellerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AgriMart" />
+        <activity
             android:name=".ui.MyProfile.MyStore.MyStoreActivity"
             android:exported="false" />
         <activity

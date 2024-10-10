@@ -1,6 +1,7 @@
 package com.example.agrimart.ui.MyProfile;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import androidx.core.content.ContextCompat;
@@ -19,6 +21,7 @@ import com.example.agrimart.R;
 import com.example.agrimart.ui.Account.SignInActivity;
 import com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;
 import com.example.agrimart.ui.MyProfile.MyStore.MyStoreActivity;
+import com.example.agrimart.ui.MyProfile.MyStore.RegisterSellerActivity;
 import com.example.agrimart.ui.MyProfile.PurchasedOrders.PurchasedOrdersActivity;
 import android.content.Context;
 import android.widget.Toast;
@@ -36,7 +39,6 @@ public class MyProfileFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -117,7 +119,17 @@ public class MyProfileFragment extends Fragment {
 
         evaluate.setOnClickListener(v -> navigateToEcaluate());
 
-        my_store.setOnClickListener(v -> navigateToMyStore());
+        my_store.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences sharedPreferences = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+                if (sharedPreferences.getString("user_role", "seller").equals("seller")) {
+                    navigateToMyStore();
+                } else {
+                    showDialog();
+                }
+            }
+        });
 
         my_address.setOnClickListener(v -> navigateToAddress());
 
@@ -180,6 +192,24 @@ public class MyProfileFragment extends Fragment {
 
     private void navigateToEcaluate() {
 
+    }
+
+    void showDialog() {
+        Toast.makeText(requireContext(), "Bạn chưa đăng kí tài khoản người bán! ", Toast.LENGTH_SHORT).show();
+        Dialog dialog = new Dialog(requireContext());
+
+        View view=LayoutInflater.from(requireContext()).inflate(R.layout.dialog_seller,null);
+        dialog.setContentView(view);
+        Button button=view.findViewById(R.id.btnCreateSeller);
+        button.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), RegisterSellerActivity.class);
+            startActivity(intent);
+            dialog.dismiss();
+        });
+        Button btnClose=view.findViewById(R.id.btnCancel);
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        dialog.setCancelable(true);
+        dialog.show();
     }
 
 

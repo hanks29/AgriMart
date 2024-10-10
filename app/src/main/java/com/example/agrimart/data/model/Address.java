@@ -3,24 +3,38 @@ package com.example.agrimart.data.model;
 import com.google.gson.annotations.SerializedName;
 
 public class Address {
+    @SerializedName("default")
+    private boolean isDefault;
+    @SerializedName("detailedAddress")
+    private String detailedAddress;
     @SerializedName("name")
     private String name;
-    @SerializedName("phone_address")
+    @SerializedName("phone")
     private String phone;
     @SerializedName("street")
     private String street;
-    @SerializedName("detailedAddress")
-    private String detailedAddress;
-    @SerializedName("default")
-    private boolean isDefault;
 
+    public String getAddressId() {
+        return this.AddressId;
+    }
+
+    public void setAddressId(String AddressId) {
+        this.AddressId = AddressId;
+    }
+
+    @SerializedName("AddressId")
+    private String AddressId;
+    public Address() {
+
+    }
     // Constructor
-    public Address(String name, String phone, String street, String detailedAddress, boolean isDefault) {
+    public Address(String AddressId,String name, String phone, String street, String detailedAddress, boolean isDefault) {
         this.name = name;
         this.phone = phone;
         this.street = street;
         this.detailedAddress = detailedAddress;
         this.isDefault = isDefault;
+        this.AddressId = AddressId;
     }
 
     // Getters and Setters

@@ -50,42 +50,42 @@ public class SignInViewModel extends AndroidViewModel {
 
     public void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         mAuth.signInWithCredential(GoogleAuthProvider.getCredential(acct.getIdToken(), null))
-            .addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                    if (firebaseUser != null) {
-                        Map<String, Object> userMap = new HashMap<>();
-                        userMap.put("userId", firebaseUser.getUid());
-                        userMap.put("role", "customer");
-                        if (firebaseUser.getDisplayName() != null) {
-                            userMap.put("fullName", firebaseUser.getDisplayName());
-                        }
-                        if (firebaseUser.getEmail() != null) {
-                            userMap.put("email", firebaseUser.getEmail());
-                        }
-                        if (firebaseUser.getPhoneNumber() != null) {
-                            userMap.put("phoneNumber", firebaseUser.getPhoneNumber());
-                        }
-                        userMap.put("createdAt", new Date());
-                        userMap.put("updatedAt", new Date());
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            Map<String, Object> userMap = new HashMap<>();
+                            userMap.put("userId", firebaseUser.getUid());
+                            userMap.put("role", "customer");
+                            if (firebaseUser.getDisplayName() != null) {
+                                userMap.put("fullName", firebaseUser.getDisplayName());
+                            }
+                            if (firebaseUser.getEmail() != null) {
+                                userMap.put("email", firebaseUser.getEmail());
+                            }
+                            if (firebaseUser.getPhoneNumber() != null) {
+                                userMap.put("phoneNumber", firebaseUser.getPhoneNumber());
+                            }
+                            userMap.put("createdAt", new Date());
+                            userMap.put("updatedAt", new Date());
 
-                        firestore.collection("users").document(firebaseUser.getUid())
-                            .set(userMap)
-                            .addOnSuccessListener(aVoid -> {
-                                userLiveData.setValue(firebaseUser);
-                                saveUserToPreferences(firebaseUser);
-                            })
-                            .addOnFailureListener(e -> {
-                                userLiveData.setValue(null);
-                            });
+                            firestore.collection("users").document(firebaseUser.getUid())
+                                    .set(userMap)
+                                    .addOnSuccessListener(aVoid -> {
+                                        userLiveData.setValue(firebaseUser);
+                                        saveUserToPreferences(firebaseUser);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        userLiveData.setValue(null);
+                                    });
 
+                        } else {
+                            userLiveData.setValue(null);
+                        }
                     } else {
                         userLiveData.setValue(null);
                     }
-                } else {
-                    userLiveData.setValue(null);
-                }
-            });
+                });
     }
 
     private void saveUserToPreferences(FirebaseUser user) {

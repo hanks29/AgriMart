@@ -26,6 +26,7 @@ import com.example.agrimart.ui.MyProfile.PurchasedOrders.PurchasedOrdersActivity
 import android.content.Context;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
@@ -184,6 +185,8 @@ public class MyProfileFragment extends Fragment {
         editor.apply();
 
         FirebaseAuth.getInstance().signOut();
+        LoginManager.getInstance().logOut();
+
         Intent intent = new Intent(requireContext(), SignInActivity.class);
         startActivity(intent);
         requireActivity().finish();

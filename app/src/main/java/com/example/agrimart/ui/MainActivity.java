@@ -20,6 +20,8 @@ import com.example.agrimart.ui.Notification.NotificationFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -105,5 +107,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private void fetchUserRoleAndSave(FirebaseUser user) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("users").document(user.getUid());
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String role = documentSnapshot.getString("role");
+                if (role != null) {
+                    saveUserToSharedPreferences(role);
+                }
+            }
+        }).addOnFailureListener(e -> {
+        });
+    }
+
+    private void saveUserToSharedPreferences(String role) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("user_role", role);
+        editor.apply();
     }
 }

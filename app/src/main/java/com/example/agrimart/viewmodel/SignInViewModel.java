@@ -66,38 +66,41 @@ public class SignInViewModel extends AndroidViewModel {
             });
     }
 
-
-
     private void saveUserToFirestore(FirebaseUser firebaseUser, Runnable onSuccess) {
         firestore.collection("users").document(firebaseUser.getUid())
             .get()
             .addOnSuccessListener(documentSnapshot -> {
-                String role = "customer";
-                if (documentSnapshot.exists() && documentSnapshot.contains("role")) {
-                    role = documentSnapshot.getString("role");
-                }
+                if (!documentSnapshot.exists()) {
+                    String role = "customer";
+                    if (documentSnapshot.contains("role")) {
+                        role = documentSnapshot.getString("role");
+                    }
 
-                Map<String, Object> userMap = new HashMap<>();
-                userMap.put("userId", firebaseUser.getUid());
-                userMap.put("role", role);
-                if (firebaseUser.getDisplayName() != null) {
-                    userMap.put("fullName", firebaseUser.getDisplayName());
-                }
-                if (firebaseUser.getEmail() != null) {
-                    userMap.put("email", firebaseUser.getEmail());
-                }
-                if (firebaseUser.getPhoneNumber() != null) {
-                    userMap.put("phoneNumber", firebaseUser.getPhoneNumber());
-                }
-                userMap.put("createdAt", new Date());
-                userMap.put("updatedAt", new Date());
+                    Map<String, Object> userMap = new HashMap<>();
+                    userMap.put("userId", firebaseUser.getUid());
+                    userMap.put("role", role);
+                    if (firebaseUser.getDisplayName() != null) {
+                        userMap.put("fullName", firebaseUser.getDisplayName());
+                    }
+                    if (firebaseUser.getEmail() != null) {
+                        userMap.put("email", firebaseUser.getEmail());
+                    }
+                    if (firebaseUser.getPhoneNumber() != null) {
+                        userMap.put("phoneNumber", firebaseUser.getPhoneNumber());
+                    }
+                    userMap.put("createdAt", new Date());
+                    userMap.put("updatedAt", new Date());
 
-                firestore.collection("users").document(firebaseUser.getUid())
-                    .set(userMap)
-                    .addOnSuccessListener(aVoid -> {
-                        saveUserToPreferences(firebaseUser);
-                        onSuccess.run();
-                    });
+                    firestore.collection("users").document(firebaseUser.getUid())
+                        .set(userMap)
+                        .addOnSuccessListener(aVoid -> {
+                            saveUserToPreferences(firebaseUser);
+                            onSuccess.run();
+                        });
+                } else {
+                    saveUserToPreferences(firebaseUser);
+                    onSuccess.run();
+                }
             });
     }
 

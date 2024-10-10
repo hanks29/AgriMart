@@ -16,13 +16,22 @@ import java.util.List;
 
 public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressViewHolder> {
 
-    private List<Address> addressList;
-    private float density; // Thêm biến density
-
-    public AddressAdapter(Context context, List<Address> addressList) {
-        this.addressList = addressList;
-        this.density = context.getResources().getDisplayMetrics().density; // Lấy density từ context
+    // Interface for address click listener
+    public interface OnAddressClickListener {
+        void onAddressClick(int position); // Thêm position
     }
+
+    private List<Address> addressList;
+    private float density;
+    private OnAddressClickListener listener; // Listener instance
+
+    public AddressAdapter(Context context, List<Address> addressList, OnAddressClickListener listener) {
+        // Sort address list to bring isDefault = true to the top
+        this.addressList = addressList;
+        this.density = context.getResources().getDisplayMetrics().density;
+        this.listener = listener; // Initialize listener
+    }
+
 
     @NonNull
     @Override
@@ -40,18 +49,26 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
         holder.tvStreetAddress.setText(address.getStreet());
         holder.tvAddress.setText(address.getDetailedAddress());
 
-        // Hiển thị hoặc ẩn thông tin địa chỉ mặc định
+        // Show or hide default address indicator
         holder.tvDefaultAddress.setVisibility(address.isDefault() ? View.VISIBLE : View.GONE);
 
-        // Thiết lập margin cho divider
+        // Set click listener for each address item
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onAddressClick(position); // Truyền address và position
+            }
+        });
+
+        // Adjust margin for divider
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.divider.getLayoutParams();
         if (position == addressList.size() - 1) {
-            params.setMargins(0, (int) (20 * density), 0, 0); // Không có margin cho item cuối
+            params.setMargins(0, (int) (20 * density), 0, 0); // No margin for last item
         } else {
-            params.setMargins((int) (20 * density), (int) (20 * density), 0, 0); // Margin cho các item khác
+            params.setMargins((int) (20 * density), (int) (20 * density), 0, 0); // Margin for other items
         }
-        holder.divider.setLayoutParams(params); // Áp dụng layout params cho divider
+        holder.divider.setLayoutParams(params);
     }
+
 
     @Override
     public int getItemCount() {

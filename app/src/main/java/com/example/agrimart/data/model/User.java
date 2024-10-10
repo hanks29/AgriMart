@@ -163,16 +163,16 @@ public class User implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public static class Address {
-        @SerializedName("street")
-        private String street;
-        @SerializedName("district")
-        private String district;
-        @SerializedName("city")
-        private String city;
-
-        // Constructors, getters, and setters...
-    }
+//    public static class Address {
+//        @SerializedName("street")
+//        private String street;
+//        @SerializedName("district")
+//        private String district;
+//        @SerializedName("city")
+//        private String city;
+//
+//        // Constructors, getters, and setters...
+//    }
 
     public static class PaymentAccount {
         @SerializedName("accountNumber")

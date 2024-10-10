@@ -3,6 +3,7 @@ package com.example.agrimart.ui.Account;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,13 +19,24 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.agrimart.R;
 import com.example.agrimart.ui.MainActivity;
 import com.example.agrimart.viewmodel.SignInViewModel;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class SignInActivity extends AppCompatActivity {
     private static final String TAG = "SignInActivity";
@@ -33,12 +45,13 @@ public class SignInActivity extends AppCompatActivity {
     private GoogleSignInOptions gso;
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
+    private CallbackManager callbackManager;
 
     private TextView tvDonthaveAccount;
     private TextView forgotPass;
     private Button btnSignIn;
-    private Button btnSignInGoogle;
-    private TextView edtPhoneNumber, edtPassword;
+    private Button btnSignInGoogle, btnSignInFacebook;
+    private TextView edtEmail, edtPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,31 +89,22 @@ public class SignInActivity extends AppCompatActivity {
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                     try {
                         GoogleSignInAccount account = task.getResult(ApiException.class);
-                        signInViewModel.firebaseAuthWithGoogle(account);
+                        handleGoogleAccessToken(account);
                     } catch (ApiException e) {
+                        Log.e(TAG, "Google sign-in failed", e);
                         Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
                     }
                 } else {
+                    Log.w(TAG, "Google sign-in was cancelled");
                     Toast.makeText(this, "Đăng nhập bị từ chối", Toast.LENGTH_SHORT).show();
                 }
             });
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+
         addControls();
         addEvents();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        signInViewModel.userLiveData.observe(this, user -> {
-            if (user != null) {
-                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(SignInActivity.this, MainActivity.class));
-                finish();
-            } else {
-                Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     public void addControls() {
@@ -108,8 +112,9 @@ public class SignInActivity extends AppCompatActivity {
         forgotPass = findViewById(R.id.forgotPassword);
         btnSignIn = findViewById(R.id.btnSignIn);
         btnSignInGoogle = findViewById(R.id.btnSignInGoogle);
-        edtPhoneNumber = findViewById(R.id.edtPhoneNumber);
+        edtEmail = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
+        btnSignInFacebook = findViewById(R.id.btnSignInFacebook);
     }
 
     public void addEvents() {
@@ -124,11 +129,12 @@ public class SignInActivity extends AppCompatActivity {
         });
 
         btnSignIn.setOnClickListener(v -> {
-            String phoneNumber = edtPhoneNumber.getText().toString().trim();
-            if (!phoneNumber.isEmpty()) {
-                signInViewModel.signInWithPhoneNumber(phoneNumber);
+            String email = edtEmail.getText().toString().trim();
+            String password = edtPassword.getText().toString().trim();
+            if (!email.isEmpty() && !password.isEmpty()) {
+                signInViewModel.signInWithEmail(email, password, this::navigateToMain);
             } else {
-                Toast.makeText(SignInActivity.this, "Vui lòng nhập số điện thoại", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignInActivity.this, "Email hoặc mật khẩu không hợp lệ", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -136,11 +142,101 @@ public class SignInActivity extends AppCompatActivity {
             Intent signInIntent = GoogleSignIn.getClient(this, gso).getSignInIntent();
             googleSignInLauncher.launch(signInIntent);
         });
+
+        btnSignInFacebook.setOnClickListener(v -> {
+            LoginButton loginButton = new LoginButton(this);
+            loginButton.setPermissions("email", "public_profile");
+            loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    handleFacebookAccessToken(loginResult.getAccessToken());
+                }
+
+                @Override
+                public void onCancel() {
+                    Toast.makeText(SignInActivity.this, "Facebook login canceled", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(FacebookException error) {
+                    Toast.makeText(SignInActivity.this, "Facebook login failed", Toast.LENGTH_SHORT).show();
+                }
+            });
+            loginButton.performClick();
+        });
+    }
+
+    private boolean isUserDataExists() {
+        String email = sharedPreferences.getString("user_email", null);
+        return email != null;
+    }
+
+    private void saveUserData(FirebaseUser user) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("user_email", user.getEmail());
+        editor.putString("user_name", user.getDisplayName());
+        editor.apply();
+    }
+
+    private void handleGoogleAccessToken(GoogleSignInAccount account) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+        signInViewModel.signInWithGoogle(credential, () -> {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                if (!isUserDataExists()) {
+                    saveUserData(user);
+                }
+                setLoginState(true);
+            } else {
+            }
+            navigateToMain();
+        });
+    }
+
+private void handleFacebookAccessToken(AccessToken token) {
+    AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+    signInViewModel.signInWithFacebook(credential, () -> {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            if (!isUserDataExists()) {
+                saveUserData(user);
+            }
+            setLoginState(true);
+        } else {
+            Log.w(TAG, "Facebook login successful but user is null");
+        }
+        navigateToMain();
+    });
+}
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     private void navigateToMain() {
         Intent intent = new Intent(SignInActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    public void signOutFromFacebook() {
+    LoginManager.getInstance().logOut();
+    FirebaseAuth.getInstance().signOut();
+    setLoginState(false);
+    navigateToSignIn();
+}
+
+    private void navigateToSignIn() {
+        Intent intent = new Intent(SignInActivity.this, SignInActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void setLoginState(boolean isLoggedIn) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("is_logged_in", isLoggedIn);
+        editor.apply();
     }
 }

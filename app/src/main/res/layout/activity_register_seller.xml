@@ -1,54 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MyProfile.MyStore.RegisterSellerActivity">
+    tools:context=".ui.MyProfile.MyStore.RegisterSellerActivity"
+    android:padding="16dp">
 
     <ImageButton
         android:id="@+id/btn_back"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:background="@color/white"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/chevron_left"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
         android:fontFamily="@font/gabarito"
-        android:text="Đăng ký người bán"
-        android:layout_centerHorizontal="true"
-        android:textSize="34sp" />
+        android:text="Thông tin cửa hàng"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/btn_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tenCuaHang"
+        android:layout_marginTop="16dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tenCuaHang"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Ten cua hang"
-        android:layout_below="@id/textView2"
-        android:layout_marginHorizontal="24dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"        >
+        android:hint="Tên cửa hàng"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@id/textView2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtNameStore"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/soDienThoai"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="So dien thoai"
-        android:layout_below="@id/tenCuaHang"
-        android:layout_marginHorizontal="24dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"        >
+        android:hint="Số điện thoại"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@id/tenCuaHang"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtPhoneNumber"
@@ -56,89 +66,90 @@
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <LinearLayout
-        android:id="@+id/lnAddress"
-        android:layout_width="match_parent"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/city"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/soDienThoai"
-        android:layout_marginHorizontal="24dp"
-        android:orientation="horizontal">
+        android:hint="Tỉnh/Thành phố"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@id/soDienThoai"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/district"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/city"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtCity"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Tỉnh/Thành phố"
-            android:layout_weight="1"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"        >
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtCity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/district"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/district"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Quận/Huyện"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@id/soDienThoai"
+        app:layout_constraintStart_toEndOf="@id/city"
+        app:layout_constraintEnd_toStartOf="@id/ward"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtDistrict"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Quận/Huyện"
-            android:layout_weight="1"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"        >
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtDistrict"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/ward"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ward"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Phường/Xã"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@id/soDienThoai"
+        app:layout_constraintStart_toEndOf="@id/district"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtWard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Phường/Xã"
-            android:layout_weight="1"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"        >
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtWard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/street"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Đường"
-        android:layout_below="@id/lnAddress"
-        android:layout_marginHorizontal="24dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"        >
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toBottomOf="@id/city"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtStreet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRegister"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/background_green"
+        android:text="Tạo cửa hàng"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:text="Đăng kí"
-        android:backgroundTint="#E8DDF7"
-        android:layout_alignParentBottom="true"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginBottom="24dp"
+        android:textColor="@color/background_green"
+        android:backgroundTint="@color/green"
         style="@style/Widget.Material3.Button.TonalButton"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/street"
-        android:text="Button" />
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

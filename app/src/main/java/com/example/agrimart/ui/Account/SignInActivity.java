@@ -91,11 +91,9 @@ public class SignInActivity extends AppCompatActivity {
                         GoogleSignInAccount account = task.getResult(ApiException.class);
                         handleGoogleAccessToken(account);
                     } catch (ApiException e) {
-                        Log.e(TAG, "Google sign-in failed", e);
                         Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Log.w(TAG, "Google sign-in was cancelled");
                     Toast.makeText(this, "Đăng nhập bị từ chối", Toast.LENGTH_SHORT).show();
                 }
             });

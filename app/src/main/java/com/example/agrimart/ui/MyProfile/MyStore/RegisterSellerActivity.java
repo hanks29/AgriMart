@@ -37,9 +37,9 @@ public class RegisterSellerActivity extends AppCompatActivity {
         binding.btnRegister.setOnClickListener(v -> {
             updateUserInformation();
         });
-        binding.button2.setOnClickListener(v -> {
-            updateUserInformation();
-        });
+//        binding.button2.setOnClickListener(v -> {
+//            updateUserInformation();
+//        });
     }
 
 
@@ -73,7 +73,6 @@ public class RegisterSellerActivity extends AppCompatActivity {
                            Log.w("Register", "Error updating document", e);
                        });
         }
-
 
 
     }

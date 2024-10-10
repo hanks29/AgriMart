@@ -19,6 +19,7 @@ public class ExploreFragmentViewModel extends ViewModel {
 
     public void getData(){
         db.collection("categories")
+                .orderBy("id")
                 .get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<Category> categoryList = task.getResult().toObjects(Category.class);

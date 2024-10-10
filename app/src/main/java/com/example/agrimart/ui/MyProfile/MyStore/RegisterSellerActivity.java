@@ -7,6 +7,10 @@ import android.view.LayoutInflater;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.agrimart.R;
 import com.example.agrimart.databinding.ActivityRegisterSellerBinding;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,11 +42,32 @@ public class RegisterSellerActivity extends AppCompatActivity {
         binding.btnRegister.setOnClickListener(v -> {
             updateUserInformation();
         });
-        binding.button2.setOnClickListener(v -> {
-            updateUserInformation();
+        ActivityResultLauncher<PickVisualMediaRequest> pickMedia=registerForActivityResult(
+                new ActivityResultContracts.PickVisualMedia(), uri->{
+                    if (uri != null) {
+                        Log.d("PhotoPicker", "Selected URI: " + uri);
+                    } else {
+                        Log.d("PhotoPicker", "No media selected");
+                    }
+                });
+        binding.floatingActionButton.setOnClickListener(v -> {
+            ImagePicker.with(RegisterSellerActivity.this)
+                    .galleryOnly()
+                    .start();
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if( resultCode==RESULT_OK && data!=null){
+            binding.imgAvt.setImageURI(data.getData());
+        }else if (resultCode == RESULT_CANCELED) {
+            Log.d("ImagePicker", "Người dùng hủy chọn ảnh");
+        }else {
+            Log.w("ImagePicker", "Truong hop khac");
+        }
+    }
 
     private void updateUserInformation() {
         boolean isSuccessful=false;

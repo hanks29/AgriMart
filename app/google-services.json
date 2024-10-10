@@ -23,6 +23,22 @@
           }
         },
         {
+          "client_id": "689266518488-ma86an6gtkbsa9t34mu0ipu9jr3s8c69.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.agrimart",
+            "certificate_hash": "52595998b3de1856eaa4c5ae75c297a95a7c3881"
+          }
+        },
+        {
+          "client_id": "689266518488-n0qan7m0j228t8dqhegk3a5tjbqe2su7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.agrimart",
+            "certificate_hash": "7f9ecbf7a65fa9600d4df47be0d54dd53a53741a"
+          }
+        },
+        {
           "client_id": "689266518488-dggpokj3cbc4t7hoa53j2vsa6vt59qi4.apps.googleusercontent.com",
           "client_type": 3
         }

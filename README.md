@@ -1,1 +1,1 @@
-Android native application for buying and selling agricultural products
+Android application for buying and selling agricultural products

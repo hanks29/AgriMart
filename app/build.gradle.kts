@@ -57,8 +57,8 @@ dependencies {
     implementation ("com.google.android.material:material:1.8.0")
     implementation("com.google.firebase:firebase-firestore:25.1.0")
     implementation("com.google.firebase:firebase-auth:23.0.0")
-    implementation("com.google.firebase:firebase-storage:21.0.0")
-    implementation("com.google.firebase:firebase-messaging:24.0.1")
+    implementation("com.google.firebase:firebase-storage:21.0.1")
+    implementation("com.google.firebase:firebase-messaging:24.0.2")
     implementation("com.google.firebase:firebase-inappmessaging-display:21.0.0")
     implementation("androidx.navigation:navigation-fragment:2.8.0")
     implementation("androidx.navigation:navigation-ui:2.8.0")
@@ -67,6 +67,12 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     implementation("com.google.android.gms:play-services-auth:20.2.0")
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation ("com.google.code.gson:gson:2.8.9")
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
+
+    // ViewModel
+//    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.5")
+
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation ("com.facebook.android:facebook-login:latest.release")

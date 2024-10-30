@@ -40,6 +40,7 @@ android {
     }
 }
 dependencies {
+    implementation("com.github.yalantis:ucrop:2.2.6")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.22")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22")

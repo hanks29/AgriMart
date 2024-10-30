@@ -1,0 +1,6 @@
+<!-- res/drawable/rounded_bottom.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#80000000" /> <!-- Màu nền với độ trong suốt tùy chỉnh -->
+    <corners android:bottomLeftRadius="39dp" android:bottomRightRadius="39dp" />
+</shape>
+

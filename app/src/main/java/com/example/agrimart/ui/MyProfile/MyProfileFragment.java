@@ -12,14 +12,19 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.agrimart.R;
 import com.example.agrimart.ui.Account.SignInActivity;
+
+import com.example.agrimart.ui.MyProfile.MyAccount.MyAccountActivity;
 import com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;
 import com.example.agrimart.ui.MyProfile.MyStore.MyStoreActivity;
 import com.example.agrimart.ui.MyProfile.MyStore.RegisterSellerActivity;
@@ -30,15 +35,18 @@ import android.widget.Toast;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 
 public class MyProfileFragment extends Fragment {
 
     private LinearLayout purchase_order, confirm, goods, logout,
-            delivery, evaluate, my_store, my_address, setting;
+            delivery, evaluate, my_store, my_address, setting, my_account, header;
     private TextView userNameTextView;
+    private ImageView user_image;
+    private FirebaseAuth auth;
     private FirebaseFirestore firestore;
-    private FirebaseUser currentUser;
 
     public MyProfileFragment() {
         // Required empty public constructor
@@ -48,7 +56,8 @@ public class MyProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
-
+        auth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
         addControl(view);
         addEvents();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -57,7 +66,7 @@ public class MyProfileFragment extends Fragment {
             window.setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.green));
         }
 
-        loadUserFullName();
+        loadUserInfo();
 
         return view;
     }
@@ -74,6 +83,18 @@ public class MyProfileFragment extends Fragment {
         setting = view.findViewById(R.id.setting);
         logout = view.findViewById(R.id.logout);
         userNameTextView = view.findViewById(R.id.user_name); // Ensure this ID matches the layout
+        purchase_order = (LinearLayout)view.findViewById(R.id.purchase_order);
+        confirm = (LinearLayout)view.findViewById(R.id.waiting_confirm);
+        goods = (LinearLayout)view.findViewById(R.id.waiting_goods);
+        delivery = (LinearLayout)view.findViewById(R.id.waiting_delivery);
+        evaluate = (LinearLayout)view.findViewById(R.id.evaluate);
+        my_store = (LinearLayout)view.findViewById(R.id.my_store);
+        my_address = (LinearLayout)view.findViewById(R.id.my_address);
+        setting = (LinearLayout)view.findViewById(R.id.setting);
+        logout = (LinearLayout)view.findViewById(R.id.logout);
+        my_account = (LinearLayout) view.findViewById(R.id.my_account);
+        header = (LinearLayout) view.findViewById(R.id.header);
+        user_image = (ImageView) view.findViewById(R.id.user_image);
     }
 
     void addEvents() {
@@ -93,24 +114,40 @@ public class MyProfileFragment extends Fragment {
         my_address.setOnClickListener(v -> navigateToAddress());
         setting.setOnClickListener(v -> navigateToSettings());
         logout.setOnClickListener(v -> handleLogout());
+        header.setOnClickListener(v -> myAccount());
+        my_account.setOnClickListener(v -> myAccount());
     }
 
-    private void loadUserFullName() {
-        if (currentUser != null) {
-            firestore.collection("users").document(currentUser.getUid())
+    private void myAccount() {
+        Intent intent = new Intent(requireContext(), MyAccountActivity.class);
+        startActivity(intent);
+    }
+
+    private void loadUserInfo() {
+        String userId = auth.getCurrentUser().getUid(); // Lấy UID của người dùng hiện tại
+        firestore.collection("users").document(userId)
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String fullName = documentSnapshot.getString("fullName");
-                        if (fullName != null) {
-                            userNameTextView.setText(fullName);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            // Lấy dữ liệu từ document
+                            String name = document.getString("fullName");
+                            String urlImage = document.getString("userImage");
+
+                            // Cập nhật TextViews
+                            userNameTextView.setText(name);
+
+                            if (urlImage != null && !urlImage.isEmpty()) {
+                                Glide.with(this)
+                                        .load(urlImage)
+                                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh khi tải lên
+                                        .placeholder(R.drawable.account) // ảnh mặc định nếu URL rỗng
+                                        .into(user_image);
+                            }
                         }
                     }
-                })
-                .addOnFailureListener(e -> {
-                    // Handle the error
                 });
-        }
     }
 
     private void navigateToPurchasedOrders() {
@@ -194,4 +231,6 @@ public class MyProfileFragment extends Fragment {
         dialog.setCancelable(true);
         dialog.show();
     }
+
+
 }

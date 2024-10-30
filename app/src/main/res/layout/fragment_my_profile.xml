@@ -20,13 +20,12 @@
             android:layout_height="48dp"
             android:layout_marginEnd="16dp"
             android:contentDescription="User Image"
-            android:src="@drawable/user" />
+             />
 
         <TextView
         android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tên người dùng"
         android:textColor="@android:color/white"
         android:textSize="24sp"
         android:textStyle="bold"

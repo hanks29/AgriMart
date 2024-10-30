@@ -1,6 +1,7 @@
 package com.example.agrimart.ui.MyProfile.MyStore;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -84,6 +85,10 @@ public class RegisterSellerActivity extends AppCompatActivity {
         updates.put("store_address",storeAddress);
         updates.put("store_name",binding.edtNameStore.getText().toString());
         updates.put("role","seller");
+
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("role", "seller");
 
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null) {

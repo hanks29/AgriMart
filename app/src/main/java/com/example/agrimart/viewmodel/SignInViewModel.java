@@ -110,7 +110,6 @@ public class SignInViewModel extends AndroidViewModel {
         editor.putString("user_name", user.getDisplayName());
         editor.putString("user_email", user.getEmail());
         editor.putBoolean("is_logged_in", true);
-        editor.putString("user_role", "customer");
         editor.apply();
     }
 }

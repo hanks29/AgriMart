@@ -88,7 +88,8 @@ public class RegisterSellerActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("role", "seller");
+        editor.putString("user_role", "seller");
+        editor.apply();
 
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null) {

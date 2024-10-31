@@ -32,7 +32,8 @@
             android:exported="false" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            tools:replace="android:theme" />
         <activity
             android:name=".ui.MyProfile.MyAddress.EditAddressActivity"
             android:exported="false" />
@@ -111,18 +112,6 @@
             android:name="com.facebook.sdk.ClientToken"
             android:value="@string/facebook_client_token" />
 
-        <activity
-            android:name="com.facebook.FacebookActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            tools:ignore="DiscouragedApi" />
-        <activity
-            android:name="com.facebook.FacebookActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            tools:ignore="DiscouragedApi" />
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"

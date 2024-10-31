@@ -1,19 +1,22 @@
 package com.example.agrimart.ui.MyProfile.MyAccount;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.View;
+import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -22,7 +25,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.agrimart.R;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.agrimart.ui.Account.SignInActivity;
+import com.example.agrimart.ui.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -34,6 +38,7 @@ import com.yalantis.ucrop.UCrop;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 
 public class MyAccountActivity extends AppCompatActivity {
 
@@ -46,7 +51,9 @@ public class MyAccountActivity extends AppCompatActivity {
     ImageView user_image;
     FrameLayout btn_account_img;
     private static final int PICK_IMAGE_REQUEST = 1;
-
+    LinearLayout myUserSex,myUserDateBirth,myUserName;
+    String[] genderOptions = {"Nam", "Nữ", "Khác"};
+    private static final int EDIT_USER_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +78,9 @@ public class MyAccountActivity extends AppCompatActivity {
         addEvent();
     }
 
+
+
+
     void addControl() {
         user_name_text = findViewById(R.id.user_name_text);
         my_phone_number_text = findViewById(R.id.my_phone_number_text);
@@ -80,12 +90,86 @@ public class MyAccountActivity extends AppCompatActivity {
         btn_back = findViewById(R.id.btn_back);
         user_image = findViewById(R.id.user_image);
         btn_account_img = findViewById(R.id.fl_my_account_img);
+        myUserSex = findViewById(R.id.my_user_sex);
+        myUserDateBirth = findViewById(R.id.my_user_date_birth);
+        myUserName = findViewById(R.id.my_user_name);
     }
 
-    void addEvent(){
-        btn_back.setOnClickListener(v-> onBackPressed());
-        btn_account_img.setOnClickListener(v -> openImageChooser());
+    void addEvent() {
+        btn_back.setOnClickListener(v -> onBackPressed());
+        btn_account_img.setOnClickListener(v -> openImageChooser()); // cập nhật ảnh user
+        myUserSex.setOnClickListener(v -> openGenderOptions()); // cập nhật giới tính
+        myUserDateBirth.setOnClickListener(v -> openDatePicker());
+        myUserName.setOnClickListener(v -> openEditUser());
     }
+
+    private void openEditUser()
+    {
+        Intent intent = new Intent(MyAccountActivity.this, EditUserActivity.class);
+        startActivityForResult(intent, EDIT_USER_REQUEST_CODE);
+    }
+
+    private void openDatePicker() {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Tạo DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDay) -> {
+            // Cập nhật TextView với ngày đã chọn
+            String selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+            user_date_birth_text.setText(selectedDate);
+        }, year, month, day);
+
+        // Tạo AlertDialog để bọc DatePickerDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setView(datePickerDialog.getDatePicker());
+        builder.setPositiveButton("Hoàn thành", (dialog, which) -> {
+            datePickerDialog.getDatePicker().clearFocus(); // Đảm bảo lấy ngày chính xác
+            datePickerDialog.onClick(dialog, DatePickerDialog.BUTTON_POSITIVE);
+
+            String selectedDate = user_date_birth_text.getText().toString();
+            saveBirthDateToFirestore(selectedDate);
+        });
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss());
+
+        // Hiển thị AlertDialog
+        builder.show();
+    }
+
+    private void saveBirthDateToFirestore(String date) {
+        String userId = auth.getCurrentUser().getUid();
+        firestore.collection("users").document(userId)
+                .update("birthDate", date)
+                .addOnSuccessListener(aVoid ->
+                        Toast.makeText(MyAccountActivity.this, "Đã cập nhật ngày sinh", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(MyAccountActivity.this, "Lỗi khi cập nhật ngày sinh: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void openGenderOptions() {
+        // Tạo một TextView cho tiêu đề và tùy chỉnh nó
+        TextView title = new TextView(this);
+        title.setText("Giới tính");
+        title.setPadding(0, 30, 0, 30); // Khoảng cách trên và dưới
+        title.setGravity(Gravity.CENTER); // Căn giữa
+        title.setTextSize(20); // Kích thước chữ
+        title.setTypeface(null, Typeface.BOLD); // Đặt kiểu chữ đậm nếu cần
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCustomTitle(title); // Đặt tiêu đề tùy chỉnh
+
+        // Thiết lập danh sách tùy chọn
+        builder.setItems(genderOptions, (dialog, which) -> {
+            user_sex_text.setText(genderOptions[which]);
+            saveGenderToFirestore(genderOptions[which]);
+        });
+
+        builder.show();
+    }
+
 
     private void openImageChooser() {
         Intent intent = new Intent();
@@ -94,9 +178,26 @@ public class MyAccountActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    private void saveGenderToFirestore(String gender) {
+        String userId = auth.getCurrentUser().getUid();
+        firestore.collection("users").document(userId)
+                .update("sex", gender)
+                .addOnSuccessListener(aVoid ->
+                        Toast.makeText(MyAccountActivity.this, "Đã cập nhật giới tính", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(MyAccountActivity.this, "Lỗi khi cập nhật giới tính: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        // Kiểm tra nếu kết quả trả về từ EditUserActivity
+        if (requestCode == EDIT_USER_REQUEST_CODE && resultCode == RESULT_OK) {
+            loadUserInfo(); // Gọi phương thức để tải lại thông tin người dùng
+        }
+
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri imageUri = data.getData();
 
@@ -120,7 +221,6 @@ public class MyAccountActivity extends AppCompatActivity {
             }
         }
     }
-
 
 
     private void uploadImageToFirebase(Uri imageUri) {
@@ -162,8 +262,6 @@ public class MyAccountActivity extends AppCompatActivity {
                     Toast.makeText(MyAccountActivity.this, "Error updating image URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
-
 
     private void loadUserInfo() {
         String userId = auth.getCurrentUser().getUid(); // Lấy UID của người dùng hiện tại

@@ -2,6 +2,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFF</color>
     <color name="green">#53B175</color>
+    <color name="gray">#808080</color>
     <color name="background_green">#006623</color>
     <color name="background_light">#ECECEC</color>
     <color name="backgound_dark">#0D1F29</color>

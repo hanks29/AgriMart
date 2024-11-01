@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             FirebaseUser currentUser = mAuth.getCurrentUser();
             if (currentUser != null) {
                 navigateToHome();
-                fetchUserRoleAndSave(currentUser);
+                getUserRole(currentUser);
             } else {
                 clearLoginState();
                 navigateToLogin();
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void fetchUserRoleAndSave(FirebaseUser user) {
+    private void getUserRole(FirebaseUser user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("users").document(user.getUid());
         docRef.get().addOnSuccessListener(documentSnapshot -> {

@@ -16,45 +16,7 @@ public class Valid {
         return !name.isEmpty() && name.length() >= 3 && !name.matches(".*\\d.*");
     }
 
-    public static boolean validateInputs(String email, String password, String name, TextView tvEmailError, TextView tvPasswordError, TextView tvNameError) {
-        boolean isValid = true;
-
-        if (!isValidEmail(email)) {
-            tvEmailError.setText("Email không hợp lệ");
-            isValid = false;
-        } else {
-            tvEmailError.setText("");
-        }
-
-        if (!isValidPassword(password)) {
-            tvPasswordError.setText("Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa và số");
-            isValid = false;
-        } else {
-            tvPasswordError.setText("");
-        }
-
-        if (!isValidName(name)) {
-            tvNameError.setText("Tên phải có ít nhất 3 ký tự và không được chứa số");
-            isValid = false;
-        } else {
-            tvNameError.setText("");
-        }
-
-        return isValid;
+    public static boolean isPasswordMatching(String password, String confirmPassword) {
+        return password.equals(confirmPassword);
     }
-
-    public static boolean validatePass(String password, TextView tvPasswordError) {
-        boolean isValid = true;
-
-        if (!isValidPassword(password)) {
-            tvPasswordError.setText("Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa và số");
-            isValid = false;
-        } else {
-            tvPasswordError.setText("");
-        }
-
-
-        return isValid;
-    }
-
 }

@@ -42,4 +42,19 @@ public class Valid {
 
         return isValid;
     }
+
+    public static boolean validatePass(String password, TextView tvPasswordError) {
+        boolean isValid = true;
+
+        if (!isValidPassword(password)) {
+            tvPasswordError.setText("Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa và số");
+            isValid = false;
+        } else {
+            tvPasswordError.setText("");
+        }
+
+
+        return isValid;
+    }
+
 }

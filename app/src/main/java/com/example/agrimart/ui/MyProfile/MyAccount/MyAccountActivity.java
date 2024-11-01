@@ -51,7 +51,7 @@ public class MyAccountActivity extends AppCompatActivity {
     ImageView user_image;
     FrameLayout btn_account_img;
     private static final int PICK_IMAGE_REQUEST = 1;
-    LinearLayout myUserSex,myUserDateBirth,myUserName;
+    LinearLayout myUserSex,myUserDateBirth,myUserName,changePassword;
     String[] genderOptions = {"Nam", "Nữ", "Khác"};
     private static final int EDIT_USER_REQUEST_CODE = 1;
 
@@ -93,6 +93,7 @@ public class MyAccountActivity extends AppCompatActivity {
         myUserSex = findViewById(R.id.my_user_sex);
         myUserDateBirth = findViewById(R.id.my_user_date_birth);
         myUserName = findViewById(R.id.my_user_name);
+        changePassword = findViewById(R.id.change_password);
     }
 
     void addEvent() {
@@ -101,6 +102,54 @@ public class MyAccountActivity extends AppCompatActivity {
         myUserSex.setOnClickListener(v -> openGenderOptions()); // cập nhật giới tính
         myUserDateBirth.setOnClickListener(v -> openDatePicker());
         myUserName.setOnClickListener(v -> openEditUser());
+        changePassword.setOnClickListener(v -> openVerifyAccount());
+    }
+
+    private void loadUserInfo() {
+        String userId = auth.getCurrentUser().getUid(); // Lấy UID của người dùng hiện tại
+        firestore.collection("users").document(userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            // Lấy dữ liệu từ document
+                            String name = document.getString("fullName");
+                            String phone = document.getString("phone");
+                            String email = document.getString("email");
+                            String sex = document.getString("sex");
+                            String birthDate = document.getString("birthDate");
+                            String urlImage = document.getString("userImage");
+
+                            // Cập nhật TextViews
+                            user_name_text.setText(name);
+                            my_phone_number_text.setText(phone);
+                            email_text.setText(email);
+                            user_sex_text.setText(sex);
+                            user_date_birth_text.setText(birthDate);
+
+                            if (urlImage != null && !urlImage.isEmpty()) {
+                                Glide.with(this)
+                                        .load(urlImage)
+                                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh khi tải lên
+                                        .placeholder(R.drawable.account) // ảnh mặc định nếu URL rỗng
+                                        .into(user_image);
+                            }
+                        } else {
+                            // Xử lý khi không tìm thấy tài liệu
+                            user_name_text.setText("User not found");
+                        }
+                    } else {
+                        // Xử lý lỗi khi lấy dữ liệu
+                        user_name_text.setText("Error getting user info");
+                    }
+                });
+    }
+
+    private void openVerifyAccount()
+    {
+        Intent intent = new Intent(MyAccountActivity.this, VerifyAccountActivity.class);
+        startActivity(intent);
     }
 
     private void openEditUser()
@@ -263,44 +312,5 @@ public class MyAccountActivity extends AppCompatActivity {
                 });
     }
 
-    private void loadUserInfo() {
-        String userId = auth.getCurrentUser().getUid(); // Lấy UID của người dùng hiện tại
-        firestore.collection("users").document(userId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            // Lấy dữ liệu từ document
-                            String name = document.getString("fullName");
-                            String phone = document.getString("phone");
-                            String email = document.getString("email");
-                            String sex = document.getString("sex");
-                            String birthDate = document.getString("birthDate");
-                            String urlImage = document.getString("userImage");
 
-                            // Cập nhật TextViews
-                            user_name_text.setText(name);
-                            my_phone_number_text.setText(phone);
-                            email_text.setText(email);
-                            user_sex_text.setText(sex);
-                            user_date_birth_text.setText(birthDate);
-
-                            if (urlImage != null && !urlImage.isEmpty()) {
-                                Glide.with(this)
-                                        .load(urlImage)
-                                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh khi tải lên
-                                        .placeholder(R.drawable.account) // ảnh mặc định nếu URL rỗng
-                                        .into(user_image);
-                            }
-                        } else {
-                            // Xử lý khi không tìm thấy tài liệu
-                            user_name_text.setText("User not found");
-                        }
-                    } else {
-                        // Xử lý lỗi khi lấy dữ liệu
-                        user_name_text.setText("Error getting user info");
-                    }
-                });
-    }
 }

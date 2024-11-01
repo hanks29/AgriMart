@@ -77,26 +77,26 @@ public class SignInActivity extends AppCompatActivity {
         signInViewModel = new ViewModelProvider(this).get(SignInViewModel.class);
 
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build();
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
 
         googleSignInLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    Intent data = result.getData();
-                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-                    try {
-                        GoogleSignInAccount account = task.getResult(ApiException.class);
-                        handleGoogleAccessToken(account);
-                    } catch (ApiException e) {
-                        Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        Intent data = result.getData();
+                        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                        try {
+                            GoogleSignInAccount account = task.getResult(ApiException.class);
+                            handleGoogleAccessToken(account);
+                        } catch (ApiException e) {
+                            Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, "Đăng nhập bị từ chối", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(this, "Đăng nhập bị từ chối", Toast.LENGTH_SHORT).show();
-                }
-            });
+                });
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
@@ -130,7 +130,7 @@ public class SignInActivity extends AppCompatActivity {
             String email = edtEmail.getText().toString().trim();
             String password = edtPassword.getText().toString().trim();
             if (!email.isEmpty() && !password.isEmpty()) {
-                signInViewModel.signInWithEmail(email, password, this::navigateToMain);
+                signInViewModel.signInWithEmail(email, password, () -> checkEmailVerification(true));
             } else {
                 Toast.makeText(SignInActivity.this, "Email hoặc mật khẩu không hợp lệ", Toast.LENGTH_SHORT).show();
             }
@@ -148,20 +148,38 @@ public class SignInActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
                     handleFacebookAccessToken(loginResult.getAccessToken());
+                    Toast.makeText(SignInActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onCancel() {
-                    Toast.makeText(SignInActivity.this, "Facebook login canceled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignInActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onError(FacebookException error) {
-                    Toast.makeText(SignInActivity.this, "Facebook login failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignInActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
                 }
             });
             loginButton.performClick();
         });
+    }
+
+    private void checkEmailVerification(boolean isEmailSignIn) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            if (!isEmailSignIn || user.isEmailVerified()) {
+                navigateToMain();
+            } else {
+                Toast.makeText(SignInActivity.this, "Vui lòng xác thực email của bạn trước khi đăng nhập", Toast.LENGTH_SHORT).show();
+                signOut();
+            }
+        }
+    }
+
+    private void signOut() {
+        mAuth.signOut();
+        setLoginState(false);
     }
 
     private boolean isUserDataExists() {
@@ -183,29 +201,30 @@ public class SignInActivity extends AppCompatActivity {
             if (user != null) {
                 if (!isUserDataExists()) {
                     saveUserData(user);
+                    Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                 }
-                setLoginState(true);
+                checkEmailVerification(false);
             } else {
+                Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
             }
-            navigateToMain();
         });
     }
 
-private void handleFacebookAccessToken(AccessToken token) {
-    AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-    signInViewModel.signInWithFacebook(credential, () -> {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            if (!isUserDataExists()) {
-                saveUserData(user);
+    private void handleFacebookAccessToken(AccessToken token) {
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        signInViewModel.signInWithFacebook(credential, () -> {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                if (!isUserDataExists()) {
+                    saveUserData(user);
+                    Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                }
+                checkEmailVerification(false);
+            } else {
+                Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
             }
-            setLoginState(true);
-        } else {
-            Log.w(TAG, "Facebook login successful but user is null");
-        }
-        navigateToMain();
-    });
-}
+        });
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -215,19 +234,6 @@ private void handleFacebookAccessToken(AccessToken token) {
 
     private void navigateToMain() {
         Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    public void signOutFromFacebook() {
-    LoginManager.getInstance().logOut();
-    FirebaseAuth.getInstance().signOut();
-    setLoginState(false);
-    navigateToSignIn();
-}
-
-    private void navigateToSignIn() {
-        Intent intent = new Intent(SignInActivity.this, SignInActivity.class);
         startActivity(intent);
         finish();
     }

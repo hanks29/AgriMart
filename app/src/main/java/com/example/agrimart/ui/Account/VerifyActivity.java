@@ -20,6 +20,7 @@ public class VerifyActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private Handler handler;
     private Runnable checkEmailVerifiedRunnable;
+    private String fullname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,8 @@ public class VerifyActivity extends AppCompatActivity {
 
         Button btnResendEmail = findViewById(R.id.btnResendEmail);
         Button btnBackToLogin = findViewById(R.id.btnBackToLogin);
+
+        fullname = getIntent().getStringExtra("fullname");
 
         btnResendEmail.setOnClickListener(v -> {
             FirebaseUser user = mAuth.getCurrentUser();
@@ -57,7 +60,7 @@ public class VerifyActivity extends AppCompatActivity {
                 if (user != null) {
                     user.reload().addOnCompleteListener(task -> {
                         if (user.isEmailVerified()) {
-                            viewModel.saveUserToFirestore(user);
+                            viewModel.saveUserToFirestore(user, fullname);
                             Toast.makeText(VerifyActivity.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(VerifyActivity.this, MainActivity.class));
                             finish();

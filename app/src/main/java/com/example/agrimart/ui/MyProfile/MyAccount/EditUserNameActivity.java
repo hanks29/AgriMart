@@ -59,7 +59,7 @@ public class EditUserNameActivity extends AppCompatActivity {
     }
 
     void addEvent() {
-        btnBack.setOnClickListener(v -> onBackPressed());
+        btnBack.setOnClickListener(v -> finish());
         userErase.setOnClickListener(v -> clearUserName());
         txt_luu.setOnClickListener(v -> saveUserNameToFirestore());
 

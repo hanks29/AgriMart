@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,10 +15,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.agrimart.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
     Button btnContinue;
     ImageButton btnBack;
+    EditText edtEmail;
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +32,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -40,14 +45,20 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     public void addControls() {
         btnContinue = findViewById(R.id.btn_continue);
         btnBack = findViewById(R.id.btn_back);
+        edtEmail = findViewById(R.id.edtEmail);
     }
 
     public void addEvents() {
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ForgotPasswordActivity.this, EnterOTPActivity.class);
-                startActivity(intent);
+                String email = edtEmail.getText().toString().trim();
+                if (email.isEmpty()) {
+                    Toast.makeText(ForgotPasswordActivity.this, "Hãy nhập email của bạn", Toast.LENGTH_SHORT).show();
+                } else {
+                    sendPasswordResetEmail(email);
+                    finish();
+                }
             }
         });
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -59,5 +70,15 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     }
 
+    private void sendPasswordResetEmail(String email) {
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(ForgotPasswordActivity.this, "Email đặt lại mật khẩu đã được gửi", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(ForgotPasswordActivity.this, "Gửi email thất bại", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
 }

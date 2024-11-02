@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".ui.MyProfile.MyAccount.EditNumberPhoneActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/background_light_blur_1"
+        tools:ignore="MissingConstraints">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="30dp"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_left"
+                android:scaleType="fitCenter"
+                android:layout_marginStart="5dp"
+                android:layout_gravity="center_vertical"
+                android:background="@color/white" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:layout_marginStart="15dp"
+                android:text="Số điện thoại mới"
+                android:textColor="@color/black"
+                android:textSize="11pt" />
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@color/background_light_blur_1" />
+
+        <LinearLayout
+            android:id="@+id/my_user"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:background="@color/white"
+            android:paddingStart="20dp"
+            android:paddingBottom="10dp">
+
+            <EditText
+                android:id="@+id/user_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:layout_weight="1"
+                android:background="@null"
+                android:textColor="@color/black"
+                android:hint="Số điện thoại"
+                android:textSize="8pt"
+                android:inputType="number"
+                android:maxLength="10"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/errorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:visibility="gone"
+            android:textColor="@android:color/holo_red_dark"
+            android:text="Số điện thoại phải bắt đầu bằng số 0!" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnUpdate"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/gray"
+            android:textColor="@color/white"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="Cập nhật"
+            android:textAllCaps="false"/>
+
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

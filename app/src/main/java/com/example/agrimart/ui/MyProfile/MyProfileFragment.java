@@ -1,5 +1,7 @@
 package com.example.agrimart.ui.MyProfile;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
@@ -16,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -47,6 +50,7 @@ public class MyProfileFragment extends Fragment {
     private ImageView user_image;
     private FirebaseAuth auth;
     private FirebaseFirestore firestore;
+    private static final int MY_ACCOUNT_REQUEST_CODE = 2;
 
     public MyProfileFragment() {
         // Required empty public constructor
@@ -69,6 +73,14 @@ public class MyProfileFragment extends Fragment {
         loadUserInfo();
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MY_ACCOUNT_REQUEST_CODE && resultCode == RESULT_OK) {
+            loadUserInfo(); // Gọi phương thức để tải lại thông tin người dùng
+        }
     }
 
     @SuppressLint("WrongViewCast")
@@ -120,7 +132,7 @@ public class MyProfileFragment extends Fragment {
 
     private void myAccount() {
         Intent intent = new Intent(requireContext(), MyAccountActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, MY_ACCOUNT_REQUEST_CODE);
     }
 
     private void loadUserInfo() {
@@ -142,9 +154,17 @@ public class MyProfileFragment extends Fragment {
                                 Glide.with(this)
                                         .load(urlImage)
                                         .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh khi tải lên
-                                        .placeholder(R.drawable.account) // ảnh mặc định nếu URL rỗng
+                                        .placeholder(R.drawable.user_img) // ảnh mặc định khi đang tải
+                                        .error(R.drawable.user_img) // ảnh mặc định nếu URL không tồn tại hoặc tải ảnh lỗi
+                                        .into(user_image);
+                            } else {
+                                // Hiển thị ảnh mặc định nếu URL rỗng
+                                Glide.with(this)
+                                        .load(R.drawable.user_img)
+                                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh mặc định
                                         .into(user_image);
                             }
+
                         }
                     }
                 });

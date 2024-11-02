@@ -70,8 +70,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-
-                    android:src="@drawable/account" />
+                    />
 
                 <TextView
                     android:id="@+id/overlay_text"
@@ -280,7 +279,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:layout_weight="1"
-                android:text="h*******3@gmail.com"
                 android:textColor="@color/black"
                 android:textSize="8pt" />
 
@@ -311,6 +309,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="2"
+
                 android:text="Đổi mật khẩu"
                 android:textColor="@color/black"
                 android:textSize="8pt" />

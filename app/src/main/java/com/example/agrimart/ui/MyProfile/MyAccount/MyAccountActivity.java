@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,9 +26,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.agrimart.R;
-import com.example.agrimart.ui.Account.SignInActivity;
-import com.example.agrimart.ui.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -51,9 +51,10 @@ public class MyAccountActivity extends AppCompatActivity {
     ImageView user_image;
     FrameLayout btn_account_img;
     private static final int PICK_IMAGE_REQUEST = 1;
-    LinearLayout myUserSex,myUserDateBirth,myUserName,changePassword;
+    LinearLayout myUserSex, myUserDateBirth, myUserName, changePassword, myPhoneNumber;
     String[] genderOptions = {"Nam", "Nữ", "Khác"};
     private static final int EDIT_USER_REQUEST_CODE = 1;
+    private static final int EDIT_NUMBER_PHONE_REQUEST_CODE = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,19 +95,44 @@ public class MyAccountActivity extends AppCompatActivity {
         myUserDateBirth = findViewById(R.id.my_user_date_birth);
         myUserName = findViewById(R.id.my_user_name);
         changePassword = findViewById(R.id.change_password);
+        myPhoneNumber = findViewById(R.id.my_phone_number);
     }
 
     void addEvent() {
-        btn_back.setOnClickListener(v -> onBackPressed());
+        btn_back.setOnClickListener(v -> back());
         btn_account_img.setOnClickListener(v -> openImageChooser()); // cập nhật ảnh user
         myUserSex.setOnClickListener(v -> openGenderOptions()); // cập nhật giới tính
         myUserDateBirth.setOnClickListener(v -> openDatePicker());
         myUserName.setOnClickListener(v -> openEditUser());
         changePassword.setOnClickListener(v -> openVerifyAccount());
+        myPhoneNumber.setOnClickListener(v -> openEditNumberPhone());
+    }
+
+    void openEditNumberPhone()
+    {
+        Intent intent = new Intent(MyAccountActivity.this, EditNumberPhoneActivity.class);
+        startActivityForResult(intent, EDIT_NUMBER_PHONE_REQUEST_CODE);
+    }
+
+    void back()
+    {
+        setResult(RESULT_OK); // Đặt kết quả trả về
+        finish();
     }
 
     private void loadUserInfo() {
         String userId = auth.getCurrentUser().getUid(); // Lấy UID của người dùng hiện tại
+
+        if (auth.getCurrentUser() != null) {
+            for (UserInfo profile : auth.getCurrentUser().getProviderData()) {
+                String providerId = profile.getProviderId();
+                if (providerId.equals("google.com") || providerId.equals("facebook.com")) {
+                    // Ẩn nút changePassword nếu tài khoản đăng nhập bằng Google hoặc Facebook
+                    changePassword.setVisibility(View.GONE);
+                }
+            }
+        }
+
         firestore.collection("users").document(userId)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -115,7 +141,7 @@ public class MyAccountActivity extends AppCompatActivity {
                         if (document.exists()) {
                             // Lấy dữ liệu từ document
                             String name = document.getString("fullName");
-                            String phone = document.getString("phone");
+                            String phone = document.getString("phoneNumber");
                             String email = document.getString("email");
                             String sex = document.getString("sex");
                             String birthDate = document.getString("birthDate");
@@ -132,7 +158,14 @@ public class MyAccountActivity extends AppCompatActivity {
                                 Glide.with(this)
                                         .load(urlImage)
                                         .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh khi tải lên
-                                        .placeholder(R.drawable.account) // ảnh mặc định nếu URL rỗng
+                                        .placeholder(R.drawable.user_img) // ảnh mặc định khi đang tải
+                                        .error(R.drawable.user_img) // ảnh mặc định nếu URL không tồn tại hoặc tải ảnh lỗi
+                                        .into(user_image);
+                            } else {
+                                // Hiển thị ảnh mặc định nếu URL rỗng
+                                Glide.with(this)
+                                        .load(R.drawable.user_img)
+                                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh mặc định
                                         .into(user_image);
                             }
                         } else {
@@ -154,7 +187,7 @@ public class MyAccountActivity extends AppCompatActivity {
 
     private void openEditUser()
     {
-        Intent intent = new Intent(MyAccountActivity.this, EditUserActivity.class);
+        Intent intent = new Intent(MyAccountActivity.this, EditUserNameActivity.class);
         startActivityForResult(intent, EDIT_USER_REQUEST_CODE);
     }
 
@@ -170,6 +203,9 @@ public class MyAccountActivity extends AppCompatActivity {
             String selectedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
             user_date_birth_text.setText(selectedDate);
         }, year, month, day);
+
+        // Giới hạn ngày phải bé hơn hoặc bằng ngày hiện hành
+        datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
 
         // Tạo AlertDialog để bọc DatePickerDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -187,6 +223,7 @@ public class MyAccountActivity extends AppCompatActivity {
         // Hiển thị AlertDialog
         builder.show();
     }
+
 
     private void saveBirthDateToFirestore(String date) {
         String userId = auth.getCurrentUser().getUid();
@@ -219,7 +256,6 @@ public class MyAccountActivity extends AppCompatActivity {
         builder.show();
     }
 
-
     private void openImageChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -242,6 +278,9 @@ public class MyAccountActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == EDIT_NUMBER_PHONE_REQUEST_CODE && resultCode == RESULT_OK) {
+            loadUserInfo(); // Gọi phương thức để tải lại thông tin người dùng
+        }
         // Kiểm tra nếu kết quả trả về từ EditUserActivity
         if (requestCode == EDIT_USER_REQUEST_CODE && resultCode == RESULT_OK) {
             loadUserInfo(); // Gọi phương thức để tải lại thông tin người dùng

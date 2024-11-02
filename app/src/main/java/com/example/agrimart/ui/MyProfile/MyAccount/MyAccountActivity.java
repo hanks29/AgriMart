@@ -181,7 +181,7 @@ public class MyAccountActivity extends AppCompatActivity {
 
     private void openVerifyAccount()
     {
-        Intent intent = new Intent(MyAccountActivity.this, VerifyAccountActivity.class);
+        Intent intent = new Intent(MyAccountActivity.this, VerifyWithPasswordActivity.class);
         startActivity(intent);
     }
 

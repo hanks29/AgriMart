@@ -6,6 +6,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
@@ -29,6 +30,7 @@ public class VerifyWithPasswordActivity extends AppCompatActivity {
     private TextInputEditText edtPassword;
     private AppCompatButton btn_dongY;
     private ImageButton btn_back;
+    private static final int CHANGE_PASS_REQUEST_CODE = 11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +93,14 @@ public class VerifyWithPasswordActivity extends AppCompatActivity {
     private void openChangePassword()
     {
         Intent intent = new Intent(VerifyWithPasswordActivity.this, ChangePasswordActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, CHANGE_PASS_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CHANGE_PASS_REQUEST_CODE && resultCode == RESULT_OK) {
+            finish();
+        }
     }
 }

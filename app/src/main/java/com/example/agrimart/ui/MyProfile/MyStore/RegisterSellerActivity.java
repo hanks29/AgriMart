@@ -19,13 +19,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.agrimart.R;
 import com.example.agrimart.databinding.ActivityRegisterSellerBinding;
-import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+
+
 
 public class RegisterSellerActivity extends AppCompatActivity {
     private ActivityRegisterSellerBinding binding;
@@ -52,22 +53,24 @@ public class RegisterSellerActivity extends AppCompatActivity {
                     }
                 });
         binding.floatingActionButton.setOnClickListener(v -> {
-            ImagePicker.with(RegisterSellerActivity.this)
-                    .galleryOnly()
-                    .start();
+//            TedImagePicker.with(RegisterSellerActivity.this)
+//                    .max(1, "Chỉ được chọn 1 ảnh")
+//                    .start(uri -> {
+//                        binding.imgAvt.setImageURI(uri);
+//                    });
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if( resultCode==RESULT_OK && data!=null){
-            binding.imgAvt.setImageURI(data.getData());
-        }else if (resultCode == RESULT_CANCELED) {
-            Log.d("ImagePicker", "Người dùng hủy chọn ảnh");
-        }else {
-            Log.w("ImagePicker", "Truong hop khac");
-        }
+//        if( resultCode==RESULT_OK && data!=null){
+//            binding.imgAvt.setImageURI(data.getData());
+//        }else if (resultCode == RESULT_CANCELED) {
+//            Log.d("ImagePicker", "Người dùng hủy chọn ảnh");
+//        }else {
+//            Log.w("ImagePicker", "Truong hop khac");
+//        }
     }
 
     private void updateUserInformation() {

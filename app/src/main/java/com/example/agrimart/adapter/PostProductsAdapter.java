@@ -11,32 +11,33 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.PostProduct;
+import com.example.agrimart.data.model.ProductResponse;
+import com.example.agrimart.databinding.ItemYourProductListingsBinding;
 
 import java.util.List;
 
 public class PostProductsAdapter extends RecyclerView.Adapter<PostProductsAdapter.PostProductsViewHolder> {
 
-    private final List<PostProduct> postProductList;
+    private final List<ProductResponse> postProductList;
 
-    public PostProductsAdapter(List<PostProduct> postProductList) {
+    public PostProductsAdapter(List<ProductResponse> postProductList) {
         this.postProductList = postProductList;
     }
 
     @NonNull
     @Override
     public PostProductsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_your_product_listings, parent, false);
-        return new PostProductsViewHolder(view);
+        ItemYourProductListingsBinding binding = ItemYourProductListingsBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new PostProductsViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull PostProductsViewHolder holder, int position) {
-        PostProduct postProduct = postProductList.get(position);
-        holder.tvIconTitle.setText(postProduct.getTitle());
-        holder.tvPrice.setText(postProduct.getPrice());
-        holder.imageView.setImageResource(postProduct.getImageResId());  // Cập nhật ảnh
+        ProductResponse postProduct = postProductList.get(position);
+        holder.bindData(postProduct);
     }
 
     @Override
@@ -45,17 +46,19 @@ public class PostProductsAdapter extends RecyclerView.Adapter<PostProductsAdapte
     }
 
     static class PostProductsViewHolder extends RecyclerView.ViewHolder {
-        TextView tvIconTitle;
-        TextView tvPrice;
-        ImageView imageView;  // Thêm ImageView
-        AppCompatButton btnDetailPL;
+        ItemYourProductListingsBinding binding;
 
-        public PostProductsViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvIconTitle = itemView.findViewById(R.id.tvIconTitle);
-            tvPrice = itemView.findViewById(R.id.tvPrice);
-            imageView = itemView.findViewById(R.id.imageView);  // Khởi tạo ImageView
-            btnDetailPL = itemView.findViewById(R.id.btn_detailPL);
+        public PostProductsViewHolder(@NonNull ItemYourProductListingsBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        void bindData(ProductResponse postProduct) {
+            binding.tvIconTitle.setText(postProduct.getName());
+            binding.tvPrice.setText(String.valueOf(postProduct.getPrice()));
+            Glide.with(itemView.getContext())
+                    .load(postProduct.getImageUrls())
+                    .into(binding.imageView);
         }
     }
 }

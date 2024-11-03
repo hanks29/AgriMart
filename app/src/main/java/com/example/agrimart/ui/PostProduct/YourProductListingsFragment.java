@@ -15,6 +15,12 @@ import android.view.ViewGroup;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.PostProductsAdapter;
 import com.example.agrimart.data.model.PostProduct;
+import com.example.agrimart.data.model.ProductRequest;
+import com.example.agrimart.data.model.ProductResponse;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +63,7 @@ public class YourProductListingsFragment extends Fragment {
     private RecyclerView recyclerView;
     private PostProductsAdapter postProductsAdapter;
     private List<PostProduct> postProductList;
+    private List<ProductResponse> productResponseList;
 
     @Nullable
     @Override
@@ -70,18 +77,40 @@ public class YourProductListingsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         postProductList = new ArrayList<>();
 
-        // Populate postProductList with sample data or from a data source
-        postProductList.add(new PostProduct("Chuối tiêu", "27.000đ/kg", R.drawable.banana));
-        postProductList.add(new PostProduct("Táo đỏ", "35.000đ/kg", R.drawable.apple));
-        postProductList.add(new PostProduct("Chuối tiêu", "27.000đ/kg", R.drawable.banana));
-        postProductList.add(new PostProduct("Táo đỏ", "35.000đ/kg", R.drawable.apple));
-        postProductList.add(new PostProduct("Chuối tiêu", "27.000đ/kg", R.drawable.banana));
-        postProductList.add(new PostProduct("Táo đỏ", "35.000đ/kg", R.drawable.apple));
-        postProductList.add(new PostProduct("Táo đỏ", "35.000đ/kg", R.drawable.apple));
-        // Add more post products as needed
+        productResponseList = new ArrayList<>();
 
-        postProductsAdapter = new PostProductsAdapter(postProductList);
+        postProductsAdapter = new PostProductsAdapter(productResponseList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(postProductsAdapter);
+        loadData();
+    }
+
+    private void loadData(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user != null){
+            String uid=user.getUid();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("products")
+                    .whereEqualTo("storeId",uid)
+                    .whereEqualTo("status","approved")
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                ProductRequest product = document.toObject(ProductRequest.class);
+                                productResponseList.add(
+                                        new ProductResponse(
+                                                product.getName(),
+                                                product.getPrice(),
+                                                product.getImageUrls().isEmpty() ? "https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/notfound.jpg?alt=media&token=40e61714-5a10-4352-918c-7e5e2643a1fe" : product.getImageUrls().get(0)
+                                        )
+                                );
+                            }
+                            postProductsAdapter.notifyDataSetChanged();
+                        }
+                    });
+        }
     }
 }

@@ -15,10 +15,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.agrimart.R;
 import com.example.agrimart.ui.PostProduct.PostProductActivity;
+import com.example.agrimart.ui.Store.StoreActivity;
 
 public class MyStoreActivity extends AppCompatActivity {
 
-    CardView postProduct, orderManagement;
+    CardView postProduct, orderManagement,myProduct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class MyStoreActivity extends AppCompatActivity {
     private void addControl() {
         postProduct = findViewById(R.id.postProduct);
         orderManagement = findViewById(R.id.orderManagement);
+        myProduct = findViewById(R.id.productsManagement);
     }
 
     private void addEvent() {
@@ -55,6 +57,11 @@ public class MyStoreActivity extends AppCompatActivity {
 
         orderManagement.setOnClickListener(v -> {
             Intent intent = new Intent(MyStoreActivity.this, OrderManagementActivity.class);
+            startActivity(intent);
+        });
+
+        myProduct.setOnClickListener(v -> {
+            Intent intent = new Intent(MyStoreActivity.this, StoreActivity.class);
             startActivity(intent);
         });
     }

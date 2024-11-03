@@ -1,16 +1,22 @@
 // PostProduct.java
 package com.example.agrimart.data.model;
 
-public class PostProduct {
-    private final String title;
-    private final String price;
-    private final int imageResId;
+import android.net.Uri;
 
-    public PostProduct(String title, String price, int imageResId) {
-        this.title = title;
-        this.price = price;
-        this.imageResId = imageResId;
+import java.io.Serializable;
+import java.util.List;
+
+public class PostProduct implements Serializable {
+    private String title;
+    private String price;
+    private int imageResId;
+    private String category;
+
+    public PostProduct() {
+
     }
+
+
 
     public String getTitle() {
         return title;
@@ -22,5 +28,12 @@ public class PostProduct {
 
     public int getImageResId() {
         return imageResId;
+    }
+
+
+    public PostProduct(String title, String price, int imageResId) {
+        this.title = title;
+        this.price = price;
+        this.imageResId = imageResId;
     }
 }

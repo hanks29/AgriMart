@@ -93,6 +93,7 @@ public class YourProductListingsFragment extends Fragment {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("products")
                     .whereEqualTo("storeId",uid)
+                    .whereEqualTo("status","approved")
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {

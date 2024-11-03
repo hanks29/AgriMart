@@ -84,12 +84,12 @@ public class HomeFragment extends Fragment {
 
 
         List<Product> products = new ArrayList<>();
-        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
+//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
+//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
+//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
+//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
+//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
+//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
 
         ProductAdapter productAdapter = new ProductAdapter(products, product -> {
             Intent intent = new Intent(getContext(), ProductDetailActivity.class);

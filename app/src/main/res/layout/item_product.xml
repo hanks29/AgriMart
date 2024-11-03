@@ -26,7 +26,7 @@
                 android:layout_height="79dp"
                 android:scaleType="centerCrop"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/banana" />
+                android:src="@drawable/banana" />
         </FrameLayout>
 
         <TextView
@@ -41,8 +41,7 @@
             android:layout_marginStart="15dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textStyle="bold"
-            android:text="@{product.name}" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/tvPrice"
@@ -54,8 +53,7 @@
             android:layout_marginTop="20dp"
             android:textColor="#F44336"
             android:fontFamily="@font/gabarito"
-            android:letterSpacing="0.01"
-            android:text="@{product.price}" />
+            android:letterSpacing="0.01"/>
 
         <ImageButton
             android:id="@+id/imageButton"

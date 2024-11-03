@@ -114,6 +114,7 @@ public class PostProductPriceFragment extends Fragment {
                                                 product.setWidth(Double.parseDouble(binding.edtWidth.getText().toString()));
                                                 product.setLength(Double.parseDouble(binding.edtLength.getText().toString()));
                                                 product.setWeight(Double.parseDouble(binding.edtWeight.getText().toString()));
+                                                product.setStatus("approved");
                                                 FirebaseFirestore db=FirebaseFirestore.getInstance();
 
 

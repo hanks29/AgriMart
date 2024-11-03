@@ -15,6 +15,7 @@ public class ProductRequest implements Serializable {
     private double height;
     private double width;
     private double length;
+    private String status;
 
     public ProductRequest() {
     }
@@ -111,5 +112,13 @@ public class ProductRequest implements Serializable {
 
     public void setLength(double length) {
         this.length = length;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

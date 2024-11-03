@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".ui.MyProfile.MyAccount.EditUserNameActivity">
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+
+        tools:ignore="MissingConstraints">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="30dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_left"
+            android:scaleType="fitCenter"
+            android:layout_marginStart="5dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/white" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:layout_marginStart="15dp"
+            android:text="địa chỉ"
+            android:textColor="@color/black"
+            android:textSize="11pt" />
+
+        <TextView
+            android:id="@+id/txt_chon"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:layout_marginStart="15dp"
+            android:text="chọn"
+            android:textColor="@color/green"
+            android:textSize="10pt" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/background_light_blur_1" />
+
+    <!-- Spinner để chọn Tỉnh -->
+    <TextView
+        android:id="@+id/textViewProvince"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        android:text="Chọn Tỉnh/Thành phố"
+        android:background="@color/background_light_blur_1"
+        android:textSize="16sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingStart="16dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerProvince"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewProvince" />
+
+    <!-- Spinner để chọn Huyện -->
+    <TextView
+        android:id="@+id/textViewDistrict"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_light_blur_1"
+        android:text="Chọn Huyện/Quận"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/spinnerProvince"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        android:paddingStart="16dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerDistrict"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textViewDistrict"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+    <!-- Spinner để chọn Xã -->
+    <TextView
+        android:id="@+id/textViewWard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_light_blur_1"
+        android:text="Chọn Xã/Phường"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/spinnerDistrict"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        android:paddingStart="16dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerWard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textViewWard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

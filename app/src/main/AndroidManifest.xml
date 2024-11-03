@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.SEND_SMS" />
 
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -28,19 +29,16 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
-            android:name=".ui.MyProfile.MyAccount.EditNumberPhoneActivity"
+            android:name=".ui.MyProfile.MyAddress.GetAddressActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.MyProfile.MyAccount.VerifyWithMailActivity"
+            android:name=".ui.MyProfile.MyAccount.EditNumberPhoneActivity"
             android:exported="false" />
         <activity
             android:name=".ui.MyProfile.MyAccount.ChangePasswordActivity"
             android:exported="false" />
         <activity
             android:name=".ui.MyProfile.MyAccount.VerifyWithPasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.MyProfile.MyAccount.VerifyAccountActivity"
             android:exported="false" />
         <activity
             android:name=".ui.MyProfile.MyAccount.EditUserNameActivity"

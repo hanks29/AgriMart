@@ -1,11 +1,13 @@
 package com.example.agrimart.ui.MyProfile.MyAddress;
 
+import android.content.Intent;
 import android.os.Bundle;
 import java.util.UUID;
 
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,31 +27,25 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class NewAddressActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_NEW_ADDRESS = 1;
-    private EditText edtHoTen, edtSDT, edtTinh, edtTenDuong;
+    private EditText edtHoTen, edtSDT, edtTenDuong;
     private Switch switch1; // Switch để đánh dấu địa chỉ mặc định
-    private TextView btnComplete; // TextView cho nút hoàn thành
+    private TextView btnComplete, edtTinh;
+    private FirebaseAuth auth;// TextView cho nút hoàn thành
     private FirebaseFirestore firestore; // Tham chiếu đến Firestore
     private String userId; // ID của người dùng hiện tại
+    private LinearLayout address;
+    private ImageButton btn_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_address);
 
-        // Khởi tạo các View
-        edtHoTen = findViewById(R.id.edtHoTen);
-        edtSDT = findViewById(R.id.edtSDT);
-        edtTinh = findViewById(R.id.edtTinh);
-        edtTenDuong = findViewById(R.id.edtTenDuong);
-        btnComplete = findViewById(R.id.textView4);
-        switch1 = findViewById(R.id.switch1);
-        ImageButton btn_back = findViewById(R.id.btn_back);
-
         // Khởi tạo tham chiếu đến Firestore
+        auth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -59,9 +55,48 @@ public class NewAddressActivity extends AppCompatActivity {
             return insets;
         });
 
+        addControl();
+        addEvent();
+    }
+
+    private void addControl()
+    {
+        // Khởi tạo các View
+        edtHoTen = findViewById(R.id.edtHoTen);
+        edtSDT = findViewById(R.id.edtSDT);
+        edtTinh = findViewById(R.id.edtTinh);
+        edtTenDuong = findViewById(R.id.edtTenDuong);
+        btnComplete = findViewById(R.id.textView4);
+        switch1 = findViewById(R.id.switch1);
+        address = findViewById(R.id.id_address);
+        btn_back = findViewById(R.id.btn_back);
+    }
+
+    private void addEvent()
+    {
         // Thiết lập sự kiện click cho nút hoàn thành
         btnComplete.setOnClickListener(v -> uploadAddress());
         btn_back.setOnClickListener(v -> onBackPressed());
+        address.setOnClickListener(v -> openAddressAPI());
+    }
+
+    private void openAddressAPI() {
+        Intent intent = new Intent(NewAddressActivity.this, GetAddressActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_NEW_ADDRESS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_NEW_ADDRESS && resultCode == RESULT_OK) {
+            if (data != null) {
+                // Nhận chuỗi từ Intent
+                String addressString = data.getStringExtra("address");
+                // Xử lý chuỗi nhận được ở đây (ví dụ: hiển thị trong một TextView hoặc sử dụng nó theo cách khác)
+                edtTinh.setText(addressString);
+            }
+        }
     }
 
     private void uploadAddress() {

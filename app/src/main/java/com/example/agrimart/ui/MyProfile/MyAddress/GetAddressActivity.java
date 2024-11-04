@@ -30,9 +30,9 @@ public class GetAddressActivity extends AppCompatActivity {
     private Spinner spinnerProvince, spinnerDistrict, spinnerWard;
     private GetAPIAddressViewModel getAPIAddressModel;
     private TextView txtChon;
-    private String selectedProvinceName;
-    private String selectedDistrictName;
-    private String selectedWardName;
+    private String selectedProvinceName, selectedProvinceId;
+    private String selectedDistrictName, selectedDistrictId;
+    private String selectedCommuneName, selectedCommuneId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +49,25 @@ public class GetAddressActivity extends AppCompatActivity {
         getAPIAddressModel = new GetAPIAddressViewModel();
 
         initializeViews();
-        loadProvinces();
+
+        // Kiểm tra dữ liệu từ Intent
+        Intent intent = getIntent();
+        String detailedAddressID = intent.getStringExtra("detailedAddressID");
+        if (detailedAddressID != null && !detailedAddressID.isEmpty()) {
+            String[] ids = detailedAddressID.split(",");
+            if (ids.length == 3) {
+                selectedProvinceId = ids[0];
+                selectedDistrictId = ids[1];
+                selectedCommuneId = ids[2];
+                prepopulateAddress(selectedProvinceId, selectedDistrictId, selectedCommuneId);
+            }
+        } else {
+            loadProvinces();
+        }
+
         setEventListeners();
     }
+
 
     private void initializeViews() {
         spinnerProvince = findViewById(R.id.spinnerProvince);
@@ -64,9 +80,11 @@ public class GetAddressActivity extends AppCompatActivity {
     private void setEventListeners() {
         btnBack.setOnClickListener(v -> onBackPressed());
         txtChon.setOnClickListener(v -> {
-            String address = selectedProvinceName + ", " + selectedDistrictName + ", " + selectedWardName;
-            Intent intent = new Intent(GetAddressActivity.this, NewAddressActivity.class);
+            String address = selectedProvinceName + ", " + selectedDistrictName + ", " + selectedCommuneName;
+            String id = selectedProvinceId + "," + selectedDistrictId + "," + selectedCommuneId;
+            Intent intent = new Intent();
             intent.putExtra("address", address);
+            intent.putExtra("detailedAddressID", id);
             setResult(RESULT_OK, intent);
             finish();
         });
@@ -80,34 +98,91 @@ public class GetAddressActivity extends AppCompatActivity {
             }
             setupSpinner(spinnerProvince, provinceNames, position -> {
                 selectedProvinceName = provinceApiResponses.get(position).getName();
-                loadDistrictsByProvince(provinceApiResponses.get(position).getIdProvince());
+                selectedProvinceId = provinceApiResponses.get(position).getIdProvince();
+                loadDistrictsByProvince(selectedProvinceId);
             });
+        }, error -> Log.e("API Error", error));
+    }
+
+    private void prepopulateAddress(String provinceId, String districtId, String communeId) {
+        getAPIAddressModel.loadProvinces(provinceApiResponses -> {
+            List<String> provinceNames = new ArrayList<>();
+            int provincePosition = -1;
+            for (int i = 0; i < provinceApiResponses.size(); i++) {
+                Province province = provinceApiResponses.get(i);
+                provinceNames.add(province.getName());
+                if (province.getIdProvince().equals(provinceId)) {
+                    selectedProvinceName = province.getName();
+                    provincePosition = i;
+                }
+            }
+            int finalProvincePosition = provincePosition;
+            setupSpinner(spinnerProvince, provinceNames, position -> {
+                if (position == finalProvincePosition) {
+                    loadDistrictsByProvince(provinceId);
+                } else {
+                    selectedProvinceName = provinceApiResponses.get(position).getName();
+                    selectedProvinceId = provinceApiResponses.get(position).getIdProvince();
+                    loadDistrictsByProvince(selectedProvinceId);
+                }
+            });
+            if (provincePosition != -1) {
+                spinnerProvince.setSelection(provincePosition);
+            }
         }, error -> Log.e("API Error", error));
     }
 
     private void loadDistrictsByProvince(String provinceCode) {
         getAPIAddressModel.loadDistrictsByProvince(provinceCode, districts -> {
             List<String> districtNames = new ArrayList<>();
-            for (District district : districts) {
+            int districtPosition = -1;
+            for (int i = 0; i < districts.size(); i++) {
+                District district = districts.get(i);
                 districtNames.add(district.getName());
+                if (district.getIdDistrict().equals(selectedDistrictId)) {
+                    selectedDistrictName = district.getName();
+                    districtPosition = i;
+                }
             }
+            int finalDistrictPosition = districtPosition;
             setupSpinner(spinnerDistrict, districtNames, position -> {
-                selectedDistrictName = districts.get(position).getName();
-                loadCommuneByDistrict(districts.get(position).getIdDistrict());
-                Log.d("GetAddressActivity", "IdDistrict: " + districts.get(position).getIdDistrict());
+                if (position == finalDistrictPosition) {
+                    loadCommuneByDistrict(selectedDistrictId);
+                } else {
+                    selectedDistrictName = districts.get(position).getName();
+                    selectedDistrictId = districts.get(position).getIdDistrict();
+                    loadCommuneByDistrict(selectedDistrictId);
+                }
             });
+            if (districtPosition != -1) {
+                spinnerDistrict.setSelection(districtPosition);
+            }
         }, error -> Log.e("API Error", error));
     }
 
     private void loadCommuneByDistrict(String districtCode) {
-        getAPIAddressModel.loadCommuneByDistrict(districtCode, commune -> {
+        getAPIAddressModel.loadCommuneByDistrict(districtCode, communeList -> {
             List<String> communeNames = new ArrayList<>();
-            for (Commune ward : commune) {
-                communeNames.add(ward.getName());
+            int communePosition = -1;
+            for (int i = 0; i < communeList.size(); i++) {
+                Commune commune = communeList.get(i);
+                communeNames.add(commune.getName());
+                if (commune.getIdCommune().equals(selectedCommuneId)) {
+                    selectedCommuneName = commune.getName();
+                    communePosition = i;
+                }
             }
-            setupSpinner(spinnerWard, communeNames, position -> selectedWardName = commune.get(position).getName());
+            setupSpinner(spinnerWard, communeNames, position -> {
+                selectedCommuneName = communeList.get(position).getName();
+                selectedCommuneId = communeList.get(position).getIdCommune();
+            });
+            if (communePosition != -1) {
+                spinnerWard.setSelection(communePosition);
+            }
         }, error -> Log.e("API Error", error));
     }
+
+
 
     private void setupSpinner(Spinner spinner, List<String> names, OnItemSelectedListener onItemSelected) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,

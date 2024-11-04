@@ -90,7 +90,10 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(this, "Đổi mật khẩu thành công", Toast.LENGTH_SHORT).show();
-                            finish(); // Đóng Activity sau khi đổi mật khẩu thành công
+
+                            // Đóng Activity sau khi đổi mật khẩu thành công
+                            setResult(RESULT_OK); // Đặt kết quả trả về
+                            finish();
                         } else {
                             Toast.makeText(this, "Đổi mật khẩu thất bại", Toast.LENGTH_SHORT).show();
                         }

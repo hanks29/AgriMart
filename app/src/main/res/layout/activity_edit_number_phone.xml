@@ -6,11 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".ui.MyProfile.MyAccount.VerifyAccountActivity">
+    tools:context=".ui.MyProfile.MyAccount.EditNumberPhoneActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="@color/background_light_blur_1"
         tools:ignore="MissingConstraints">
 
         <LinearLayout
@@ -27,7 +28,6 @@
                 android:id="@+id/btn_back"
                 android:layout_width="30dp"
                 android:layout_height="35dp"
-                android:contentDescription="TODO"
                 android:src="@drawable/ic_left"
                 android:scaleType="fitCenter"
                 android:layout_marginStart="5dp"
@@ -41,10 +41,9 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:layout_marginStart="15dp"
-                android:text="Xác minh tài khoản"
+                android:text="Số điện thoại mới"
                 android:textColor="@color/black"
                 android:textSize="11pt" />
-
 
         </LinearLayout>
         <View
@@ -55,64 +54,51 @@
         <LinearLayout
             android:id="@+id/my_user"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
             android:paddingTop="10dp"
             android:background="@color/white"
             android:paddingStart="20dp"
             android:paddingBottom="10dp">
 
-            <TextView
-                android:id="@+id/user_text"
+            <EditText
+                android:id="@+id/user_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:layout_weight="1"
-                android:paddingEnd="20dp"
                 android:background="@null"
                 android:textColor="@color/black"
-                android:text="Để tăng cường bảo mật cho tài khoản của bạn, hãy xác minh thông tin."
-                android:textSize="16sp" />
+                android:hint="Số điện thoại"
+                android:textSize="8pt"
+                android:inputType="number"
+                android:maxLength="10"/>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/id_VerifyPassword"
+        <TextView
+            android:id="@+id/errorMessage"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_gravity="top|center"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:visibility="gone"
+            android:textColor="@android:color/holo_red_dark"
+            android:text="Số điện thoại phải bắt đầu bằng số 0!" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnUpdate"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/gray"
+            android:textColor="@color/white"
             android:layout_marginTop="10dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/rounded_edittext"
-            android:orientation="horizontal"> <!-- Thêm sự kiện onClick -->
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="Cập nhật"
+            android:textAllCaps="false"/>
 
-
-            <ImageView
-                android:layout_width="10dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_weight="2"
-                android:layout_marginStart="20dp"
-                android:contentDescription="@string/todo"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:src="@drawable/padlock" /> <!-- Điều chỉnh khoảng cách giữa icon và chữ -->
-
-            <TextView
-                android:layout_width="280dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="2"
-                android:gravity="start"
-                android:text="Xác minh bằng mật khẩu"
-                android:textColor="@color/black"
-                android:textAllCaps="false"
-                android:textSize="22sp" />
-
-
-        </LinearLayout>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

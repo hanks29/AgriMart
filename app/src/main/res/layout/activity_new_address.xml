@@ -92,15 +92,37 @@
             android:background="@color/background_light_blur"
             android:text="Địa chỉ" />
 
-        <EditText
-            android:id="@+id/edtTinh"
+        <LinearLayout
+            android:id="@+id/id_address"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:paddingStart="10dp"
-            android:background="@color/white"
-            android:ems="10"
-            android:inputType="text"
-            android:hint="Tỉnh/Thành phố, Quận/Huyện, Phường/Xã" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/edtTinh"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:ems="10"
+                android:layout_weight="1"
+                android:textSize="17sp"
+                android:gravity="center|start"
+                android:text="Tỉnh/Thành phố, Quận/Huyện, Phường/Xã"
+                android:inputType="text"
+                android:paddingStart="10dp"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:background="@color/white"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/next" />
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"

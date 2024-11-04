@@ -7,6 +7,8 @@ public class Address {
     private boolean isDefault;
     @SerializedName("detailedAddress")
     private String detailedAddress;
+    @SerializedName("detailedAddressID")
+    private String detailedAddressID;
     @SerializedName("name")
     private String name;
     @SerializedName("phone")
@@ -28,11 +30,12 @@ public class Address {
 
     }
     // Constructor
-    public Address(String AddressId,String name, String phone, String street, String detailedAddress, boolean isDefault) {
+    public Address(String AddressId,String name, String phone, String street, String detailedAddress,String detailedAddressID, boolean isDefault) {
         this.name = name;
         this.phone = phone;
         this.street = street;
         this.detailedAddress = detailedAddress;
+        this.detailedAddressID = detailedAddressID;
         this.isDefault = isDefault;
         this.AddressId = AddressId;
     }
@@ -68,6 +71,14 @@ public class Address {
 
     public void setDetailedAddress(String detailedAddress) {
         this.detailedAddress = detailedAddress;
+    }
+
+    public String getDetailedAddressID() {
+        return detailedAddressID;
+    }
+
+    public void setDetailedAddressID(String detailedAddressID) {
+        this.detailedAddressID = detailedAddressID;
     }
 
     public boolean isDefault() {

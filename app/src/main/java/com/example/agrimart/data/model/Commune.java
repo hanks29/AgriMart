@@ -1,12 +1,12 @@
 package com.example.agrimart.data.model;
 
-public class District {
-    private String idProvince;
+public class Commune {
     private String idDistrict;
+    private String idCommune;
     private String name;
 
-    public String getIdProvince() {
-        return idProvince;
+    public String getIdCommune() {
+        return idCommune;
     }
 
     public String getIdDistrict() {
@@ -16,6 +16,4 @@ public class District {
     public String getName() {
         return name;
     }
-
 }
-

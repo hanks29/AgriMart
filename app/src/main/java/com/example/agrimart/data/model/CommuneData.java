@@ -2,12 +2,12 @@ package com.example.agrimart.data.model;
 
 import java.util.List;
 
-public class WardData {
+public class CommuneData {
     private int nItems;
     private int nPages;
-    private List<Ward> data; // Danh sách tỉnh
+    private List<Commune> data; // Danh sách tỉnh
 
-    public List<Ward> getData() {
+    public List<Commune> getData() {
         return data;
     }
 }

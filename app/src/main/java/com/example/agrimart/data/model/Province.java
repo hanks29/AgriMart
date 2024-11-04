@@ -1,24 +1,24 @@
 package com.example.agrimart.data.model;
 
 public class Province {
-    private String _id;
+    private String idProvince;
     private String name;
-    private String slug;
-    private String type;
-    private String name_with_type;
-    private String code;
-    private boolean isDeleted;
 
-    // Getter và Setter cho các thuộc tính
-    public String getId() {
-        return _id;
+    // Getter và Setter
+    public String getIdProvince() {
+        return idProvince;
+    }
+
+    public void setIdProvince(String idProvince) {
+        this.idProvince = idProvince;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getCode() {
-        return code;
+    public void setName(String name) {
+        this.name = name;
     }
 }
+

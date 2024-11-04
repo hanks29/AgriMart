@@ -1,32 +1,32 @@
 package com.example.agrimart.data.model;
 
 public class Product {
-    private int image;
+    private String image;
     private String name;
-    private String price;
+    private double price;
     private String active;
 
     public Product() {
     }
 
-    public Product(int image, String name, String price) {
+    public Product(String image, String name, double price) {
         this.image = image;
         this.name = name;
         this.price = price;
     }
 
-    public Product(int image, String name, String price, String active) {
+    public Product(String image, String name, double price, String active) {
         this.image = image;
         this.name = name;
         this.price = price;
         this.active = active;
     }
 
-    public int getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(int image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
@@ -38,11 +38,11 @@ public class Product {
         this.name = name;
     }
 
-    public String getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

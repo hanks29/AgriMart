@@ -18,6 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.ProductAdapter;
 import com.example.agrimart.data.model.Product;
+import com.example.agrimart.data.model.ProductRequest;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,19 +58,43 @@ public class StoreActivity extends AppCompatActivity {
         storeAddress = findViewById(R.id.store_address);
         rvProducts = findViewById(R.id.rvProducts);
 
-        storeName.setText("Khánh");
-        storeRating.setText("Đánh giá: 4.5");
-        storeAddress.setText("123 Lê Trong Tấn, Tân Phú, HCM");
 
         productList = new ArrayList<>();
-        productList.add(new Product(R.drawable.apple, "Táo", "50000"));
-        productList.add(new Product(R.drawable.frash_fruits, "ABC", "20000"));
-        productList.add(new Product(R.drawable.vegetable, "XYZ", "30000"));
+
 
         productAdapter = new ProductAdapter(productList, product -> {
 
         });
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         rvProducts.setAdapter(productAdapter);
+        loadData();
+    }
+    private void loadData() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String uid = user.getUid();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("products")
+                    .whereEqualTo("storeId", uid)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                ProductRequest product = document.toObject(ProductRequest.class);
+                                productList.add(
+                                        new Product(
+                                                product.getImageUrls().isEmpty() ? "https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/notfound.jpg?alt=media&token=40e61714-5a10-4352-918c-7e5e2643a1fe" : product.getImageUrls().get(0),
+                                                product.getName(),
+                                                product.getPrice()
+                                        )
+                                );
+                            }
+                            productAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+        }
     }
 }

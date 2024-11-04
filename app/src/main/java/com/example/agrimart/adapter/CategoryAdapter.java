@@ -17,6 +17,7 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder> {
     private List<Category> categories;
 
+    public Category category;
     public CategoryAdapter(List<Category> categories) {
         this.categories = categories;
     }
@@ -31,6 +32,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.bindData(categories.get(position));
+        holder.binding.getRoot().setOnClickListener(v -> {
+            category = categories.get(position);
+        });
     }
 
     @Override
@@ -55,3 +59,4 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
         }
     }
 }
+

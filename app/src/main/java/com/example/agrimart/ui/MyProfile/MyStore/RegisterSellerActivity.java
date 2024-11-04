@@ -2,6 +2,7 @@ package com.example.agrimart.ui.MyProfile.MyStore;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,24 +12,34 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.agrimart.R;
 import com.example.agrimart.databinding.ActivityRegisterSellerBinding;
-import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 public class RegisterSellerActivity extends AppCompatActivity {
     private ActivityRegisterSellerBinding binding;
+    private Uri imageUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         binding= ActivityRegisterSellerBinding.inflate(LayoutInflater.from(this));
@@ -43,31 +54,30 @@ public class RegisterSellerActivity extends AppCompatActivity {
         binding.btnRegister.setOnClickListener(v -> {
             updateUserInformation();
         });
-        ActivityResultLauncher<PickVisualMediaRequest> pickMedia=registerForActivityResult(
-                new ActivityResultContracts.PickVisualMedia(), uri->{
+        ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                    // Callback is invoked after the user selects a media item or closes the
+                    // photo picker.
                     if (uri != null) {
-                        Log.d("PhotoPicker", "Selected URI: " + uri);
+                        Glide.with(this)
+                                .load(uri).
+                                into(binding.imgAvt);
+                        imageUri=uri;
                     } else {
                         Log.d("PhotoPicker", "No media selected");
                     }
                 });
         binding.floatingActionButton.setOnClickListener(v -> {
-            ImagePicker.with(RegisterSellerActivity.this)
-                    .galleryOnly()
-                    .start();
+            pickMedia.launch(new PickVisualMediaRequest.Builder()
+                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                    .build());
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if( resultCode==RESULT_OK && data!=null){
-            binding.imgAvt.setImageURI(data.getData());
-        }else if (resultCode == RESULT_CANCELED) {
-            Log.d("ImagePicker", "Người dùng hủy chọn ảnh");
-        }else {
-            Log.w("ImagePicker", "Truong hop khac");
-        }
+
     }
 
     private void updateUserInformation() {
@@ -91,20 +101,39 @@ public class RegisterSellerActivity extends AppCompatActivity {
         editor.putString("user_role", "seller");
         editor.apply();
 
-        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
-        if(user!=null) {
-               db.collection("users").document(user.getUid())
-                       .update(updates)
-                       .addOnSuccessListener(aVoid -> {
-                           Log.d("Register", "DocumentSnapshot successfully updated!");
-                           Toast.makeText(this, "Đăng kí người bán thành công", Toast.LENGTH_SHORT).show();
-                           Intent intent=new Intent(RegisterSellerActivity.this, MyStoreActivity.class);
-                           startActivity(intent);
-                       })
-                       .addOnFailureListener(e -> {
-                           Log.w("Register", "Error updating document", e);
-                       });
-        }
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        storageRef.putFile(imageUri)
+                .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if(task.isSuccessful()){
+                            if(task.isComplete()){
+                                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        updates.put("store_avatar",uri.toString());
+                                        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+                                        if(user!=null) {
+                                            db.collection("users").document(user.getUid())
+                                                    .update(updates)
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        Log.d("Register", "DocumentSnapshot successfully updated!");
+                                                        Toast.makeText(RegisterSellerActivity.this, "Đăng kí người bán thành công", Toast.LENGTH_SHORT).show();
+                                                        Intent intent=new Intent(RegisterSellerActivity.this, MyStoreActivity.class);
+                                                        startActivity(intent);
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Log.w("Register", "Error updating document", e);
+                                                    });
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+
+
 
 
 

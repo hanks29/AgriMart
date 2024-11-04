@@ -33,16 +33,16 @@ public class CategoryFragment extends Fragment {
 
         List<Product> products = new ArrayList<>();
 
-        if (categoryName.equals("Rau củ quả")) {
-            products.add(new Product(R.drawable.vegetable, "Cà chua", "20.000đ"));
-            products.add(new Product(R.drawable.vegetable, "Cà rốt", "15.000đ"));
-            products.add(new Product(R.drawable.vegetable, "Bí đỏ", "10.000đ"));
-        }
-        else if (categoryName.equals("Trái cây")) {
-            products.add(new Product(R.drawable.apple, "Dâu tây", "30.000đ"));
-            products.add(new Product(R.drawable.apple, "Chuối", "10.000đ"));
-            products.add(new Product(R.drawable.apple, "Cam", "20.000đ"));
-        }
+//        if (categoryName.equals("Rau củ quả")) {
+//            products.add(new Product(R.drawable.vegetable, "Cà chua", "20.000đ"));
+//            products.add(new Product(R.drawable.vegetable, "Cà rốt", "15.000đ"));
+//            products.add(new Product(R.drawable.vegetable, "Bí đỏ", "10.000đ"));
+//        }
+//        else if (categoryName.equals("Trái cây")) {
+//            products.add(new Product(R.drawable.apple, "Dâu tây", "30.000đ"));
+//            products.add(new Product(R.drawable.apple, "Chuối", "10.000đ"));
+//            products.add(new Product(R.drawable.apple, "Cam", "20.000đ"));
+//        }
 
         ProductAdapter productAdapter = new ProductAdapter(products, product -> {
         });

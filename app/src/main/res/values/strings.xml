@@ -143,4 +143,5 @@
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
     <string name="verify">Email xác nhận đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra email và nhấn vào liên kết xác nhận để hoàn tất đăng ký.</string>
+    <string name="new_product">Mới nhất</string>
 </resources>

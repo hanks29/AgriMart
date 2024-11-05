@@ -40,7 +40,7 @@
     </RelativeLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/store_avatar"
+        android:id="@+id/storeAvatar"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginStart="16dp"
@@ -50,17 +50,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/store_name"
+        android:id="@+id/storeName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="66dp"
         android:text="Tên cửa hàng"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/store_avatar"
+        app:layout_constraintStart_toEndOf="@id/storeAvatar"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -68,13 +68,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="Đánh giá: 4.5"
-        app:layout_constraintStart_toEndOf="@id/store_avatar"
-        app:layout_constraintTop_toBottomOf="@id/store_name" />
+        app:layout_constraintStart_toEndOf="@id/storeAvatar"
+        app:layout_constraintTop_toBottomOf="@id/storeName" />
 
     <TextView
-        android:id="@+id/store_address"
+        android:id="@+id/storeAddress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -82,7 +82,7 @@
         android:text="Đia chỉ: 123, ABC, XYZ"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/store_avatar"
+        app:layout_constraintStart_toEndOf="@id/storeAvatar"
         app:layout_constraintTop_toBottomOf="@id/store_rating" />
 
     <TextView
@@ -94,7 +94,7 @@
         android:text="Sản phẩm đang bán"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/store_avatar"
+        app:layout_constraintTop_toBottomOf="@id/storeAvatar"
         app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -107,5 +107,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvProductTitle"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        android:paddingLeft="10dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,21 +12,18 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.agrimart.R;
+import com.example.agrimart.viewmodel.VerifyWithPasswordViewModel;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class VerifyWithPasswordActivity extends AppCompatActivity {
 
-    private FirebaseAuth auth;
+    private VerifyWithPasswordViewModel viewModel;
     private TextInputEditText edtPassword;
     private AppCompatButton btn_dongY;
     private ImageButton btn_back;
@@ -38,7 +35,7 @@ public class VerifyWithPasswordActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_verify_with_password);
 
-        auth = FirebaseAuth.getInstance();
+        viewModel = new ViewModelProvider(this).get(VerifyWithPasswordViewModel.class);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -48,6 +45,7 @@ public class VerifyWithPasswordActivity extends AppCompatActivity {
 
         addControl();
         addEvent();
+        observeViewModel();
     }
 
     private void addControl() {
@@ -55,7 +53,6 @@ public class VerifyWithPasswordActivity extends AppCompatActivity {
         btn_dongY = findViewById(R.id.btn_dongY);
         btn_back = findViewById(R.id.btn_back);
     }
-
 
     private void addEvent() {
         btn_back.setOnClickListener(v -> onBackPressed());
@@ -66,32 +63,19 @@ public class VerifyWithPasswordActivity extends AppCompatActivity {
                 edtPassword.setError("Vui lòng nhập mật khẩu");
                 return;
             }
-            verifyPassword(password);
+            viewModel.verifyPassword(password, this);
         });
     }
 
-
-    private void verifyPassword(String password) {
-        FirebaseUser user = auth.getCurrentUser();
-        if (user != null && user.getEmail() != null) {
-            // Tạo xác thực với mật khẩu
-            AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), password);
-
-            // Thực hiện xác thực
-            user.reauthenticate(credential).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Toast.makeText(this, "Xác thực thành công", Toast.LENGTH_SHORT).show();
-                    // Thực hiện hành động tiếp theo khi xác thực thành công
-                    openChangePassword();
-                } else {
-                    Toast.makeText(this, "Mật khẩu không đúng", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+    private void observeViewModel() {
+        viewModel.isAuthenticationSuccessful().observe(this, isSuccess -> {
+            if (isSuccess) {
+                openChangePassword();
+            }
+        });
     }
 
-    private void openChangePassword()
-    {
+    private void openChangePassword() {
         Intent intent = new Intent(VerifyWithPasswordActivity.this, ChangePasswordActivity.class);
         startActivityForResult(intent, CHANGE_PASS_REQUEST_CODE);
     }

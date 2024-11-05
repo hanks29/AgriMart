@@ -48,7 +48,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.22")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22")
     implementation("androidx.viewpager:viewpager:1.0.0")
-    implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.activity:activity:1.9.1")
@@ -71,18 +70,12 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
-    implementation ("com.google.code.gson:gson:2.10.1")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
-    implementation ("com.google.android.material:material:1.12.0")
     implementation ("com.github.dhaval2404:imagepicker:2.1")
-    implementation ("com.google.android.material:material:1.6.0")
 //  implementation ("io.github.ParkSangGwon:tedimagepicker:1.6.1")
     // ViewModel
 //    implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.5")
-
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation ("com.facebook.android:facebook-login:latest.release")
     implementation("androidx.browser:browser:1.8.0")
-    implementation ("com.google.android.material:material:1.12.0")
+
 }

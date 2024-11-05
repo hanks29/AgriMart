@@ -6,6 +6,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -18,10 +22,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.agrimart.R;
 import com.example.agrimart.databinding.ActivityRegisterSellerBinding;
+import com.example.agrimart.ui.MyProfile.MyAddress.GetAddressActivity;
+import com.example.agrimart.viewmodel.RegisterSellerViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -33,16 +41,26 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 public class RegisterSellerActivity extends AppCompatActivity {
     private ActivityRegisterSellerBinding binding;
+    private RegisterSellerViewModel viewModel;
     private Uri imageUri;
+    private String selectedProvinceName="";
+    private String provinceId;
+    private String selectedDistrictName="";
+    private String districtId;
+    private String selectedWardName="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        binding= ActivityRegisterSellerBinding.inflate(LayoutInflater.from(this));
+        viewModel= new ViewModelProvider(this).get(RegisterSellerViewModel.class);
+        binding= DataBindingUtil.setContentView(this,R.layout.activity_register_seller);
+        binding.setViewModel(viewModel);
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
@@ -51,7 +69,19 @@ public class RegisterSellerActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        loadProvince();
         binding.btnRegister.setOnClickListener(v -> {
+//            if(binding.edtStreet.getText().toString().isEmpty() &&
+//                    binding.edtNameStore.getText().toString().isEmpty()||
+//                    binding.edtPhoneNumber.getText().toString().isEmpty()||
+//                    Objects.equals(selectedDistrictName, "") ||
+//                    Objects.equals(selectedProvinceName, "")||
+//                    Objects.equals(selectedWardName, "")
+//            ) {
+//                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+//            }else{
+//                updateUserInformation();
+//            }
             updateUserInformation();
         });
         ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
@@ -63,6 +93,7 @@ public class RegisterSellerActivity extends AppCompatActivity {
                                 .load(uri).
                                 into(binding.imgAvt);
                         imageUri=uri;
+                        Log.d("PhotoPicker", "Selected URI: " + uri.toString());
                     } else {
                         Log.d("PhotoPicker", "No media selected");
                     }
@@ -72,6 +103,8 @@ public class RegisterSellerActivity extends AppCompatActivity {
                             .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                     .build());
         });
+
+
     }
 
     @Override
@@ -85,10 +118,10 @@ public class RegisterSellerActivity extends AppCompatActivity {
         FirebaseFirestore db=FirebaseFirestore.getInstance();
 
         Map<String,Object> storeAddress=new HashMap<>();
-        storeAddress.put("city",binding.edtCity.getText().toString());
-        storeAddress.put("district",binding.edtDistrict.getText().toString());
-        storeAddress.put("ward",binding.edtWard.getText().toString());
-        storeAddress.put("street",binding.edtStreet.getText().toString());
+//        storeAddress.put("city",selectedProvinceName);
+//        storeAddress.put("district",selectedDistrictName);
+//        storeAddress.put("ward",selectedWardName);
+//        storeAddress.put("street",binding.edtStreet.getText().toString());
 
         Map<String,Object> updates=new HashMap<>();
         updates.put("store_phone_number",binding.edtPhoneNumber.getText().toString());
@@ -100,8 +133,8 @@ public class RegisterSellerActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("user_role", "seller");
         editor.apply();
-
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(String.valueOf(System.currentTimeMillis()));
         storageRef.putFile(imageUri)
                 .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -112,7 +145,6 @@ public class RegisterSellerActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         updates.put("store_avatar",uri.toString());
-                                        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
                                         if(user!=null) {
                                             db.collection("users").document(user.getUid())
                                                     .update(updates)
@@ -129,6 +161,8 @@ public class RegisterSellerActivity extends AppCompatActivity {
                                     }
                                 });
                             }
+                        }else{
+                            Log.d("Register", "Error uploading image: " + task.getException());
                         }
                     }
                 });
@@ -137,5 +171,61 @@ public class RegisterSellerActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void loadProvince(){
+        viewModel.getProvinces();
+        viewModel.provinces.observe(this, provinces -> {
+            List<String> provinceNames = provinces.stream().map(province -> province.getName()).collect(Collectors.toList());
+            setupSpinner(binding.spinnerCity, provinceNames, position -> {
+                provinceId=provinces.get(position).getIdProvince();
+                selectedProvinceName = provinces.get(position).getName();
+                loadDistrict(provinceId);
+            });
+        });
+    }
+
+    private void loadDistrict(String provinceId){
+        viewModel.getDistricts(provinceId);
+        viewModel.districts.observe(this, districts -> {
+            List<String> districtNames=districts.stream().map(district -> district.getName()).collect(Collectors.toList());
+            setupSpinner(binding.spinnerDistrict,districtNames,position -> {
+                districtId=districts.get(position).getIdDistrict();
+                selectedDistrictName=districts.get(position).getName();
+                loadWard(districtId);
+            });
+        });
+    }
+
+    private void loadWard(String districtId){
+        viewModel.getWard(districtId);
+        viewModel.wards.observe(this, wards -> {
+            List<String> wardNames=wards.stream().map(ward -> ward.getName()).collect(Collectors.toList());
+            setupSpinner(binding.spinnerWard,wardNames,position -> selectedWardName=wards.get(position).getName());
+        });
+    }
+
+
+    private void setupSpinner(Spinner spinner, List<String> names, RegisterSellerActivity.OnItemSelectedListener onItemSelected) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, names);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                onItemSelected.onItemSelected(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // No action needed
+            }
+        });
+    }
+
+    private interface OnItemSelectedListener {
+        void onItemSelected(int position);
     }
 }

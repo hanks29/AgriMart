@@ -150,7 +150,7 @@ public class RegisterSellerActivity extends AppCompatActivity {
                                                     .update(updates)
                                                     .addOnSuccessListener(aVoid -> {
                                                         Log.d("Register", "DocumentSnapshot successfully updated!");
-                                                        Toast.makeText(RegisterSellerActivity.this, "Đăng kí người bán thành công", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(RegisterSellerActivity.this, "Tạo cửa hàng thành công", Toast.LENGTH_SHORT).show();
                                                         Intent intent=new Intent(RegisterSellerActivity.this, MyStoreActivity.class);
                                                         startActivity(intent);
                                                     })

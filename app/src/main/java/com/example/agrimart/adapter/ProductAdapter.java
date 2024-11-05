@@ -10,7 +10,9 @@ import com.bumptech.glide.Glide;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.databinding.ItemProductBinding;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
     private List<Product> products;
@@ -54,10 +56,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
 
         public void bindData(Product product) {
             binding.tvName.setText(product.getName());
-            binding.tvPrice.setText(String.valueOf(product.getPrice()));
-            Glide.with(binding.getRoot().getContext())
-                    .load(product.getImage())
-                    .into(binding.imgPro);
+
+            NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            binding.tvPrice.setText(format.format(product.getPrice()));
+
+            if (product.getImages() != null && !product.getImages().isEmpty()) {
+                Glide.with(binding.getRoot().getContext())
+                        .load(product.getImages().get(0))
+                        .into(binding.imgPro);
+            } else if (product.getImages() != null) {
+                Glide.with(binding.getRoot().getContext())
+                        .load(product.getImages())
+                        .into(binding.imgPro);
+            }
+
             binding.executePendingBindings();
         }
     }

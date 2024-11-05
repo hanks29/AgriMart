@@ -28,7 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 
 
 /**
@@ -92,25 +92,30 @@ public class PostProductPhotosFragment extends Fragment {
         addEvents(view);
 
         ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia =
-                registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(5), uris -> {
+                registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(4), uris -> {
                     // Callback is invoked after the user selects media items or closes the
                     // photo picker.
                     if (!uris.isEmpty()) {
-                        if(uris.size()>0){
-                            Glide.with(this).load(uris.get(0)).into(binding.imageView3);
-                        }
-                        if(uris.size()>1){
-                            Glide.with(this).load(uris.get(1)).into(binding.imageView6);
-                        }
-                        if(uris.size()>2){
-                            Glide.with(this).load(uris.get(2)).into(binding.imageView7);
-                        }
-                        if(uris.size()>3){
-                            Glide.with(this).load(uris.get(3)).into(binding.imageView8);
-                        }
-                        binding.linearLayout.setVisibility(View.VISIBLE);
                         imageUris.clear();
                         imageUris.addAll(uris);
+                        if(uris.size()>0 && imageUris.size()>0){
+                            Glide.with(this).load(imageUris.get(0)).into(binding.imageView5);
+                            binding.frameLayout1.setVisibility(View.VISIBLE);
+                        }
+                        if(uris.size()>1 && imageUris.size()>1){
+                            Glide.with(this).load(imageUris.get(1)).into(binding.imageView6);
+                            binding.frameLayout2.setVisibility(View.VISIBLE);
+                        }
+                        if(uris.size()>2 && imageUris.size()>2){
+                            Glide.with(this).load(imageUris.get(2)).into(binding.imageView7);
+                            binding.frameLayout3.setVisibility(View.VISIBLE);
+                        }
+                        if(uris.size()>3 && imageUris.size()>3){
+                            Glide.with(this).load(imageUris.get(3)).into(binding.imageView8);
+                            binding.frameLayout4.setVisibility(View.VISIBLE);
+                        }
+                        binding.linearLayout.setVisibility(View.VISIBLE);
+
                     } else {
                         Log.d("PhotoPicker", "No media selected");
                     }
@@ -118,11 +123,81 @@ public class PostProductPhotosFragment extends Fragment {
         binding.imageButtonCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()
-                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                        .build());
+                if(!Objects.isNull(imageUris) || !imageUris.isEmpty() || imageUris.size()<4){
+                    pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()
+                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                            .build());
+                }
+                else{
+                    Toast.makeText(getContext(), "Vui long xóa ảnh đã chọn để thêm ảnh mới", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
+        binding.imageButton3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.imageView5.setImageURI(null);
+                binding.frameLayout1.setVisibility(View.GONE);
+                binding.imageButton3.setVisibility(View.GONE);
+
+                if(!imageUris.isEmpty()){
+                    imageUris.remove(0);
+                }
+                if(imageUris.isEmpty()){
+                    binding.linearLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+        binding.imageButton4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.imageView6.setImageURI(null);
+                binding.frameLayout2.setVisibility(View.GONE);
+                binding.imageButton4.setVisibility(View.GONE);
+
+                if(!imageUris.isEmpty()){
+                    imageUris.remove(1);
+                }
+                if(imageUris.isEmpty()){
+                    binding.linearLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+        binding.imageButton5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.imageView7.setImageURI(null);
+                binding.frameLayout3.setVisibility(View.GONE);
+                binding.imageButton5.setVisibility(View.GONE);
+
+                if(!imageUris.isEmpty()){
+                    imageUris.remove(2);
+                }
+                if(imageUris.isEmpty()){
+                    binding.linearLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+        binding.imageButton6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.imageView8.setImageURI(null);
+                binding.imageView8.setVisibility(View.GONE);
+                binding.imageButton6.setVisibility(View.GONE);
+
+
+                if(!imageUris.isEmpty()){
+                    imageUris.remove(0);
+                }
+                if(imageUris.isEmpty()){
+                    binding.linearLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+
+
+
         loadCategory();
         categoryAdapter = new CategoryAdapter(categories);
         binding.rvCategories.setAdapter(categoryAdapter);

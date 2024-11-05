@@ -1,20 +1,22 @@
 package com.example.agrimart.data.model;
 
+import com.google.firebase.encoders.annotations.Encodable;
+
 import java.io.Serializable;
 import java.util.List;
 
 public class ProductRequest implements Serializable {
     private String name;
     private double price;
+
+
     private String category;
     private String description;
-    private List<String> imageUrls;
-    private double weight;
+    private List<String> images;
+
     private int quantity;
     private String storeId;
-    private double height;
-    private double width;
-    private double length;
+
     private String status;
 
     public ProductRequest() {
@@ -59,20 +61,14 @@ public class ProductRequest implements Serializable {
     }
 
     public List<String> getImageUrls() {
-        return imageUrls;
+        return images;
     }
 
     public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
+        this.images = imageUrls;
     }
 
-    public double getWeight() {
-        return weight;
-    }
 
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
 
     public int getQuantity() {
         return quantity;
@@ -90,29 +86,7 @@ public class ProductRequest implements Serializable {
         this.storeId = storeId;
     }
 
-    public double getHeight() {
-        return height;
-    }
 
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
-    public double getWidth() {
-        return width;
-    }
-
-    public void setWidth(double width) {
-        this.width = width;
-    }
-
-    public double getLength() {
-        return length;
-    }
-
-    public void setLength(double length) {
-        this.length = length;
-    }
 
     public String getStatus() {
         return status;

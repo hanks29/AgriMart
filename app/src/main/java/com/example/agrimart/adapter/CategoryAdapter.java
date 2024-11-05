@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.agrimart.R;
 import com.example.agrimart.data.model.Category;
 import com.example.agrimart.databinding.CategoryItemBinding;
 import com.denzcoskun.imageslider.models.SlideModel;
@@ -17,10 +18,12 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder> {
     private List<Category> categories;
 
+    private int position = -1;
     public Category category;
     public CategoryAdapter(List<Category> categories) {
         this.categories = categories;
     }
+
 
     @NonNull
     @Override
@@ -32,8 +35,20 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.bindData(categories.get(position));
+
+        if (position == this.position) {
+            holder.binding.getRoot().setBackgroundResource(android.R.color.holo_green_light);
+        } else {
+            holder.binding.getRoot().setBackgroundResource(android.R.color.transparent);
+        }
+
         holder.binding.getRoot().setOnClickListener(v -> {
             category = categories.get(position);
+            int prePos=this.position;
+            this.position=position;
+            notifyItemChanged(prePos);
+            notifyItemChanged(position);
+
         });
     }
 

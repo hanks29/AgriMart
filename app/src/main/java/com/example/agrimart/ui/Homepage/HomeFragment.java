@@ -3,15 +3,12 @@ package com.example.agrimart.ui.Homepage;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,23 +22,22 @@ import com.example.agrimart.R;
 import com.example.agrimart.SpacesItemDecoration;
 import com.example.agrimart.adapter.CategoryAdapter;
 import com.example.agrimart.adapter.ProductAdapter;
-import com.example.agrimart.data.model.Category;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.databinding.FragmentHomeBinding;
 import com.example.agrimart.ui.ProductPage.ProductDetailActivity;
 import com.example.agrimart.viewmodel.HomeFragmentViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
+    private static final String TAG = "HomeFragment";
     ImageButton btnSearch;
     TextView search;
     HomeFragmentViewModel viewModel;
     FragmentHomeBinding binding;
 
     public HomeFragment() {
-        // Required empty public constructor
+
     }
 
     public static HomeFragment newInstance() {
@@ -54,10 +50,9 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding=DataBindingUtil.inflate(inflater,R.layout.fragment_home,container,false);
-        viewModel=new ViewModelProvider(this).get(HomeFragmentViewModel.class);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
+        viewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);
 
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
         binding.setViewmodel(viewModel);
@@ -69,36 +64,35 @@ public class HomeFragment extends Fragment {
             window.setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.green));
         }
 
-//        if (getActivity() != null) {
-//            getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.green));
-//        }
         viewModel.getData();
+        viewModel.getProducts();
+
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
             if (categories != null) {
                 CategoryAdapter categoryAdapter = new CategoryAdapter(categories);
                 binding.rvCategories.setAdapter(categoryAdapter);
                 binding.rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
-                Log.d("duy1", "onCreateView: " + categories.size());
+                Log.d(TAG, "Categories loaded: " + categories.size());
             }
         });
 
+        viewModel.products.observe(getViewLifecycleOwner(), products -> {
+            if (products != null) {
+                ProductAdapter productAdapter = new ProductAdapter(products, product -> {
+                    try {
+                        Intent intent = new Intent(getContext(), ProductDetailActivity.class);
+                        intent.putExtra("product", product);
+                        intent.putExtra("storeId", product.getStoreId());
+                        startActivity(intent);
+                    } catch (Exception e) {
 
-        List<Product> products = new ArrayList<>();
-//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-//        products.add(new Product(R.drawable.banana, "Chuối nhà trồng", "45.000"));
-
-        ProductAdapter productAdapter = new ProductAdapter(products, product -> {
-            Intent intent = new Intent(getContext(), ProductDetailActivity.class);
-            startActivity(intent);
+                    }
+                });
+                binding.rvProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));
+                binding.rvProducts.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
+                binding.rvProducts.setAdapter(productAdapter);
+            }
         });
-
-        binding.rvProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        binding.rvProducts.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
-        binding.rvProducts.setAdapter(productAdapter);
 
         addControls(view);
         addEvents();
@@ -107,13 +101,13 @@ public class HomeFragment extends Fragment {
     }
 
     private void addEvents() {
-        btnSearch.setOnClickListener(View -> {
-            Intent intent=new Intent(getActivity(), SearchActivity.class);
+        btnSearch.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), SearchActivity.class);
             getActivity().startActivity(intent);
         });
 
-        search.setOnClickListener(View -> {
-            Intent intent=new Intent(getContext(), SearchActivity.class);
+        search.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), SearchActivity.class);
             startActivity(intent);
         });
     }

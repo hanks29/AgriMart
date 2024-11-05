@@ -132,7 +132,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
-                        android:text="@string/top_selling"
+                        android:text="@string/new_product"
                         android:layout_marginTop="24dp"
                         android:textColor="#272727"
                         android:fontFamily="@font/gabarito"

@@ -1,28 +1,30 @@
 package com.example.agrimart.ui.Store;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.ProductAdapter;
 import com.example.agrimart.data.model.Product;
-import com.example.agrimart.data.model.ProductRequest;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.example.agrimart.data.model.Store;
+import com.example.agrimart.ui.ProductPage.ProductDetailActivity;
+import com.example.agrimart.viewmodel.HomeFragmentViewModel; // Sử dụng ViewModel cho sản phẩm
+import com.example.agrimart.viewmodel.ProductDetailViewModel;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +36,45 @@ public class StoreActivity extends AppCompatActivity {
     private RecyclerView rvProducts;
     private ProductAdapter productAdapter;
     private List<Product> productList;
+    private FirebaseFirestore db;
+    private String storeId;
+    private ProductDetailViewModel viewModel;
+    private HomeFragmentViewModel productViewModel; // Khai báo ViewModel cho sản phẩm
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_store);
+
+        setupWindowInsets();
+        addControls();
+        db = FirebaseFirestore.getInstance();
+
+        storeId = getIntent().getStringExtra("storeId");
+
+        viewModel = new ProductDetailViewModel();
+        productViewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class); // Khởi tạo ViewModel cho sản phẩm
+
+        productList = new ArrayList<>();
+        productAdapter = new ProductAdapter(productList, product -> {
+            Intent intent = new Intent(StoreActivity.this, ProductDetailActivity.class);
+            intent.putExtra("product", product);
+            startActivity(intent);
+        });
+        rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
+        rvProducts.setAdapter(productAdapter);
+
+        viewModel.getStoreInfo().observe(this, store -> {
+            if (store != null) {
+                updateStoreInfo(store);
+            }
+        });
+
+        loadStoreInfo();
+        loadProducts();
+    }
+
+    private void setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main1), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -51,50 +86,36 @@ public class StoreActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(ContextCompat.getColor(this, R.color.green));
         }
-
-        storeAvatar = findViewById(R.id.store_avatar);
-        storeName = findViewById(R.id.store_name);
-        storeRating = findViewById(R.id.store_rating);
-        storeAddress = findViewById(R.id.store_address);
-        rvProducts = findViewById(R.id.rvProducts);
-
-
-        productList = new ArrayList<>();
-
-
-        productAdapter = new ProductAdapter(productList, product -> {
-
-        });
-        rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
-        rvProducts.setAdapter(productAdapter);
-        loadData();
     }
-    private void loadData() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String uid = user.getUid();
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("products")
-                    .whereEqualTo("storeId", uid)
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
+    private void addControls() {
+        storeAvatar = findViewById(R.id.storeAvatar);
+        storeName = findViewById(R.id.storeName);
+        storeRating = findViewById(R.id.store_rating);
+        storeAddress = findViewById(R.id.storeAddress);
+        rvProducts = findViewById(R.id.rvProducts);
+    }
 
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                ProductRequest product = document.toObject(ProductRequest.class);
-                                productList.add(
-                                        new Product(
-                                                product.getImageUrls().isEmpty() ? "https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/notfound.jpg?alt=media&token=40e61714-5a10-4352-918c-7e5e2643a1fe" : product.getImageUrls().get(0),
-                                                product.getName(),
-                                                product.getPrice()
-                                        )
-                                );
-                            }
-                            productAdapter.notifyDataSetChanged();
-                        }
-                    });
+    private void updateStoreInfo(Store store) {
+        storeName.setText(store.getName());
+        storeAddress.setText(store.getFullAddress());
+        storeRating.setText("Đánh giá: 4.5");
+        Glide.with(StoreActivity.this).load(store.getAvatarUrl()).into(storeAvatar);
+    }
 
-        }
+    private void loadStoreInfo() {
+        viewModel.loadStoreInfo(storeId);
+    }
+
+    private void loadProducts() {
+        // Gọi phương thức getProducts từ productViewModel
+        productViewModel.getProducts();
+
+        // Quan sát LiveData
+        productViewModel.products.observe(this, products -> {
+            productList.clear(); // Xóa danh sách hiện tại
+            productList.addAll(products); // Thêm sản phẩm mới vào danh sách
+            productAdapter.notifyDataSetChanged(); // Cập nhật adapter
+        });
     }
 }

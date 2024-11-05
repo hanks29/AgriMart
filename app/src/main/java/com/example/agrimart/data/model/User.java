@@ -207,6 +207,49 @@ public class User implements Serializable {
 //
 //        // Constructors, getters, and setters...
 //    }
+    public static class Address {
+        @SerializedName("street")
+        private String street;
+        @SerializedName("district")
+        private String district;
+        @SerializedName("city")
+        private String city;
+
+        public Address() {
+        }
+
+        public Address(String street, String district, String city) {
+            this.street = street;
+            this.district = district;
+            this.city = city;
+        }
+
+        // Getters and setters...
+
+        public String getStreet() {
+            return street;
+        }
+
+        public void setStreet(String street) {
+            this.street = street;
+        }
+
+        public String getDistrict() {
+            return district;
+        }
+
+        public void setDistrict(String district) {
+            this.district = district;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        public void setCity(String city) {
+            this.city = city;
+        }
+    }
 
     public static class PaymentAccount {
         @SerializedName("accountNumber")
@@ -216,9 +259,15 @@ public class User implements Serializable {
         @SerializedName("branchName")
         private String branchName;
 
-        // Constructors, getters, and setters...
-    }
+        public PaymentAccount() {
+        }
 
-    // Getters and setters for User class fields
-    // ...
+        public PaymentAccount(String accountNumber, String bankName, String branchName) {
+            this.accountNumber = accountNumber;
+            this.bankName = bankName;
+            this.branchName = branchName;
+        }
+
+        // Getters and setters...
+    }
 }

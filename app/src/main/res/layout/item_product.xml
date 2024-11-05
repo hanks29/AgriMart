@@ -22,10 +22,10 @@
 
             <ImageView
                 android:id="@+id/imgPro"
-                android:layout_width="99dp"
-                android:layout_height="79dp"
-                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="139dp"
                 android:layout_gravity="center"
+                android:scaleType="centerCrop"
                 android:src="@drawable/banana" />
         </FrameLayout>
 

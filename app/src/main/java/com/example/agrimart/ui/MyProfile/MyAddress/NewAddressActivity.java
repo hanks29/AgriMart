@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import java.util.UUID;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -38,6 +40,7 @@ public class NewAddressActivity extends AppCompatActivity {
     private String userId; // ID của người dùng hiện tại
     private LinearLayout address;
     private ImageButton btn_back;
+    private String detailedAddressID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +85,11 @@ public class NewAddressActivity extends AppCompatActivity {
 
     private void openAddressAPI() {
         Intent intent = new Intent(NewAddressActivity.this, GetAddressActivity.class);
+
+        if (detailedAddressID != null && !detailedAddressID.isEmpty()) {
+            intent.putExtra("detailedAddressID", detailedAddressID);
+        }
+
         startActivityForResult(intent, REQUEST_CODE_NEW_ADDRESS);
     }
 
@@ -93,6 +101,7 @@ public class NewAddressActivity extends AppCompatActivity {
             if (data != null) {
                 // Nhận chuỗi từ Intent
                 String addressString = data.getStringExtra("address");
+                detailedAddressID = data.getStringExtra("detailedAddressID");
                 // Xử lý chuỗi nhận được ở đây (ví dụ: hiển thị trong một TextView hoặc sử dụng nó theo cách khác)
                 edtTinh.setText(addressString);
             }
@@ -105,6 +114,7 @@ public class NewAddressActivity extends AppCompatActivity {
         String phone = edtSDT.getText().toString().trim();
         String street = edtTenDuong.getText().toString().trim();
         String city = edtTinh.getText().toString().trim();
+
         String AddressId = generateUniqueAddressId();
 
         Log.d("NewAddressActivity", "Generated Address ID: " + AddressId);
@@ -128,7 +138,7 @@ public class NewAddressActivity extends AppCompatActivity {
                             boolean isDefault = isFirstAddress || switch1.isChecked();
 
                             // Tạo một đối tượng địa chỉ mới
-                            Address newAddress = new Address(AddressId, name, phone, street, city, isDefault);
+                            Address newAddress = new Address(AddressId, name, phone, street, city,detailedAddressID, isDefault);
 
                             if (isDefault) {
                                 updateAddressesToNotDefault(newAddress);
@@ -137,7 +147,7 @@ public class NewAddressActivity extends AppCompatActivity {
                             }
                         } else {
                             // Nếu không có địa chỉ nào, đặt địa chỉ mới là mặc định
-                            Address newAddress = new Address(AddressId, name, phone, street, city, true);
+                            Address newAddress = new Address(AddressId, name, phone, street, city,detailedAddressID, true);
                             addAddress(newAddress);
                         }
                     } else {
@@ -163,6 +173,7 @@ public class NewAddressActivity extends AppCompatActivity {
                                 address.setStreet((String) addressMap.get("street"));
                                 address.setPhone((String) addressMap.get("phone"));
                                 address.setDetailedAddress((String) addressMap.get("detailedAddress"));
+                                address.setDetailedAddressID((String) addressMap.get("detailedAddressID"));
                                 address.setName((String) addressMap.get("name"));
                                 address.setDefault(false);
                                 updatedAddresses.add(address);

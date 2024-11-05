@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -28,13 +29,16 @@ import java.util.List;
 import java.util.Map;
 
 public class EditAddressActivity extends AppCompatActivity {
-    public static final int REQUEST_CODE_NEW_ADDRESS = 1;
-    private EditText edtHoTen, edtSDT, edtTinh, edtTenDuong;
+    public static final int REQUEST_CODE_EDIT_ADDRESS = 12;
+    private EditText edtHoTen, edtSDT, edtTenDuong;
     private Switch switchDefault;
     private String AddressId; // Biến lưu trữ ID của địa chỉ
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
-    private LinearLayout save_address, delete_address;
+    private LinearLayout save_address, delete_address, getAddress;
+    private String detailedAddressID;
+    private TextView edtTinh;
+    ImageButton btnBack;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -49,36 +53,71 @@ public class EditAddressActivity extends AppCompatActivity {
             return insets;
         });
 
+
+        // Khởi tạo Firestore và FirebaseAuth
+        firestore = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+
+        addControl();
+
+        // Nhận AddressId từ Intent
+        Intent intent = getIntent();
+        AddressId = intent.getStringExtra("addressId");
+
+        // Tải thông tin địa chỉ
+        loadAddressDetails();
+        addEvent();
+
+    }
+
+    void addControl()
+    {
         // Khởi tạo các EditText và Switch
         edtHoTen = findViewById(R.id.edtHoTen);
         edtSDT = findViewById(R.id.edtSDT);
         edtTinh = findViewById(R.id.edtTinh);
         edtTenDuong = findViewById(R.id.edtTenDuong);
         switchDefault = findViewById(R.id.switch2);
-
-        // Khởi tạo Firestore và FirebaseAuth
-        firestore = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
-
-        // Nhận AddressId từ Intent
-        Intent intent = getIntent();
-        AddressId = intent.getStringExtra("addressId");
-        Log.d("EditAddressActivity", "Address ID: " + AddressId);
-
-        // Tải thông tin địa chỉ
-        loadAddressDetails();
-
-        // Thiết lập nút quay lại
-        ImageButton btnBack = findViewById(R.id.btn_back);
-        btnBack.setOnClickListener(v -> finish());
-
-        // Thiết lập sự kiện cho nút lưu
+        getAddress = findViewById(R.id.get_address);
         save_address = findViewById(R.id.id_save_address);
         delete_address = findViewById(R.id.id_delete_address);
+        btnBack = findViewById(R.id.btn_back);
+    }
 
+    void addEvent()
+    {
         save_address.setOnClickListener(v -> saveAddress());
 
         delete_address.setOnClickListener(v -> deleteAddress());
+
+        btnBack.setOnClickListener(v -> onBackPressed());
+
+        getAddress.setOnClickListener(v -> openAddressAPI());
+    }
+
+    private void openAddressAPI() {
+        Intent intent = new Intent(EditAddressActivity.this, GetAddressActivity.class);
+
+        if (detailedAddressID != null && !detailedAddressID.isEmpty()) {
+            intent.putExtra("detailedAddressID", detailedAddressID);
+        }
+
+        startActivityForResult(intent, REQUEST_CODE_EDIT_ADDRESS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_EDIT_ADDRESS && resultCode == RESULT_OK) {
+            if (data != null) {
+                // Nhận chuỗi từ Intent
+                String addressString = data.getStringExtra("address");
+                detailedAddressID = data.getStringExtra("detailedAddressID");
+                // Xử lý chuỗi nhận được ở đây (ví dụ: hiển thị trong một TextView hoặc sử dụng nó theo cách khác)
+                edtTinh.setText(addressString);
+            }
+        }
     }
 
     private void loadAddressDetails() {
@@ -95,8 +134,9 @@ public class EditAddressActivity extends AppCompatActivity {
                             if (AddressId.equals(address.get("addressId"))) {
                                 edtHoTen.setText((String) address.get("name"));
                                 edtSDT.setText((String) address.get("phone"));
-                                edtTinh.setText((String) address.get("street"));
-                                edtTenDuong.setText((String) address.get("detailedAddress"));
+                                edtTenDuong.setText((String) address.get("street"));
+                                edtTinh.setText((String) address.get("detailedAddress"));
+                                detailedAddressID = (String) address.get("detailedAddressID");
 
                                 Boolean isDefault = (Boolean) address.get("default");
                                 switchDefault.setChecked(isDefault != null ? isDefault : false);
@@ -114,15 +154,16 @@ public class EditAddressActivity extends AppCompatActivity {
     private void saveAddress() {
         String name = edtHoTen.getText().toString();
         String phone = edtSDT.getText().toString();
-        String street = edtTinh.getText().toString();
-        String detailedAddress = edtTenDuong.getText().toString();
+        String street =  edtTenDuong.getText().toString();
+        String detailedAddress = edtTinh.getText().toString();
         boolean isDefault = switchDefault.isChecked();
 
         Map<String, Object> updatedAddress = new HashMap<>();
-        updatedAddress.put("addressId", AddressId); // Giữ lại AddressId
+        updatedAddress.put("addressId", AddressId);
         updatedAddress.put("street", street);
         updatedAddress.put("phone", phone);
         updatedAddress.put("detailedAddress", detailedAddress);
+        updatedAddress.put("detailedAddressID", detailedAddressID);
         updatedAddress.put("name", name);
         updatedAddress.put("default", isDefault);
 
@@ -135,7 +176,11 @@ public class EditAddressActivity extends AppCompatActivity {
                     if (documentSnapshot.exists() && documentSnapshot.contains("addresses")) {
                         List<Map<String, Object>> addressList = (List<Map<String, Object>>) documentSnapshot.get("addresses");
 
+                        // Ensure we update only the matching address
+                        boolean addressFound = false;
+
                         if (isDefault) {
+                            // Reset default flag for all addresses
                             for (Map<String, Object> address : addressList) {
                                 if (address.containsKey("default") && (Boolean) address.get("default")) {
                                     address.put("default", false);
@@ -143,32 +188,34 @@ public class EditAddressActivity extends AppCompatActivity {
                             }
                         }
 
-                        // Cập nhật địa chỉ
+                        // Update the existing address
                         for (int i = 0; i < addressList.size(); i++) {
-                            if (AddressId.equals(addressList.get(i).get("id"))) {
+                            if (AddressId.equals(addressList.get(i).get("addressId"))) {
                                 addressList.set(i, updatedAddress);
+                                addressFound = true;
                                 break;
                             }
                         }
 
-                        if (isDefault) {
-                            addressList.remove(updatedAddress); // Xóa khỏi cuối danh sách
-                            addressList.add(0, updatedAddress); // Thêm lên đầu
+                        if (addressFound) {
+                            // Update Firestore with modified address list
+                            firestore.collection("users")
+                                    .document(userId)
+                                    .update("addresses", addressList)
+                                    .addOnSuccessListener(aVoid -> {
+                                        setResult(RESULT_OK);
+                                        Toast.makeText(this, "Địa chỉ đã được lưu", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    })
+                                    .addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi lưu địa chỉ: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        } else {
+                            Toast.makeText(this, "Không tìm thấy địa chỉ để cập nhật.", Toast.LENGTH_SHORT).show();
                         }
-
-                        firestore.collection("users")
-                                .document(userId)
-                                .update("addresses", addressList)
-                                .addOnSuccessListener(aVoid -> {
-                                    setResult(RESULT_OK);
-                                    Toast.makeText(this, "Địa chỉ đã được lưu", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                })
-                                .addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi lưu địa chỉ: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi tải danh sách địa chỉ: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
 
     private void deleteAddress() {
         String userId = auth.getCurrentUser().getUid();

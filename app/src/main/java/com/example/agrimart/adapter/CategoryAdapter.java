@@ -18,7 +18,7 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder> {
     private List<Category> categories;
 
-    private int position = -1;
+    private int selectedPosition = -1;
     public Category category;
     public CategoryAdapter(List<Category> categories) {
         this.categories = categories;
@@ -36,18 +36,18 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.bindData(categories.get(position));
 
-        if (position == this.position) {
+        if (holder.getAdapterPosition() == selectedPosition) {
             holder.binding.getRoot().setBackgroundResource(android.R.color.holo_green_light);
         } else {
             holder.binding.getRoot().setBackgroundResource(android.R.color.transparent);
         }
 
         holder.binding.getRoot().setOnClickListener(v -> {
-            category = categories.get(position);
-            int prePos=this.position;
-            this.position=position;
+            category = categories.get(holder.getAdapterPosition());
+            int prePos=selectedPosition;
+            selectedPosition=holder.getAdapterPosition();
             notifyItemChanged(prePos);
-            notifyItemChanged(position);
+            notifyItemChanged(holder.getAdapterPosition());
 
         });
     }

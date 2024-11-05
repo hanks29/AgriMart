@@ -96,7 +96,7 @@ public class PostProductPhotosFragment extends Fragment {
                     // Callback is invoked after the user selects media items or closes the
                     // photo picker.
                     if (!uris.isEmpty()) {
-                        imageUris.clear();
+//                        imageUris.clear();
                         imageUris.addAll(uris);
                         if(uris.size()>0 && imageUris.size()>0){
                             Glide.with(this).load(imageUris.get(0)).into(binding.imageView5);
@@ -137,7 +137,6 @@ public class PostProductPhotosFragment extends Fragment {
         binding.imageButton3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.imageView5.setImageURI(null);
                 binding.frameLayout1.setVisibility(View.GONE);
                 binding.imageButton3.setVisibility(View.GONE);
 
@@ -152,7 +151,6 @@ public class PostProductPhotosFragment extends Fragment {
         binding.imageButton4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.imageView6.setImageURI(null);
                 binding.frameLayout2.setVisibility(View.GONE);
                 binding.imageButton4.setVisibility(View.GONE);
 
@@ -167,7 +165,6 @@ public class PostProductPhotosFragment extends Fragment {
         binding.imageButton5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.imageView7.setImageURI(null);
                 binding.frameLayout3.setVisibility(View.GONE);
                 binding.imageButton5.setVisibility(View.GONE);
 
@@ -182,13 +179,12 @@ public class PostProductPhotosFragment extends Fragment {
         binding.imageButton6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.imageView8.setImageURI(null);
                 binding.imageView8.setVisibility(View.GONE);
                 binding.imageButton6.setVisibility(View.GONE);
 
 
                 if(!imageUris.isEmpty()){
-                    imageUris.remove(0);
+                    imageUris.remove(3);
                 }
                 if(imageUris.isEmpty()){
                     binding.linearLayout.setVisibility(View.GONE);

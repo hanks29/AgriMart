@@ -22,12 +22,13 @@ import com.example.agrimart.adapter.ProductAdapter;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.Store;
 import com.example.agrimart.ui.ProductPage.ProductDetailActivity;
-import com.example.agrimart.viewmodel.HomeFragmentViewModel; // Sử dụng ViewModel cho sản phẩm
+import com.example.agrimart.viewmodel.HomeFragmentViewModel;
 import com.example.agrimart.viewmodel.ProductDetailViewModel;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StoreActivity extends AppCompatActivity {
 
@@ -39,7 +40,7 @@ public class StoreActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String storeId;
     private ProductDetailViewModel viewModel;
-    private HomeFragmentViewModel productViewModel; // Khai báo ViewModel cho sản phẩm
+    private HomeFragmentViewModel productViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,7 @@ public class StoreActivity extends AppCompatActivity {
         storeId = getIntent().getStringExtra("storeId");
 
         viewModel = new ProductDetailViewModel();
-        productViewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class); // Khởi tạo ViewModel cho sản phẩm
+        productViewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);
 
         productList = new ArrayList<>();
         productAdapter = new ProductAdapter(productList, product -> {
@@ -108,14 +109,14 @@ public class StoreActivity extends AppCompatActivity {
     }
 
     private void loadProducts() {
-        // Gọi phương thức getProducts từ productViewModel
         productViewModel.getProducts();
 
-        // Quan sát LiveData
         productViewModel.products.observe(this, products -> {
-            productList.clear(); // Xóa danh sách hiện tại
-            productList.addAll(products); // Thêm sản phẩm mới vào danh sách
-            productAdapter.notifyDataSetChanged(); // Cập nhật adapter
+            productList.clear();
+            productList.addAll(products.stream()
+                    .filter(product -> product.getStoreId().equals(storeId))
+                    .collect(Collectors.toList()));
+            productAdapter.notifyDataSetChanged();
         });
     }
 }

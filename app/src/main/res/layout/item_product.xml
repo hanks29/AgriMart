@@ -8,64 +8,66 @@
             type="com.example.agrimart.data.model.Product" />
     </data>
 
-    <RelativeLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="173dp"
-        android:background="@drawable/bg_product"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp">
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        android:layout_margin="8dp"
+        android:clipToPadding="false">
 
-        <FrameLayout
-            android:id="@+id/frame_layout"
+        <!-- ImageView chiếm toàn bộ chiều rộng và nằm trên cùng của CardView -->
+        <ImageView
+            android:id="@+id/imgPro"
             android:layout_width="match_parent"
-            android:layout_height="124dp">
+            android:layout_height="146dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/banana" />
 
-            <ImageView
-                android:id="@+id/imgPro"
-                android:layout_width="match_parent"
-                android:layout_height="139dp"
-                android:layout_gravity="center"
-                android:scaleType="centerCrop"
-                android:src="@drawable/banana" />
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/tvName"
-            android:layout_width="129dp"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/frame_layout"
-            android:layout_marginTop="12dp"
-            android:textSize="16sp"
-            android:textColor="#333333"
-            android:letterSpacing="0.01"
-            android:layout_marginStart="15dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textStyle="bold"/>
+            android:layout_below="@id/imgPro"
+            android:padding="8dp"
+            android:layout_marginTop="146dp">
 
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tvName"
-            android:textSize="18sp"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="20dp"
-            android:textColor="#F44336"
-            android:fontFamily="@font/gabarito"
-            android:letterSpacing="0.01"/>
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="129dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textSize="16sp"
+                android:textColor="#333333"
+                android:letterSpacing="0.01"
+                android:layout_marginStart="15dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textStyle="bold" />
 
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:layout_below="@id/tvName"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="10dp"
-            app:srcCompat="@drawable/ic_plus_1" />
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvName"
+                android:textSize="18sp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="8dp"
+                android:textColor="#F44336"
+                android:fontFamily="@font/gabarito"
+                android:letterSpacing="0.01" />
 
-    </RelativeLayout>
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:layout_below="@id/tvName"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                app:srcCompat="@drawable/ic_plus_1" />
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
 </layout>

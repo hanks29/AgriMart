@@ -96,6 +96,13 @@
             </LinearLayout>
 
             <!-- Row 2 -->
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="15dp"
+                android:background="#65424242" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -138,6 +145,13 @@
             </LinearLayout>
 
             <!-- Row 3 -->
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="15dp"
+                android:background="#65424242" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -179,171 +193,9 @@
 
 
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/custom_border"
-                android:orientation="horizontal"
-                android:padding="8dp">
-
-                <TextView
-                    android:id="@+id/tvHeight"
-                    android:layout_width="27dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:text="Chiều cao"
-                    android:textSize="9.5pt" />
-
-                <TextView
-                    android:id="@+id/textViewSeparator4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="10dp"
-                    android:scaleY="2"
-                    android:text="|"
-                    android:textSize="10pt" />
-
-                <EditText
-                    android:id="@+id/edtHeight"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="3"
-                    android:background="@android:color/transparent"
-                    android:inputType="number"
-                    android:textSize="9.5pt" />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/custom_border"
-                android:orientation="horizontal"
-                android:padding="8dp">
-
-                <TextView
-                    android:id="@+id/tvWidth"
-                    android:layout_width="56dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:text="Chiều rộng"
-                    android:textSize="9.5pt" />
-
-                <TextView
-                    android:id="@+id/textViewSeparator5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="10dp"
-                    android:scaleY="2"
-                    android:text="|"
-                    android:textSize="10pt" />
-
-                <EditText
-                    android:id="@+id/edtWidth"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="3"
-                    android:background="@android:color/transparent"
-                    android:inputType="number"
-                    android:textSize="9.5pt" />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/custom_border"
-                android:orientation="horizontal"
-                android:padding="8dp">
-
-                <TextView
-                    android:id="@+id/tvLength"
-                    android:layout_width="27dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:text="Chiều dài"
-                    android:textSize="9.5pt" />
-
-                <TextView
-                    android:id="@+id/textViewSeparator6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="10dp"
-                    android:scaleY="2"
-                    android:text="|"
-                    android:textSize="10pt" />
-
-                <EditText
-                    android:id="@+id/edtLength"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="3"
-                    android:background="@android:color/transparent"
-                    android:inputType="number"
-                    android:textSize="9.5pt" />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/custom_border"
-                android:orientation="horizontal"
-                android:padding="8dp">
-
-                <TextView
-                    android:id="@+id/tvWeight"
-                    android:layout_width="27dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:text="Cân nặng"
-                    android:textSize="9.5pt" />
-
-                <TextView
-                    android:id="@+id/textViewSeparator7"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="10dp"
-                    android:scaleY="2"
-                    android:text="|"
-                    android:textSize="10pt" />
-
-                <EditText
-                    android:id="@+id/edtWeight"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="3"
-                    android:background="@android:color/transparent"
-                    android:inputType="number"
-                    android:textSize="9.5pt" />
-
-            </LinearLayout>
 
         </LinearLayout>
 
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="15dp"
-            android:background="#65424242" />
 
         <!-- Input field with character limit -->
 

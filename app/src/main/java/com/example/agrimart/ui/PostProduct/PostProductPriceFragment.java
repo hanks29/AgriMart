@@ -110,11 +110,7 @@ public class PostProductPriceFragment extends Fragment {
                                             if(count==imageUris.size()){
                                                 product.setPrice(Double.parseDouble(binding.edtPrice.getText().toString()));
                                                 product.setQuantity(Integer.parseInt(binding.edtQuantity.getText().toString()));
-                                                product.setHeight(Double.parseDouble(binding.edtHeight.getText().toString()));
-                                                product.setWidth(Double.parseDouble(binding.edtWidth.getText().toString()));
-                                                product.setLength(Double.parseDouble(binding.edtLength.getText().toString()));
-                                                product.setWeight(Double.parseDouble(binding.edtWeight.getText().toString()));
-                                                product.setStatus("approved");
+                                                product.setStatus("pending");
                                                 FirebaseFirestore db=FirebaseFirestore.getInstance();
 
 
@@ -125,12 +121,12 @@ public class PostProductPriceFragment extends Fragment {
                                                 }
                                                 db.collection("products").add(product)
                                                         .addOnSuccessListener(documentReference -> {
-                                                            Toast.makeText(requireContext(), "Đăng bài thành công", Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(requireContext(), "Tạo sản phẩm thành công", Toast.LENGTH_SHORT).show();
                                                             Intent intent = new Intent(requireContext(), YourProductListingsActivity.class);
                                                             startActivity(intent);
                                                         })
                                                         .addOnFailureListener(e -> {
-                                                            Toast.makeText(requireContext(), "Đăng bài thất bại", Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(requireContext(), "Tạo sản phẩm thất bại", Toast.LENGTH_SHORT).show();
                                                         });
                                             }
 

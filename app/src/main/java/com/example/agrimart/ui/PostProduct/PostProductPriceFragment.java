@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -129,6 +130,8 @@ public class PostProductPriceFragment extends Fragment {
                                                     String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                                     product.setStoreId(uid);
                                                 }
+                                                DocumentReference newProductRef = db.collection("products").document();
+                                                String productId = newProductRef.getId();
                                                 db.collection("users")
                                                         .whereEqualTo("email", FirebaseAuth.getInstance().getCurrentUser().getEmail())
                                                         .get()
@@ -150,7 +153,8 @@ public class PostProductPriceFragment extends Fragment {
                                                                         Log.d("Firestore", "District: " + district);
                                                                         Log.d("Firestore", "Ward: " + ward);
                                                                         Log.d("Firestore", "Street: " + street);
-                                                                        db.collection("products").add(product)
+                                                                        product.setProductId(productId);
+                                                                        newProductRef.set(product)
                                                                                 .addOnSuccessListener(documentReference -> {
                                                                                     Toast.makeText(requireContext(), "Tạo sản phẩm thành công", Toast.LENGTH_SHORT).show();
                                                                                     Intent intent = new Intent(requireContext(), YourProductListingsActivity.class);

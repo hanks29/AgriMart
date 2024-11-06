@@ -1,10 +1,13 @@
 package com.example.agrimart.data.model;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 public class Product implements Serializable {
+
     private String productId;
     private String name;
     private double price;

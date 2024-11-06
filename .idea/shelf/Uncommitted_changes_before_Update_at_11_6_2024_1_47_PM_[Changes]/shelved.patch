@@ -1,0 +1,618 @@
+Index: app/src/main/java/com/example/agrimart/adapter/CategoryAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.adapter;\r\n\r\nimport android.view.LayoutInflater;\r\nimport android.view.ViewGroup;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.data.model.Category;\r\nimport com.example.agrimart.databinding.CategoryItemBinding;\r\nimport com.denzcoskun.imageslider.models.SlideModel;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder> {\r\n    private List<Category> categories;\r\n\r\n    private int selectedPosition = -1;\r\n    public Category category;\r\n    public CategoryAdapter(List<Category> categories) {\r\n        this.categories = categories;\r\n    }\r\n\r\n\r\n    @NonNull\r\n    @Override\r\n    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {\r\n        CategoryItemBinding binding = CategoryItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);\r\n        return new MyViewHolder(binding);\r\n    }\r\n\r\n    @Override\r\n    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {\r\n        holder.bindData(categories.get(position));\r\n\r\n        if (holder.getAdapterPosition() == selectedPosition) {\r\n            holder.binding.getRoot().setBackgroundResource(android.R.color.holo_green_light);\r\n        } else {\r\n            holder.binding.getRoot().setBackgroundResource(android.R.color.transparent);\r\n        }\r\n\r\n        holder.binding.getRoot().setOnClickListener(v -> {\r\n            category = categories.get(holder.getAdapterPosition());\r\n            int prePos=selectedPosition;\r\n            selectedPosition=holder.getAdapterPosition();\r\n            notifyItemChanged(prePos);\r\n            notifyItemChanged(holder.getAdapterPosition());\r\n\r\n        });\r\n    }\r\n\r\n    @Override\r\n    public int getItemCount() {\r\n        return categories.size();\r\n    }\r\n\r\n    public static class MyViewHolder extends RecyclerView.ViewHolder {\r\n        CategoryItemBinding binding;\r\n\r\n        public MyViewHolder(@NonNull CategoryItemBinding binding) {\r\n            super(binding.getRoot());\r\n            this.binding = binding;\r\n        }\r\n\r\n        public void bindData(Category category) {\r\n            Glide.with(binding.getRoot())\r\n                    .load(category.getImg())\r\n                    .into(binding.imgCate);\r\n\r\n            binding.tvName.setText(category.getName());\r\n        }\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/adapter/CategoryAdapter.java b/app/src/main/java/com/example/agrimart/adapter/CategoryAdapter.java
+--- a/app/src/main/java/com/example/agrimart/adapter/CategoryAdapter.java	(revision 228780504db3890093dbb6b5930f9132fc72f60c)
++++ b/app/src/main/java/com/example/agrimart/adapter/CategoryAdapter.java	(date 1730875628432)
+@@ -1,5 +1,7 @@
+ package com.example.agrimart.adapter;
+ 
++import android.content.Context;
++import android.content.Intent;
+ import android.view.LayoutInflater;
+ import android.view.ViewGroup;
+ 
+@@ -7,23 +9,23 @@
+ import androidx.recyclerview.widget.RecyclerView;
+ 
+ import com.bumptech.glide.Glide;
+-import com.example.agrimart.R;
+ import com.example.agrimart.data.model.Category;
+ import com.example.agrimart.databinding.CategoryItemBinding;
+-import com.denzcoskun.imageslider.models.SlideModel;
++import com.example.agrimart.ui.ProductPage.CategoryActivity;
+ 
+-import java.util.ArrayList;
+ import java.util.List;
+ 
+ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder> {
+     private List<Category> categories;
++    private Context context;
+ 
+     private int selectedPosition = -1;
+     public Category category;
+-    public CategoryAdapter(List<Category> categories) {
++
++    public CategoryAdapter(List<Category> categories, Context context) {
+         this.categories = categories;
++        this.context = context;
+     }
+-
+ 
+     @NonNull
+     @Override
+@@ -44,11 +46,15 @@
+ 
+         holder.binding.getRoot().setOnClickListener(v -> {
+             category = categories.get(holder.getAdapterPosition());
+-            int prePos=selectedPosition;
+-            selectedPosition=holder.getAdapterPosition();
++            int prePos = selectedPosition;
++            selectedPosition = holder.getAdapterPosition();
+             notifyItemChanged(prePos);
+             notifyItemChanged(holder.getAdapterPosition());
+ 
++            // Start CategoryActivity with the selected category ID
++            Intent intent = new Intent(context, CategoryActivity.class);
++            intent.putExtra("categoryId", category.getId());
++            context.startActivity(intent);
+         });
+     }
+ 
+@@ -73,5 +79,4 @@
+             binding.tvName.setText(category.getName());
+         }
+     }
+-}
+-
++}
+\ No newline at end of file
+Index: app/src/main/java/com/example/agrimart/ui/ProductPage/CategoryActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.ProductPage;\r\n\r\nimport android.os.Bundle;\r\n\r\nimport androidx.activity.EdgeToEdge;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.graphics.Insets;\r\nimport androidx.core.view.ViewCompat;\r\nimport androidx.core.view.WindowInsetsCompat;\r\n\r\nimport com.example.agrimart.R;\r\n\r\npublic class CategoryActivity extends AppCompatActivity {\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        EdgeToEdge.enable(this);\r\n        setContentView(R.layout.activity_category);\r\n        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {\r\n            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());\r\n            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);\r\n            return insets;\r\n        });\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/ProductPage/CategoryActivity.java b/app/src/main/java/com/example/agrimart/ui/ProductPage/CategoryActivity.java
+--- a/app/src/main/java/com/example/agrimart/ui/ProductPage/CategoryActivity.java	(revision 228780504db3890093dbb6b5930f9132fc72f60c)
++++ b/app/src/main/java/com/example/agrimart/ui/ProductPage/CategoryActivity.java	(date 1730875030552)
+@@ -1,26 +1,76 @@
+ package com.example.agrimart.ui.ProductPage;
+ 
+ import android.os.Bundle;
++import android.widget.Toast;
+ 
+-import androidx.activity.EdgeToEdge;
+ import androidx.appcompat.app.AppCompatActivity;
+ import androidx.core.graphics.Insets;
+ import androidx.core.view.ViewCompat;
+ import androidx.core.view.WindowInsetsCompat;
++import androidx.lifecycle.ViewModelProvider;
++import androidx.recyclerview.widget.GridLayoutManager;
++import androidx.recyclerview.widget.RecyclerView;
+ 
+ import com.example.agrimart.R;
++import com.example.agrimart.adapter.ProductAdapter;
++import com.example.agrimart.data.model.Product;
++import com.example.agrimart.viewmodel.CategoryViewModel;
++
++import java.util.ArrayList;
++import java.util.List;
+ 
+ public class CategoryActivity extends AppCompatActivity {
+ 
++    private RecyclerView rvProducts;
++    private ProductAdapter productAdapter;
++    private List<Product> productList;
++    private CategoryViewModel categoryViewModel;
++    private String categoryId;
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+-        EdgeToEdge.enable(this);
+         setContentView(R.layout.activity_category);
++
++        categoryId = getIntent().getStringExtra("categoryId");
++        if (categoryId == null) {
++            Toast.makeText(this, "Category ID is missing", Toast.LENGTH_SHORT).show();
++            finish();
++            return;
++        }
++
++        setupWindowInsets();
++        addControls();
++
++        categoryViewModel = new ViewModelProvider(this).get(CategoryViewModel.class);
++
++        productList = new ArrayList<>();
++        productAdapter = new ProductAdapter(productList, product -> {
++            // Handle product click
++        });
++        rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
++        rvProducts.setAdapter(productAdapter);
++
++        loadProducts();
++    }
++
++    private void setupWindowInsets() {
+         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+             return insets;
+         });
+     }
++
++    private void addControls() {
++        rvProducts = findViewById(R.id.rvProduct);
++    }
++
++    private void loadProducts() {
++        categoryViewModel.getProductsByCategory(categoryId).observe(this, products -> {
++            productList.clear();
++            productList.addAll(products);
++            productAdapter.notifyDataSetChanged();
++        });
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/res/layout/activity_category.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:id=\"@+id/main\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".ui.ProductPage.CategoryActivity\">\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_category.xml b/app/src/main/res/layout/activity_category.xml
+--- a/app/src/main/res/layout/activity_category.xml	(revision 228780504db3890093dbb6b5930f9132fc72f60c)
++++ b/app/src/main/res/layout/activity_category.xml	(date 1730874978320)
+@@ -1,10 +1,14 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+-    xmlns:tools="http://schemas.android.com/tools"
+-    android:id="@+id/main"
+     android:layout_width="match_parent"
+-    android:layout_height="match_parent"
+-    tools:context=".ui.ProductPage.CategoryActivity">
++    android:layout_height="wrap_content"
++    android:layout_margin="8dp"
++    app:cardCornerRadius="8dp"
++    app:cardElevation="4dp">
+ 
+-</androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
++    <androidx.recyclerview.widget.RecyclerView
++        android:id="@+id/rvProduct"
++        android:layout_width="match_parent"
++        android:layout_height="match_parent"/>
++</RelativeLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/example/agrimart/ui/Homepage/SearchActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.Homepage;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\nimport android.view.Window;\r\nimport android.view.WindowManager;\r\n\r\nimport androidx.activity.EdgeToEdge;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.content.ContextCompat;\r\nimport androidx.core.graphics.Insets;\r\nimport androidx.core.view.ViewCompat;\r\nimport androidx.core.view.WindowInsetsCompat;\r\nimport androidx.databinding.DataBindingUtil;\r\nimport androidx.lifecycle.ViewModelProvider;\r\nimport androidx.recyclerview.widget.GridLayoutManager;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.SpacesItemDecoration;\r\nimport com.example.agrimart.adapter.CategoryAdapter;\r\nimport com.example.agrimart.adapter.ProductAdapter;\r\nimport com.example.agrimart.data.model.Category;\r\nimport com.example.agrimart.data.model.Product;\r\nimport com.example.agrimart.databinding.ActivitySearchBinding;\r\nimport com.example.agrimart.ui.ProductPage.ProductDetailActivity;\r\nimport com.example.agrimart.viewmodel.SearchViewModel;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class SearchActivity extends AppCompatActivity {\r\n\r\n    SearchViewModel searchViewModel;\r\n    ActivitySearchBinding binding;\r\n    List<Category> categories=new ArrayList<>();\r\n    CategoryAdapter categoryAdapter;\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        searchViewModel= new ViewModelProvider(this).get(SearchViewModel.class);\r\n        binding = DataBindingUtil.setContentView(this, R.layout.activity_search);\r\n        binding.setSearch(searchViewModel);\r\n        EdgeToEdge.enable(this);\r\n        setContentView(binding.getRoot());\r\n        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main1), (v, insets) -> {\r\n            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());\r\n            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);\r\n            return insets;\r\n        });\r\n\r\n        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {\r\n            Window window = getWindow();\r\n            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);\r\n            window.setStatusBarColor(ContextCompat.getColor(this, R.color.green));\r\n        }\r\n\r\n\r\n        categoryAdapter = new CategoryAdapter(categories);\r\n        binding.rvCategories.setLayoutManager(new GridLayoutManager(this, 4));\r\n        binding.rvCategories.setAdapter(categoryAdapter);\r\n        getCategories();\r\n        List<Product> products = new ArrayList<>();\r\n//        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\"));\r\n//        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\"));\r\n//        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\"));\r\n//        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\"));\r\n//        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\"));\r\n//        products.add(new Product(R.drawable.banana, \"Organic Bananas\", \"45.000\"));\r\n\r\n        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);\r\n        binding.rvProducts.setLayoutManager(new GridLayoutManager(this, 2));\r\n        binding.rvProducts.addItemDecoration(new SpacesItemDecoration(spacingInPixels));\r\n\r\n        ProductAdapter productAdapter = new ProductAdapter(products, product -> {\r\n            Intent intent = new Intent(this, ProductDetailActivity.class);\r\n            startActivity(intent);\r\n        });\r\n        binding.rvProducts.setAdapter(productAdapter);\r\n        searchViewModel.setProducts(products);\r\n\r\n    }\r\n\r\n    private void getCategories() {\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n        List<Category> categories = new ArrayList<>();\r\n        db.collection(\"categories\")\r\n                .get().addOnCompleteListener(task -> {\r\n            if (task.isSuccessful()) {\r\n                categories.addAll(task.getResult().toObjects(Category.class));\r\n                this.categories.addAll(categories);\r\n                categoryAdapter.notifyDataSetChanged();\r\n\r\n            }\r\n        });\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/Homepage/SearchActivity.java b/app/src/main/java/com/example/agrimart/ui/Homepage/SearchActivity.java
+--- a/app/src/main/java/com/example/agrimart/ui/Homepage/SearchActivity.java	(revision 228780504db3890093dbb6b5930f9132fc72f60c)
++++ b/app/src/main/java/com/example/agrimart/ui/Homepage/SearchActivity.java	(date 1730875174950)
+@@ -34,12 +34,13 @@
+ 
+     SearchViewModel searchViewModel;
+     ActivitySearchBinding binding;
+-    List<Category> categories=new ArrayList<>();
++    List<Category> categories = new ArrayList<>();
+     CategoryAdapter categoryAdapter;
++
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+-        searchViewModel= new ViewModelProvider(this).get(SearchViewModel.class);
++        searchViewModel = new ViewModelProvider(this).get(SearchViewModel.class);
+         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
+         binding.setSearch(searchViewModel);
+         EdgeToEdge.enable(this);
+@@ -56,19 +57,12 @@
+             window.setStatusBarColor(ContextCompat.getColor(this, R.color.green));
+         }
+ 
+-
+-        categoryAdapter = new CategoryAdapter(categories);
++        categoryAdapter = new CategoryAdapter(categories, this);
+         binding.rvCategories.setLayoutManager(new GridLayoutManager(this, 4));
+         binding.rvCategories.setAdapter(categoryAdapter);
+         getCategories();
++
+         List<Product> products = new ArrayList<>();
+-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
+-
+         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
+         binding.rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
+         binding.rvProducts.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
+@@ -79,7 +73,6 @@
+         });
+         binding.rvProducts.setAdapter(productAdapter);
+         searchViewModel.setProducts(products);
+-
+     }
+ 
+     private void getCategories() {
+@@ -91,9 +84,7 @@
+                 categories.addAll(task.getResult().toObjects(Category.class));
+                 this.categories.addAll(categories);
+                 categoryAdapter.notifyDataSetChanged();
+-
+             }
+         });
+-
+     }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/example/agrimart/ui/Homepage/HomeFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.Homepage;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Build;\r\nimport android.os.Bundle;\r\nimport androidx.annotation.NonNull;\r\nimport androidx.core.content.ContextCompat;\r\nimport androidx.databinding.DataBindingUtil;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.lifecycle.ViewModelProvider;\r\nimport androidx.recyclerview.widget.GridLayoutManager;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.view.Window;\r\nimport android.view.WindowManager;\r\nimport android.widget.ImageButton;\r\nimport android.widget.TextView;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.SpacesItemDecoration;\r\nimport com.example.agrimart.adapter.CategoryAdapter;\r\nimport com.example.agrimart.adapter.ProductAdapter;\r\nimport com.example.agrimart.data.model.Product;\r\nimport com.example.agrimart.databinding.FragmentHomeBinding;\r\nimport com.example.agrimart.ui.ProductPage.ProductDetailActivity;\r\nimport com.example.agrimart.viewmodel.HomeFragmentViewModel;\r\n\r\nimport java.util.List;\r\n\r\npublic class HomeFragment extends Fragment {\r\n    private static final String TAG = \"HomeFragment\";\r\n    ImageButton btnSearch;\r\n    TextView search;\r\n    HomeFragmentViewModel viewModel;\r\n    FragmentHomeBinding binding;\r\n\r\n    public HomeFragment() {\r\n\r\n    }\r\n\r\n    public static HomeFragment newInstance() {\r\n        return new HomeFragment();\r\n    }\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n    }\r\n\r\n    @Override\r\n    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {\r\n        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);\r\n        viewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);\r\n\r\n        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);\r\n        binding.setViewmodel(viewModel);\r\n        View view = binding.getRoot();\r\n\r\n        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {\r\n            Window window = getActivity().getWindow();\r\n            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);\r\n            window.setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.green));\r\n        }\r\n\r\n        viewModel.getData();\r\n        viewModel.getProducts();\r\n\r\n        viewModel.categories.observe(getViewLifecycleOwner(), categories -> {\r\n            if (categories != null) {\r\n                CategoryAdapter categoryAdapter = new CategoryAdapter(categories);\r\n                binding.rvCategories.setAdapter(categoryAdapter);\r\n                binding.rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));\r\n                Log.d(TAG, \"Categories loaded: \" + categories.size());\r\n            }\r\n        });\r\n\r\n        viewModel.products.observe(getViewLifecycleOwner(), products -> {\r\n            if (products != null) {\r\n                ProductAdapter productAdapter = new ProductAdapter(products, product -> {\r\n                    try {\r\n                        Intent intent = new Intent(getContext(), ProductDetailActivity.class);\r\n                        intent.putExtra(\"product\", product);\r\n                        intent.putExtra(\"storeId\", product.getStoreId());\r\n                        startActivity(intent);\r\n                    } catch (Exception e) {\r\n\r\n                    }\r\n                });\r\n                binding.rvProducts.setLayoutManager(new GridLayoutManager(getContext(), 2));\r\n                binding.rvProducts.addItemDecoration(new SpacesItemDecoration(spacingInPixels));\r\n                binding.rvProducts.setAdapter(productAdapter);\r\n            }\r\n        });\r\n\r\n        addControls(view);\r\n        addEvents();\r\n\r\n        return view;\r\n    }\r\n\r\n    private void addEvents() {\r\n        btnSearch.setOnClickListener(v -> {\r\n            Intent intent = new Intent(getActivity(), SearchActivity.class);\r\n            getActivity().startActivity(intent);\r\n        });\r\n\r\n        search.setOnClickListener(v -> {\r\n            Intent intent = new Intent(getContext(), SearchActivity.class);\r\n            startActivity(intent);\r\n        });\r\n    }\r\n\r\n    private void addControls(View view) {\r\n        btnSearch = view.findViewById(R.id.search_icon);\r\n        search = view.findViewById(R.id.search_input);\r\n    }\r\n\r\n    private void loadFragment(Fragment fragment) {\r\n        getActivity().getSupportFragmentManager().beginTransaction()\r\n                .replace(R.id.fragment_container, fragment)\r\n                .commit();\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/Homepage/HomeFragment.java b/app/src/main/java/com/example/agrimart/ui/Homepage/HomeFragment.java
+--- a/app/src/main/java/com/example/agrimart/ui/Homepage/HomeFragment.java	(revision 228780504db3890093dbb6b5930f9132fc72f60c)
++++ b/app/src/main/java/com/example/agrimart/ui/Homepage/HomeFragment.java	(date 1730875132525)
+@@ -69,7 +69,7 @@
+ 
+         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
+             if (categories != null) {
+-                CategoryAdapter categoryAdapter = new CategoryAdapter(categories);
++                CategoryAdapter categoryAdapter = new CategoryAdapter(categories, getContext());
+                 binding.rvCategories.setAdapter(categoryAdapter);
+                 binding.rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
+                 Log.d(TAG, "Categories loaded: " + categories.size());
+Index: app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPhotosFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.PostProduct;\r\n\r\nimport android.net.Uri;\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.activity.result.ActivityResultLauncher;\r\nimport androidx.activity.result.PickVisualMediaRequest;\r\nimport androidx.activity.result.contract.ActivityResultContracts;\r\nimport androidx.appcompat.widget.AppCompatButton;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.fragment.app.FragmentTransaction;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.adapter.CategoryAdapter;\r\nimport com.example.agrimart.data.model.Category;\r\nimport com.example.agrimart.data.model.PostProduct;\r\nimport com.example.agrimart.data.model.ProductRequest;\r\nimport com.example.agrimart.databinding.FragmentPostProductPhotosBinding;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\n\r\nimport java.io.File;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Objects;\r\n\r\n\r\n/**\r\n * A simple {@link Fragment} subclass.\r\n * Use the {@link PostProductPhotosFragment#newInstance} factory method to\r\n * create an instance of this fragment.\r\n */\r\npublic class PostProductPhotosFragment extends Fragment {\r\n\r\n    // TODO: Rename parameter arguments, choose names that match\r\n    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER\r\n    private static final String ARG_PARAM1 = \"param1\";\r\n    private static final String ARG_PARAM2 = \"param2\";\r\n\r\n    // TODO: Rename and change types of parameters\r\n    private String mParam1;\r\n    private String mParam2;\r\n    FragmentPostProductPhotosBinding binding;\r\n    private List<Uri> imageUris=new ArrayList<>();\r\n    private List<Category> categories=new ArrayList<>();\r\n    private CategoryAdapter categoryAdapter;\r\n    public PostProductPhotosFragment() {\r\n        // Required empty public constructor\r\n    }\r\n\r\n    /**\r\n     * Use this factory method to create a new instance of\r\n     * this fragment using the provided parameters.\r\n     *\r\n     * @param param1 Parameter 1.\r\n     * @param param2 Parameter 2.\r\n     * @return A new instance of fragment PostPhotosFragment.\r\n     */\r\n    // TODO: Rename and change types and number of parameters\r\n    public static PostProductPhotosFragment newInstance(String param1, String param2) {\r\n        PostProductPhotosFragment fragment = new PostProductPhotosFragment();\r\n        Bundle args = new Bundle();\r\n        args.putString(ARG_PARAM1, param1);\r\n        args.putString(ARG_PARAM2, param2);\r\n        fragment.setArguments(args);\r\n        return fragment;\r\n    }\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        if (getArguments() != null) {\r\n            mParam1 = getArguments().getString(ARG_PARAM1);\r\n            mParam2 = getArguments().getString(ARG_PARAM2);\r\n        }\r\n    }\r\n\r\n    AppCompatButton button_post_product_continue;\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        // Inflate the layout for this fragment\r\n        View view = inflater.inflate(R.layout.fragment_post_product_photos, container, false);\r\n        binding = FragmentPostProductPhotosBinding.bind(view);\r\n        addControl(view);\r\n        addEvents(view);\r\n\r\n        ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia =\r\n                registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(4), uris -> {\r\n                    if (!uris.isEmpty()) {\r\n//                        imageUris.clear();\r\n                        imageUris.addAll(uris);\r\n                        if(uris.size()>0 && imageUris.size()>0){\r\n                            Glide.with(this).load(imageUris.get(0)).into(binding.imageView5);\r\n                            binding.frameLayout1.setVisibility(View.VISIBLE);\r\n                        }\r\n                        if(uris.size()>1 && imageUris.size()>1){\r\n                            Glide.with(this).load(imageUris.get(1)).into(binding.imageView6);\r\n                            binding.frameLayout2.setVisibility(View.VISIBLE);\r\n                        }\r\n                        if(uris.size()>2 && imageUris.size()>2){\r\n                            Glide.with(this).load(imageUris.get(2)).into(binding.imageView7);\r\n                            binding.frameLayout3.setVisibility(View.VISIBLE);\r\n                        }\r\n                        if(uris.size()>3 && imageUris.size()>3){\r\n                            Glide.with(this).load(imageUris.get(3)).into(binding.imageView8);\r\n                            binding.frameLayout4.setVisibility(View.VISIBLE);\r\n                        }\r\n                        binding.linearLayout.setVisibility(View.VISIBLE);\r\n\r\n                    } else {\r\n                        Log.d(\"PhotoPicker\", \"No media selected\");\r\n                    }\r\n                });\r\n        binding.imageButtonCamera.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                if(!Objects.isNull(imageUris) || !imageUris.isEmpty() || imageUris.size()<4){\r\n                    pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()\r\n                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)\r\n                            .build());\r\n                }\r\n                else{\r\n                    Toast.makeText(getContext(), \"Vui long xóa ảnh đã chọn để thêm ảnh mới\", Toast.LENGTH_SHORT).show();\r\n                }\r\n\r\n            }\r\n        });\r\n        binding.imageButton3.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                binding.frameLayout1.setVisibility(View.GONE);\r\n                binding.imageButton3.setVisibility(View.GONE);\r\n\r\n                if(!imageUris.isEmpty()){\r\n                    imageUris.remove(0);\r\n                }\r\n                if(imageUris.isEmpty()){\r\n                    binding.linearLayout.setVisibility(View.GONE);\r\n                }\r\n            }\r\n        });\r\n        binding.imageButton4.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                binding.frameLayout2.setVisibility(View.GONE);\r\n                binding.imageButton4.setVisibility(View.GONE);\r\n\r\n                if(!imageUris.isEmpty()){\r\n                    imageUris.remove(1);\r\n                }\r\n                if(imageUris.isEmpty()){\r\n                    binding.linearLayout.setVisibility(View.GONE);\r\n                }\r\n            }\r\n        });\r\n        binding.imageButton5.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                binding.frameLayout3.setVisibility(View.GONE);\r\n                binding.imageButton5.setVisibility(View.GONE);\r\n\r\n                if(!imageUris.isEmpty()){\r\n                    imageUris.remove(2);\r\n                }\r\n                if(imageUris.isEmpty()){\r\n                    binding.linearLayout.setVisibility(View.GONE);\r\n                }\r\n            }\r\n        });\r\n        binding.imageButton6.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                binding.imageView8.setVisibility(View.GONE);\r\n                binding.imageButton6.setVisibility(View.GONE);\r\n\r\n\r\n                if(!imageUris.isEmpty()){\r\n                    imageUris.remove(3);\r\n                }\r\n                if(imageUris.isEmpty()){\r\n                    binding.linearLayout.setVisibility(View.GONE);\r\n                }\r\n            }\r\n        });\r\n\r\n\r\n\r\n        loadCategory();\r\n        categoryAdapter = new CategoryAdapter(categories);\r\n        binding.rvCategories.setAdapter(categoryAdapter);\r\n        binding.rvCategories.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));\r\n\r\n\r\n\r\n        return binding.getRoot();\r\n\r\n    }\r\n\r\n\r\n\r\n    void addControl(View v)\r\n    {\r\n        button_post_product_continue = v.findViewById(R.id.button_post_product_continue);\r\n    }\r\n\r\n    void addEvents(View v) {\r\n        button_post_product_continue.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Fragment newFragment = new PostProductPriceFragment();\r\n                if(categoryAdapter.category==null){\r\n                    Toast.makeText(getContext(), \"Vui long chon danh muc\", Toast.LENGTH_SHORT).show();\r\n                    return;\r\n                }\r\n                ProductRequest product = new ProductRequest(binding.edtName.getText().toString(),binding.edtDes.getText().toString(),categoryAdapter.category.getId());\r\n                Bundle bundle = new Bundle();\r\n                bundle.putSerializable(\"postProduct\",product);\r\n                bundle.putParcelableArrayList(\"imageUris\", (ArrayList<Uri>) imageUris);\r\n                newFragment.setArguments(bundle);\r\n                FragmentTransaction transaction = getFragmentManager().beginTransaction();\r\n\r\n                transaction.replace(R.id.fragmentPostProduct, newFragment);\r\n\r\n                transaction.addToBackStack(null);\r\n                transaction.commit();\r\n            }\r\n        });\r\n    }\r\n\r\n    void loadCategory(){\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n        db.collection(\"categories\")\r\n                .orderBy(\"id\")\r\n                .get().addOnCompleteListener(task -> {\r\n                    if (task.isSuccessful()) {\r\n                        List<Category> categoryList = task.getResult().toObjects(Category.class);\r\n                        categories.addAll(categoryList);\r\n                        categoryAdapter.notifyDataSetChanged();\r\n                    } else {\r\n                        Log.e(\"HomeFragmentViewModel\", \"Error getting documents: \", task.getException());\r\n                    }\r\n                });\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPhotosFragment.java b/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPhotosFragment.java
+--- a/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPhotosFragment.java	(revision 228780504db3890093dbb6b5930f9132fc72f60c)
++++ b/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPhotosFragment.java	(date 1730875374236)
+@@ -20,49 +20,30 @@
+ import com.example.agrimart.R;
+ import com.example.agrimart.adapter.CategoryAdapter;
+ import com.example.agrimart.data.model.Category;
+-import com.example.agrimart.data.model.PostProduct;
+ import com.example.agrimart.data.model.ProductRequest;
+ import com.example.agrimart.databinding.FragmentPostProductPhotosBinding;
+ import com.google.firebase.firestore.FirebaseFirestore;
+ 
+-import java.io.File;
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.Objects;
+ 
+-
+-/**
+- * A simple {@link Fragment} subclass.
+- * Use the {@link PostProductPhotosFragment#newInstance} factory method to
+- * create an instance of this fragment.
+- */
+ public class PostProductPhotosFragment extends Fragment {
+ 
+-    // TODO: Rename parameter arguments, choose names that match
+-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+     private static final String ARG_PARAM1 = "param1";
+     private static final String ARG_PARAM2 = "param2";
+ 
+-    // TODO: Rename and change types of parameters
+     private String mParam1;
+     private String mParam2;
+     FragmentPostProductPhotosBinding binding;
+-    private List<Uri> imageUris=new ArrayList<>();
+-    private List<Category> categories=new ArrayList<>();
++    private List<Uri> imageUris = new ArrayList<>();
++    private List<Category> categories = new ArrayList<>();
+     private CategoryAdapter categoryAdapter;
++
+     public PostProductPhotosFragment() {
+         // Required empty public constructor
+     }
+ 
+-    /**
+-     * Use this factory method to create a new instance of
+-     * this fragment using the provided parameters.
+-     *
+-     * @param param1 Parameter 1.
+-     * @param param2 Parameter 2.
+-     * @return A new instance of fragment PostPhotosFragment.
+-     */
+-    // TODO: Rename and change types and number of parameters
+     public static PostProductPhotosFragment newInstance(String param1, String param2) {
+         PostProductPhotosFragment fragment = new PostProductPhotosFragment();
+         Bundle args = new Bundle();
+@@ -82,10 +63,10 @@
+     }
+ 
+     AppCompatButton button_post_product_continue;
++
+     @Override
+     public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                              Bundle savedInstanceState) {
+-        // Inflate the layout for this fragment
+         View view = inflater.inflate(R.layout.fragment_post_product_photos, container, false);
+         binding = FragmentPostProductPhotosBinding.bind(view);
+         addControl(view);
+@@ -94,147 +75,121 @@
+         ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia =
+                 registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(4), uris -> {
+                     if (!uris.isEmpty()) {
+-//                        imageUris.clear();
+                         imageUris.addAll(uris);
+-                        if(uris.size()>0 && imageUris.size()>0){
++                        if (uris.size() > 0 && imageUris.size() > 0) {
+                             Glide.with(this).load(imageUris.get(0)).into(binding.imageView5);
+                             binding.frameLayout1.setVisibility(View.VISIBLE);
+                         }
+-                        if(uris.size()>1 && imageUris.size()>1){
++                        if (uris.size() > 1 && imageUris.size() > 1) {
+                             Glide.with(this).load(imageUris.get(1)).into(binding.imageView6);
+                             binding.frameLayout2.setVisibility(View.VISIBLE);
+                         }
+-                        if(uris.size()>2 && imageUris.size()>2){
++                        if (uris.size() > 2 && imageUris.size() > 2) {
+                             Glide.with(this).load(imageUris.get(2)).into(binding.imageView7);
+                             binding.frameLayout3.setVisibility(View.VISIBLE);
+                         }
+-                        if(uris.size()>3 && imageUris.size()>3){
++                        if (uris.size() > 3 && imageUris.size() > 3) {
+                             Glide.with(this).load(imageUris.get(3)).into(binding.imageView8);
+                             binding.frameLayout4.setVisibility(View.VISIBLE);
+                         }
+                         binding.linearLayout.setVisibility(View.VISIBLE);
+-
+                     } else {
+                         Log.d("PhotoPicker", "No media selected");
+                     }
+                 });
+-        binding.imageButtonCamera.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View view) {
+-                if(!Objects.isNull(imageUris) || !imageUris.isEmpty() || imageUris.size()<4){
+-                    pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()
+-                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+-                            .build());
+-                }
+-                else{
+-                    Toast.makeText(getContext(), "Vui long xóa ảnh đã chọn để thêm ảnh mới", Toast.LENGTH_SHORT).show();
+-                }
+-
++
++        binding.imageButtonCamera.setOnClickListener(view1 -> {
++            if (!Objects.isNull(imageUris) || !imageUris.isEmpty() || imageUris.size() < 4) {
++                pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()
++                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
++                        .build());
++            } else {
++                Toast.makeText(getContext(), "Vui long xóa ảnh đã chọn để thêm ảnh mới", Toast.LENGTH_SHORT).show();
+             }
+         });
+-        binding.imageButton3.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View view) {
+-                binding.frameLayout1.setVisibility(View.GONE);
+-                binding.imageButton3.setVisibility(View.GONE);
++
++        binding.imageButton3.setOnClickListener(view12 -> {
++            binding.frameLayout1.setVisibility(View.GONE);
++            binding.imageButton3.setVisibility(View.GONE);
+ 
+-                if(!imageUris.isEmpty()){
+-                    imageUris.remove(0);
+-                }
+-                if(imageUris.isEmpty()){
+-                    binding.linearLayout.setVisibility(View.GONE);
+-                }
++            if (!imageUris.isEmpty()) {
++                imageUris.remove(0);
++            }
++            if (imageUris.isEmpty()) {
++                binding.linearLayout.setVisibility(View.GONE);
+             }
+         });
+-        binding.imageButton4.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View view) {
+-                binding.frameLayout2.setVisibility(View.GONE);
+-                binding.imageButton4.setVisibility(View.GONE);
++
++        binding.imageButton4.setOnClickListener(view13 -> {
++            binding.frameLayout2.setVisibility(View.GONE);
++            binding.imageButton4.setVisibility(View.GONE);
+ 
+-                if(!imageUris.isEmpty()){
+-                    imageUris.remove(1);
+-                }
+-                if(imageUris.isEmpty()){
+-                    binding.linearLayout.setVisibility(View.GONE);
+-                }
++            if (!imageUris.isEmpty()) {
++                imageUris.remove(1);
++            }
++            if (imageUris.isEmpty()) {
++                binding.linearLayout.setVisibility(View.GONE);
+             }
+         });
+-        binding.imageButton5.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View view) {
+-                binding.frameLayout3.setVisibility(View.GONE);
+-                binding.imageButton5.setVisibility(View.GONE);
++
++        binding.imageButton5.setOnClickListener(view14 -> {
++            binding.frameLayout3.setVisibility(View.GONE);
++            binding.imageButton5.setVisibility(View.GONE);
+ 
+-                if(!imageUris.isEmpty()){
+-                    imageUris.remove(2);
+-                }
+-                if(imageUris.isEmpty()){
+-                    binding.linearLayout.setVisibility(View.GONE);
+-                }
++            if (!imageUris.isEmpty()) {
++                imageUris.remove(2);
++            }
++            if (imageUris.isEmpty()) {
++                binding.linearLayout.setVisibility(View.GONE);
+             }
+         });
+-        binding.imageButton6.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View view) {
+-                binding.imageView8.setVisibility(View.GONE);
+-                binding.imageButton6.setVisibility(View.GONE);
++
++        binding.imageButton6.setOnClickListener(view15 -> {
++            binding.imageView8.setVisibility(View.GONE);
++            binding.imageButton6.setVisibility(View.GONE);
+ 
+-
+-                if(!imageUris.isEmpty()){
+-                    imageUris.remove(3);
+-                }
+-                if(imageUris.isEmpty()){
+-                    binding.linearLayout.setVisibility(View.GONE);
+-                }
++            if (!imageUris.isEmpty()) {
++                imageUris.remove(3);
++            }
++            if (imageUris.isEmpty()) {
++                binding.linearLayout.setVisibility(View.GONE);
+             }
+         });
+-
+-
+ 
+         loadCategory();
+-        categoryAdapter = new CategoryAdapter(categories);
++        categoryAdapter = new CategoryAdapter(categories, getContext());
+         binding.rvCategories.setAdapter(categoryAdapter);
+         binding.rvCategories.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+ 
+-
+-
+         return binding.getRoot();
+-
+     }
+ 
+-
+-
+-    void addControl(View v)
+-    {
++    void addControl(View v) {
+         button_post_product_continue = v.findViewById(R.id.button_post_product_continue);
+     }
+ 
+     void addEvents(View v) {
+-        button_post_product_continue.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View v) {
+-                Fragment newFragment = new PostProductPriceFragment();
+-                if(categoryAdapter.category==null){
+-                    Toast.makeText(getContext(), "Vui long chon danh muc", Toast.LENGTH_SHORT).show();
+-                    return;
+-                }
+-                ProductRequest product = new ProductRequest(binding.edtName.getText().toString(),binding.edtDes.getText().toString(),categoryAdapter.category.getId());
+-                Bundle bundle = new Bundle();
+-                bundle.putSerializable("postProduct",product);
+-                bundle.putParcelableArrayList("imageUris", (ArrayList<Uri>) imageUris);
+-                newFragment.setArguments(bundle);
+-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
++        button_post_product_continue.setOnClickListener(v1 -> {
++            Fragment newFragment = new PostProductPriceFragment();
++            if (categoryAdapter.category == null) {
++                Toast.makeText(getContext(), "Vui long chon danh muc", Toast.LENGTH_SHORT).show();
++                return;
++            }
++            ProductRequest product = new ProductRequest(binding.edtName.getText().toString(), binding.edtDes.getText().toString(), categoryAdapter.category.getId());
++            Bundle bundle = new Bundle();
++            bundle.putSerializable("postProduct", product);
++            bundle.putParcelableArrayList("imageUris", (ArrayList<Uri>) imageUris);
++            newFragment.setArguments(bundle);
++            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+ 
+-                transaction.replace(R.id.fragmentPostProduct, newFragment);
++            transaction.replace(R.id.fragmentPostProduct, newFragment);
+ 
+-                transaction.addToBackStack(null);
+-                transaction.commit();
+-            }
++            transaction.addToBackStack(null);
++            transaction.commit();
+         });
+     }
+ 
+-    void loadCategory(){
++    void loadCategory() {
+         FirebaseFirestore db = FirebaseFirestore.getInstance();
+         db.collection("categories")
+                 .orderBy("id")
+@@ -248,5 +203,4 @@
+                     }
+                 });
+     }
+-
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/example/agrimart/viewmodel/CategoryViewModel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/viewmodel/CategoryViewModel.java b/app/src/main/java/com/example/agrimart/viewmodel/CategoryViewModel.java
+new file mode 100644
+--- /dev/null	(date 1730874849905)
++++ b/app/src/main/java/com/example/agrimart/viewmodel/CategoryViewModel.java	(date 1730874849905)
+@@ -0,0 +1,29 @@
++package com.example.agrimart.viewmodel;
++
++import androidx.lifecycle.LiveData;
++import androidx.lifecycle.MutableLiveData;
++import androidx.lifecycle.ViewModel;
++
++import com.example.agrimart.data.model.Product;
++import com.google.firebase.firestore.FirebaseFirestore;
++
++import java.util.List;
++
++public class CategoryViewModel extends ViewModel {
++    private MutableLiveData<List<Product>> products = new MutableLiveData<>();
++    private FirebaseFirestore db = FirebaseFirestore.getInstance();
++
++    public LiveData<List<Product>> getProductsByCategory(String categoryId) {
++        db.collection("products")
++                .whereEqualTo("category_id", categoryId)
++                .get()
++                .addOnSuccessListener(queryDocumentSnapshots -> {
++                    List<Product> productList = queryDocumentSnapshots.toObjects(Product.class);
++                    products.setValue(productList);
++                })
++                .addOnFailureListener(e -> {
++                    // Handle error
++                });
++        return products;
++    }
++}
+\ No newline at end of file

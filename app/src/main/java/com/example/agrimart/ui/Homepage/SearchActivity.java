@@ -34,12 +34,13 @@ public class SearchActivity extends AppCompatActivity {
 
     SearchViewModel searchViewModel;
     ActivitySearchBinding binding;
-    List<Category> categories=new ArrayList<>();
+    List<Category> categories = new ArrayList<>();
     CategoryAdapter categoryAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        searchViewModel= new ViewModelProvider(this).get(SearchViewModel.class);
+        searchViewModel = new ViewModelProvider(this).get(SearchViewModel.class);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search);
         binding.setSearch(searchViewModel);
         EdgeToEdge.enable(this);
@@ -56,19 +57,12 @@ public class SearchActivity extends AppCompatActivity {
             window.setStatusBarColor(ContextCompat.getColor(this, R.color.green));
         }
 
-
         categoryAdapter = new CategoryAdapter(categories);
         binding.rvCategories.setLayoutManager(new GridLayoutManager(this, 4));
         binding.rvCategories.setAdapter(categoryAdapter);
         getCategories();
-        List<Product> products = new ArrayList<>();
-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
-//        products.add(new Product(R.drawable.banana, "Organic Bananas", "45.000"));
 
+        List<Product> products = new ArrayList<>();
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);
         binding.rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         binding.rvProducts.addItemDecoration(new SpacesItemDecoration(spacingInPixels));
@@ -79,7 +73,6 @@ public class SearchActivity extends AppCompatActivity {
         });
         binding.rvProducts.setAdapter(productAdapter);
         searchViewModel.setProducts(products);
-
     }
 
     private void getCategories() {
@@ -91,9 +84,7 @@ public class SearchActivity extends AppCompatActivity {
                 categories.addAll(task.getResult().toObjects(Category.class));
                 this.categories.addAll(categories);
                 categoryAdapter.notifyDataSetChanged();
-
             }
         });
-
     }
 }

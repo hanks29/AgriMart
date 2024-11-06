@@ -16,7 +16,6 @@
         android:layout_margin="8dp"
         android:clipToPadding="false">
 
-        <!-- ImageView chiếm toàn bộ chiều rộng và nằm trên cùng của CardView -->
         <ImageView
             android:id="@+id/imgPro"
             android:layout_width="match_parent"
@@ -36,7 +35,7 @@
                 android:layout_width="129dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textColor="#333333"
                 android:letterSpacing="0.01"
                 android:layout_marginStart="15dp"

@@ -23,7 +23,6 @@ public class YourProductListingsActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Add ProductPostListFragment to the container
         if (savedInstanceState == null) {
             Fragment productPostListFragment = new YourProductListingsFragment();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

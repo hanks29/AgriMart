@@ -93,8 +93,6 @@ public class PostProductPhotosFragment extends Fragment {
 
         ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia =
                 registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(4), uris -> {
-                    // Callback is invoked after the user selects media items or closes the
-                    // photo picker.
                     if (!uris.isEmpty()) {
 //                        imageUris.clear();
                         imageUris.addAll(uris);
@@ -216,7 +214,6 @@ public class PostProductPhotosFragment extends Fragment {
         button_post_product_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Tạo một instance của Fragment mới
                 Fragment newFragment = new PostProductPriceFragment();
                 if(categoryAdapter.category==null){
                     Toast.makeText(getContext(), "Vui long chon danh muc", Toast.LENGTH_SHORT).show();
@@ -227,15 +224,11 @@ public class PostProductPhotosFragment extends Fragment {
                 bundle.putSerializable("postProduct",product);
                 bundle.putParcelableArrayList("imageUris", (ArrayList<Uri>) imageUris);
                 newFragment.setArguments(bundle);
-                // Lấy FragmentManager và bắt đầu giao dịch
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                // Thay thế fragment hiện tại bằng fragment mới
                 transaction.replace(R.id.fragmentPostProduct, newFragment);
 
-                // Nếu bạn muốn quay lại fragment cũ khi nhấn nút "Back", hãy thêm giao dịch vào back stack
                 transaction.addToBackStack(null);
-                // Hoàn tất giao dịch
                 transaction.commit();
             }
         });

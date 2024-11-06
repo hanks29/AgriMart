@@ -44,7 +44,6 @@ public class PostProductPriceFragment extends Fragment {
 
     private int count = 0;
     public PostProductPriceFragment() {
-        // Required empty public constructor
     }
     private FragmentPostProductPriceBinding binding;
 
@@ -74,7 +73,7 @@ public class PostProductPriceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_post_product_price, container, false);
         binding = FragmentPostProductPriceBinding.bind(view);
         AppCompatButton btnPostProduct = view.findViewById(R.id.btnPostPro);
-        // Set the date 5 days from now to TextView
+
 
 
 

@@ -23,6 +23,7 @@ import com.example.agrimart.data.model.AddressRequestProduct;
 import com.example.agrimart.data.model.PostProduct;
 import com.example.agrimart.data.model.ProductRequest;
 import com.example.agrimart.databinding.FragmentPostProductPriceBinding;
+import com.example.agrimart.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -46,7 +47,7 @@ import java.util.Map;
 public class PostProductPriceFragment extends Fragment {
 
     private TextView textViewDate;
-    private ProductRequest product=new ProductRequest();
+    private ProductRequest product = new ProductRequest();
     private List<Uri> imageUris;
 
     private int count = 0;
@@ -67,12 +68,11 @@ public class PostProductPriceFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            product= (ProductRequest) getArguments().getSerializable("postProduct");
+            product = (ProductRequest) getArguments().getSerializable("postProduct");
             product.setImageUrls(new ArrayList<>());
-            imageUris=getArguments().getParcelableArrayList("imageUris");
+            imageUris = getArguments().getParcelableArrayList("imageUris");
         }
     }
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -80,11 +80,6 @@ public class PostProductPriceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_post_product_price, container, false);
         binding = FragmentPostProductPriceBinding.bind(view);
         AppCompatButton btnPostProduct = view.findViewById(R.id.btnPostPro);
-
-
-
-
-
 
         binding.btnPostPro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,11 +90,7 @@ public class PostProductPriceFragment extends Fragment {
         return binding.getRoot();
     }
 
-
-
-
     private void uploadImages() {
-
         for (Uri imageUri : imageUris) {
             StorageReference imageRef = FirebaseStorage.getInstance().getReference().child("products").child(String.valueOf(System.currentTimeMillis()));
             imageRef.putFile(imageUri)
@@ -113,7 +104,7 @@ public class PostProductPriceFragment extends Fragment {
                                         public void onSuccess(Uri uri) {
                                             count++;
                                             product.getImageUrls().add(uri.toString());
-                                            if(count==imageUris.size()){
+                                            if (count == imageUris.size()) {
                                                 product.setPrice(Double.parseDouble(binding.edtPrice.getText().toString()));
                                                 product.setQuantity(Integer.parseInt(binding.edtQuantity.getText().toString()));
                                                 product.setStatus("pending");
@@ -122,11 +113,11 @@ public class PostProductPriceFragment extends Fragment {
                                                 String currentDate = sdf.format(new Date());
                                                 String createdDate = String.valueOf(currentDate);
                                                 product.setCreatedAt(createdDate);
-                                                FirebaseFirestore db=FirebaseFirestore.getInstance();
+                                                FirebaseFirestore db = FirebaseFirestore.getInstance();
 
                                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-                                                if(user!=null){
+                                                if (user != null) {
                                                     String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                                     product.setStoreId(uid);
                                                 }
@@ -138,9 +129,9 @@ public class PostProductPriceFragment extends Fragment {
                                                         .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                                             @Override
                                                             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                                                if(queryDocumentSnapshots.getDocuments().size()>0){
-                                                                    DocumentSnapshot document=queryDocumentSnapshots.getDocuments().get(0);
-                                                                    Map<String,Object> storeAddress= (Map<String, Object>) document.get("store_address");
+                                                                if (queryDocumentSnapshots.getDocuments().size() > 0) {
+                                                                    DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                                                                    Map<String, Object> storeAddress = (Map<String, Object>) document.get("store_address");
 
                                                                     if (storeAddress != null) {
                                                                         String city = (String) storeAddress.get("city");
@@ -148,7 +139,7 @@ public class PostProductPriceFragment extends Fragment {
                                                                         String ward = (String) storeAddress.get("ward");
                                                                         String street = (String) storeAddress.get("street");
                                                                         product.setAddress(new AddressRequestProduct(city, district, ward, street));
-                                                                        // Use the retrieved values as needed
+
                                                                         Log.d("Firestore", "City: " + city);
                                                                         Log.d("Firestore", "District: " + district);
                                                                         Log.d("Firestore", "Ward: " + ward);
@@ -156,34 +147,28 @@ public class PostProductPriceFragment extends Fragment {
                                                                         product.setProductId(productId);
                                                                         newProductRef.set(product)
                                                                                 .addOnSuccessListener(documentReference -> {
-                                                                                    Toast.makeText(requireContext(), "Tạo sản phẩm thành công", Toast.LENGTH_SHORT).show();
-                                                                                    Intent intent = new Intent(requireContext(), YourProductListingsActivity.class);
+                                                                                    Toast.makeText(requireContext(), "Đăng sản phẩm thành công", Toast.LENGTH_SHORT).show();
+                                                                                    Intent intent = new Intent(requireContext(), MainActivity.class);
+                                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                                                                     startActivity(intent);
+                                                                                    requireActivity().finish();
                                                                                 })
                                                                                 .addOnFailureListener(e -> {
-                                                                                    Toast.makeText(requireContext(), "Tạo sản phẩm thất bại", Toast.LENGTH_SHORT).show();
+                                                                                    Toast.makeText(requireContext(), "Đăng sản phẩm thất bại", Toast.LENGTH_SHORT).show();
                                                                                 });
                                                                     }
                                                                 } else {
                                                                     Log.d("Firestore", "No such document");
                                                                 }
-
                                                             }
                                                         });
-
                                             }
-
-
-
                                         }
                                     });
-
                                 }
                             }
                         }
                     });
-
         }
-
     }
 }

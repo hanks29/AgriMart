@@ -43,6 +43,45 @@ public class Product implements Serializable {
         this.soldQuantity = soldQuantity;
     }
 
+    public static class Address {
+        private String city;
+        private String district;
+        private String street;
+        private String ward;
+
+        public String getCity() {
+            return city;
+        }
+
+        public void setCity(String city) {
+            this.city = city;
+        }
+
+        public String getDistrict() {
+            return district;
+        }
+
+        public void setDistrict(String district) {
+            this.district = district;
+        }
+
+        public String getStreet() {
+            return street;
+        }
+
+        public void setStreet(String street) {
+            this.street = street;
+        }
+
+        public String getWard() {
+            return ward;
+        }
+
+        public void setWard(String ward) {
+            this.ward = ward;
+        }
+    }
+
     public Product(String imageUrl, String name, double price) {
         this.images = Collections.singletonList(imageUrl);
         this.name = name;

@@ -14,8 +14,7 @@ import java.util.List;
 public class HomeFragmentViewModel extends ViewModel {
     public MutableLiveData<List<Category>> categories;
     public MutableLiveData<List<Product>> products;
-
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public HomeFragmentViewModel() {
         categories = new MutableLiveData<>();
@@ -50,3 +49,4 @@ public class HomeFragmentViewModel extends ViewModel {
                 });
     }
 }
+

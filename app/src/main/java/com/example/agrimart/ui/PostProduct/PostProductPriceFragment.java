@@ -19,6 +19,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 
 import com.example.agrimart.R;
+import com.example.agrimart.data.model.AddressRequestProduct;
 import com.example.agrimart.data.model.PostProduct;
 import com.example.agrimart.data.model.ProductRequest;
 import com.example.agrimart.databinding.FragmentPostProductPriceBinding;
@@ -27,14 +28,19 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class PostProductPriceFragment extends Fragment {
 
@@ -110,23 +116,57 @@ public class PostProductPriceFragment extends Fragment {
                                                 product.setPrice(Double.parseDouble(binding.edtPrice.getText().toString()));
                                                 product.setQuantity(Integer.parseInt(binding.edtQuantity.getText().toString()));
                                                 product.setStatus("pending");
+
+                                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                                String currentDate = sdf.format(new Date());
+                                                String createdDate = String.valueOf(currentDate);
+                                                product.setCreatedAt(createdDate);
                                                 FirebaseFirestore db=FirebaseFirestore.getInstance();
 
-
                                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
                                                 if(user!=null){
                                                     String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                                     product.setStoreId(uid);
                                                 }
-                                                db.collection("products").add(product)
-                                                        .addOnSuccessListener(documentReference -> {
-                                                            Toast.makeText(requireContext(), "Tạo sản phẩm thành công", Toast.LENGTH_SHORT).show();
-                                                            Intent intent = new Intent(requireContext(), YourProductListingsActivity.class);
-                                                            startActivity(intent);
-                                                        })
-                                                        .addOnFailureListener(e -> {
-                                                            Toast.makeText(requireContext(), "Tạo sản phẩm thất bại", Toast.LENGTH_SHORT).show();
+                                                db.collection("users")
+                                                        .whereEqualTo("email", FirebaseAuth.getInstance().getCurrentUser().getEmail())
+                                                        .get()
+                                                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                                            @Override
+                                                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                                                if(queryDocumentSnapshots.getDocuments().size()>0){
+                                                                    DocumentSnapshot document=queryDocumentSnapshots.getDocuments().get(0);
+                                                                    Map<String,Object> storeAddress= (Map<String, Object>) document.get("store_address");
+
+                                                                    if (storeAddress != null) {
+                                                                        String city = (String) storeAddress.get("city");
+                                                                        String district = (String) storeAddress.get("district");
+                                                                        String ward = (String) storeAddress.get("ward");
+                                                                        String street = (String) storeAddress.get("street");
+                                                                        product.setAddress(new AddressRequestProduct(city, district, ward, street));
+                                                                        // Use the retrieved values as needed
+                                                                        Log.d("Firestore", "City: " + city);
+                                                                        Log.d("Firestore", "District: " + district);
+                                                                        Log.d("Firestore", "Ward: " + ward);
+                                                                        Log.d("Firestore", "Street: " + street);
+                                                                        db.collection("products").add(product)
+                                                                                .addOnSuccessListener(documentReference -> {
+                                                                                    Toast.makeText(requireContext(), "Tạo sản phẩm thành công", Toast.LENGTH_SHORT).show();
+                                                                                    Intent intent = new Intent(requireContext(), YourProductListingsActivity.class);
+                                                                                    startActivity(intent);
+                                                                                })
+                                                                                .addOnFailureListener(e -> {
+                                                                                    Toast.makeText(requireContext(), "Tạo sản phẩm thất bại", Toast.LENGTH_SHORT).show();
+                                                                                });
+                                                                    }
+                                                                } else {
+                                                                    Log.d("Firestore", "No such document");
+                                                                }
+
+                                                            }
                                                         });
+
                                             }
 
 

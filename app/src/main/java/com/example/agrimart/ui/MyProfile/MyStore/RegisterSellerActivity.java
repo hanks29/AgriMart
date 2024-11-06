@@ -71,18 +71,19 @@ public class RegisterSellerActivity extends AppCompatActivity {
         });
         loadProvince();
         binding.btnRegister.setOnClickListener(v -> {
-//            if(binding.edtStreet.getText().toString().isEmpty() &&
-//                    binding.edtNameStore.getText().toString().isEmpty()||
-//                    binding.edtPhoneNumber.getText().toString().isEmpty()||
-//                    Objects.equals(selectedDistrictName, "") ||
-//                    Objects.equals(selectedProvinceName, "")||
-//                    Objects.equals(selectedWardName, "")
-//            ) {
-//                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
-//            }else{
-//                updateUserInformation();
-//            }
-            updateUserInformation();
+            if(binding.edtStreet.getText().toString().isEmpty() &&
+                    binding.edtNameStore.getText().toString().isEmpty()||
+                    binding.edtPhoneNumber.getText().toString().isEmpty()||
+                    Objects.equals(selectedDistrictName, "") ||
+                    Objects.equals(selectedProvinceName, "")||
+                    Objects.equals(selectedWardName, "") ||
+                    Objects.isNull(imageUri)
+            ) {
+                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+            }else{
+                updateUserInformation();
+            }
+//            updateUserInformation();
         });
         ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -132,6 +133,14 @@ public class RegisterSellerActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("user_role", "seller");
+
+        Map<String,Object> userAddress=new HashMap<>();
+        userAddress.put("city",selectedProvinceName);
+        userAddress.put("district",selectedDistrictName);
+        userAddress.put("ward",selectedWardName);
+        userAddress.put("street",binding.edtStreet.getText().toString());
+
+        updates.put("store_address",userAddress);
         editor.apply();
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(String.valueOf(System.currentTimeMillis()));

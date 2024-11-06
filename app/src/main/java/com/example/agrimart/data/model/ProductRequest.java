@@ -10,6 +10,8 @@ public class ProductRequest implements Serializable {
     private String name;
     private double price;
 
+    @PropertyName("product_id")
+    private String productId;
 
     @PropertyName("category_id")
     private String category;
@@ -138,5 +140,15 @@ public class ProductRequest implements Serializable {
     @PropertyName("updated_at")
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @PropertyName("product_id")
+    public String getProductId() {
+        return productId;
+    }
+
+    @PropertyName("product_id")
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 }

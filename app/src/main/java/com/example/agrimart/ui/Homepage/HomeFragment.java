@@ -24,8 +24,10 @@ import com.example.agrimart.adapter.CategoryAdapter;
 import com.example.agrimart.adapter.ProductAdapter;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.databinding.FragmentHomeBinding;
+import com.example.agrimart.ui.Explore.ExploreFragment;
 import com.example.agrimart.ui.ProductPage.ProductDetailActivity;
 import com.example.agrimart.viewmodel.HomeFragmentViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
@@ -69,12 +71,25 @@ public class HomeFragment extends Fragment {
 
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
             if (categories != null) {
-                CategoryAdapter categoryAdapter = new CategoryAdapter(categories);
+                CategoryAdapter categoryAdapter = new CategoryAdapter(categories, category -> {
+                    // Khi chọn một category, chuyển đến ExploreFragment và chọn mục category
+                    ExploreFragment newFragment = new ExploreFragment(category.getId());
+
+                    // Thay đổi mục đã chọn trong BottomNavigationView
+                    BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigation);
+                    if (bottomNavigationView != null) {
+                        bottomNavigationView.setSelectedItemId(R.id.category); // Chọn mục category
+                    }
+
+                    loadFragment(newFragment);
+                });
+
                 binding.rvCategories.setAdapter(categoryAdapter);
                 binding.rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
                 Log.d(TAG, "Categories loaded: " + categories.size());
             }
         });
+
 
         viewModel.products.observe(getViewLifecycleOwner(), products -> {
             if (products != null) {

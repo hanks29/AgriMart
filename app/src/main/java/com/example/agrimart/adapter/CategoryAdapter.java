@@ -17,13 +17,17 @@ import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder> {
     private List<Category> categories;
-
+    private OnCategoryClickListener listener;
     private int selectedPosition = -1;
     public Category category;
     public CategoryAdapter(List<Category> categories) {
         this.categories = categories;
     }
 
+    public CategoryAdapter(List<Category> categories, OnCategoryClickListener listener) {
+        this.categories = categories;
+        this.listener = listener;
+    }
 
     @NonNull
     @Override
@@ -49,6 +53,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
             notifyItemChanged(prePos);
             notifyItemChanged(holder.getAdapterPosition());
 
+            if (listener != null) {
+                listener.onCategoryClick(category);
+            }
         });
     }
 
@@ -72,6 +79,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
 
             binding.tvName.setText(category.getName());
         }
+    }
+
+    public interface OnCategoryClickListener {
+        void onCategoryClick(Category category);
     }
 }
 

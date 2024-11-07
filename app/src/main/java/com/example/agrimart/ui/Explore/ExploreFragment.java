@@ -29,15 +29,24 @@ import java.util.List;
 public class ExploreFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
-    private ViewPagerAdapter viewPagerAdapter;
     private ImageButton filterIcon;
     private FragmentExploreBinding binding;
     private ExploreFragmentViewModel viewModel;
+    private String categoryID;
+
+    public ExploreFragment(String categoryID) {
+        this.categoryID = categoryID;
+    }
+    public ExploreFragment() {
+
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding= DataBindingUtil.inflate(inflater,R.layout.fragment_explore,container,false);
-        viewModel=new ViewModelProvider(this).get(ExploreFragmentViewModel.class);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_explore, container, false);
+        viewModel = new ViewModelProvider(this).get(ExploreFragmentViewModel.class);
         binding.setViewmodel(viewModel);
         View view = binding.getRoot();
 
@@ -45,54 +54,50 @@ public class ExploreFragment extends Fragment {
         viewPager = view.findViewById(R.id.viewPager);
         filterIcon = view.findViewById(R.id.filter_icon);
 
-        binding.setViewmodel(viewModel);
         viewModel.getData();
 
-
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
-            Log.d("khanhmfemf", "onCreateView: " + categories.size());
             List<Fragment> fragments = new ArrayList<>();
             List<String> titles = new ArrayList<>();
+            int selectedCategoryIndex = -1; // Lưu chỉ số category được chọn (nếu có)
+
+            // Kiểm tra nếu có categoryID và chọn category tương ứng
+            if (categoryID != null && !categoryID.isEmpty()) {
+                for (int i = 0; i < categories.size(); i++) {
+                    if (categories.get(i).getId().equals(categoryID)) {
+                        selectedCategoryIndex = i;  // Ghi nhận chỉ số category được chọn
+                        break;
+                    }
+                }
+            }
+
+            // Thêm các fragment cho tất cả các category vào ViewPager
             for (int i = 0; i < categories.size(); i++) {
-                fragments.add(new CategoryFragment(categories.get(i).getName()));
+                fragments.add(new CategoryFragment(categories.get(i).getId()));
                 titles.add(categories.get(i).getName());
             }
-            viewPagerAdapter = new ViewPagerAdapter(requireActivity(), fragments, titles);
+
+            ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(requireActivity(), fragments, titles);
             viewPager.setAdapter(viewPagerAdapter);
-            Log.d("khanhmfemf", "hi: " + viewPager.getAdapter().getItemCount());
-            new TabLayoutMediator(tabLayout,viewPager,(tab,pos)->{
-                tab.setText(titles.get(pos));
-                Log.d("khanhmfemf", "onCreateView: " + tab.getTabLabelVisibility());
 
-            }).attach();
-            new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(titles.get(position))).attach();
+            // Nếu có categoryID, chọn tab tương ứng
+            if (selectedCategoryIndex != -1) {
+                viewPager.setCurrentItem(selectedCategoryIndex);  // Chọn category tương ứng trong ViewPager
+            }
 
-            filterIcon.setOnClickListener(v -> showFilterMenu(v));
+            new TabLayoutMediator(tabLayout, viewPager, (tab, pos) -> tab.setText(titles.get(pos))).attach();
+
+            filterIcon.setOnClickListener(this::showFilterMenu);
         });
 
         return view;
     }
 
+
     private void showFilterMenu(View v) {
         PopupMenu popup = new PopupMenu(getContext(), v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.filter_menu, popup.getMenu());
-        //popup.setOnMenuItemClickListener(this::onFilterItemSelected);
         popup.show();
     }
-
-//    private boolean onFilterItemSelected(MenuItem item) {
-//        int itemId = item.getItemId();
-//        if (itemId == R.id.filter_option1)
-//            return true;
-//        } else if (itemId == R.id.filter_option2) {
-//            return true;
-//        } else if (itemId == R.id.filter_option3) {
-//            return true;
-//        } else if (itemId == R.id.filter_option4) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
 }

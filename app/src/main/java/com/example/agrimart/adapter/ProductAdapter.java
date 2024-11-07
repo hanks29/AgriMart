@@ -14,13 +14,18 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
+    public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
     private List<Product> products;
     private OnItemClickListener listener;
 
     public ProductAdapter(List<Product> products, OnItemClickListener listener) {
         this.products = products;
         this.listener = listener;
+    }
+
+    public void updateProducts(List<Product> newProducts) {
+         this.products = newProducts;
+         notifyDataSetChanged();
     }
 
     public interface OnItemClickListener {
@@ -73,4 +78,5 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             binding.executePendingBindings();
         }
     }
+
 }

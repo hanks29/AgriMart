@@ -23,7 +23,6 @@ import com.example.agrimart.data.model.AddressRequestProduct;
 import com.example.agrimart.data.model.PostProduct;
 import com.example.agrimart.data.model.ProductRequest;
 import com.example.agrimart.databinding.FragmentPostProductPriceBinding;
-import com.example.agrimart.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -47,9 +46,10 @@ import java.util.Map;
 public class PostProductPriceFragment extends Fragment {
 
     private TextView textViewDate;
-    private ProductRequest product = new ProductRequest();
+    private ProductRequest product=new ProductRequest();
     private List<Uri> imageUris;
 
+    private String categoryName;
     private int count = 0;
     public PostProductPriceFragment() {
     }
@@ -68,11 +68,14 @@ public class PostProductPriceFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            product = (ProductRequest) getArguments().getSerializable("postProduct");
+            product= (ProductRequest) getArguments().getSerializable("postProduct");
             product.setImageUrls(new ArrayList<>());
-            imageUris = getArguments().getParcelableArrayList("imageUris");
+            imageUris=getArguments().getParcelableArrayList("imageUris");
+            Log.d("ImageUris", "onCreate: "+product.getName());
+            categoryName=getArguments().getString("category");
         }
     }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -80,6 +83,11 @@ public class PostProductPriceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_post_product_price, container, false);
         binding = FragmentPostProductPriceBinding.bind(view);
         AppCompatButton btnPostProduct = view.findViewById(R.id.btnPostPro);
+
+
+
+
+
 
         binding.btnPostPro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,85 +98,108 @@ public class PostProductPriceFragment extends Fragment {
         return binding.getRoot();
     }
 
+
     private void uploadImages() {
         for (Uri imageUri : imageUris) {
-            StorageReference imageRef = FirebaseStorage.getInstance().getReference().child("products").child(String.valueOf(System.currentTimeMillis()));
-            imageRef.putFile(imageUri)
-                    .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                if (task.isComplete()) {
-                                    imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            count++;
-                                            product.getImageUrls().add(uri.toString());
-                                            if (count == imageUris.size()) {
-                                                product.setPrice(Double.parseDouble(binding.edtPrice.getText().toString()));
-                                                product.setQuantity(Integer.parseInt(binding.edtQuantity.getText().toString()));
-                                                product.setStatus("pending");
+            uploadImageToFirebase(imageUri);
+        }
+    }
 
-                                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                                                String currentDate = sdf.format(new Date());
-                                                String createdDate = String.valueOf(currentDate);
-                                                product.setCreatedAt(createdDate);
-                                                FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private void uploadImageToFirebase(Uri imageUri) {
+        StorageReference imageRef = FirebaseStorage.getInstance().getReference()
+                .child("products")
+                .child(String.valueOf(System.currentTimeMillis()));
 
-                                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        imageRef.putFile(imageUri)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        getImageDownloadUrl(imageRef);
+                    } else {
+                        Toast.makeText(requireContext(), "Lỗi khi tải ảnh lên", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
-                                                if (user != null) {
-                                                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                                    product.setStoreId(uid);
-                                                }
-                                                DocumentReference newProductRef = db.collection("products").document();
-                                                String productId = newProductRef.getId();
-                                                db.collection("users")
-                                                        .whereEqualTo("email", FirebaseAuth.getInstance().getCurrentUser().getEmail())
-                                                        .get()
-                                                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                                            @Override
-                                                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                                                if (queryDocumentSnapshots.getDocuments().size() > 0) {
-                                                                    DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
-                                                                    Map<String, Object> storeAddress = (Map<String, Object>) document.get("store_address");
+    private void getImageDownloadUrl(StorageReference imageRef) {
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            count++;
+            product.getImageUrls().add(uri.toString());
 
-                                                                    if (storeAddress != null) {
-                                                                        String city = (String) storeAddress.get("city");
-                                                                        String district = (String) storeAddress.get("district");
-                                                                        String ward = (String) storeAddress.get("ward");
-                                                                        String street = (String) storeAddress.get("street");
-                                                                        product.setAddress(new AddressRequestProduct(city, district, ward, street));
+            if (count == imageUris.size()) {
+                saveProductToFirestore();
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(requireContext(), "Lỗi khi lấy URL ảnh", Toast.LENGTH_SHORT).show();
+        });
+    }
 
-                                                                        Log.d("Firestore", "City: " + city);
-                                                                        Log.d("Firestore", "District: " + district);
-                                                                        Log.d("Firestore", "Ward: " + ward);
-                                                                        Log.d("Firestore", "Street: " + street);
-                                                                        product.setProductId(productId);
-                                                                        newProductRef.set(product)
-                                                                                .addOnSuccessListener(documentReference -> {
-                                                                                    Toast.makeText(requireContext(), "Đăng sản phẩm thành công", Toast.LENGTH_SHORT).show();
-                                                                                    Intent intent = new Intent(requireContext(), MainActivity.class);
-                                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                                                    startActivity(intent);
-                                                                                    requireActivity().finish();
-                                                                                })
-                                                                                .addOnFailureListener(e -> {
-                                                                                    Toast.makeText(requireContext(), "Đăng sản phẩm thất bại", Toast.LENGTH_SHORT).show();
-                                                                                });
-                                                                    }
-                                                                } else {
-                                                                    Log.d("Firestore", "No such document");
-                                                                }
-                                                            }
-                                                        });
-                                            }
-                                        }
-                                    });
-                                }
+    private void saveProductToFirestore() {
+        product.setPrice(Double.parseDouble(binding.edtPrice.getText().toString()));
+        product.setQuantity(Integer.parseInt(binding.edtQuantity.getText().toString()));
+        product.setStatus("pending");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = sdf.format(new Date());
+        product.setCreatedAt(currentDate);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            product.setStoreId(user.getUid());
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference newProductRef = db.collection("products").document();
+        String productId = newProductRef.getId();
+        product.setProductId(productId);
+
+        getUserStoreAddressAndSave(db, newProductRef);
+    }
+
+    private void getUserStoreAddressAndSave(FirebaseFirestore db, DocumentReference newProductRef) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+            db.collection("users")
+                    .whereEqualTo("email", currentUser.getEmail())
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                            Map<String, Object> storeAddress = (Map<String, Object>) document.get("store_address");
+
+                            if (storeAddress != null) {
+                                String city = (String) storeAddress.get("city");
+                                String district = (String) storeAddress.get("district");
+                                String ward = (String) storeAddress.get("ward");
+                                String street = (String) storeAddress.get("street");
+
+                                product.setAddress(new AddressRequestProduct(city, district, ward, street));
+                                saveProduct(newProductRef);
                             }
+                        } else {
+                            Log.d("Firestore", "Không tìm thấy tài liệu người dùng.");
                         }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(requireContext(), "Lỗi khi lấy địa chỉ cửa hàng", Toast.LENGTH_SHORT).show();
                     });
         }
+    }
+
+    private void saveProduct(DocumentReference newProductRef) {
+        newProductRef.set(product)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(requireContext(), "Tạo sản phẩm thành công", Toast.LENGTH_SHORT).show();
+                    // Intent để mở ProductPreviewActivity nếu cần
+                    Intent intent = new Intent(requireContext(), ProductPreviewActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("product", product);
+                    intent.putExtras(bundle);
+                    intent.putExtra("category", categoryName);
+                    startActivity(intent);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(requireContext(), "Tạo sản phẩm thất bại", Toast.LENGTH_SHORT).show();
+                });
     }
 }

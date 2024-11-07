@@ -175,10 +175,12 @@ public class PostProductPhotosFragment extends Fragment {
                 Toast.makeText(getContext(), "Vui long chon danh muc", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             ProductRequest product = new ProductRequest(binding.edtName.getText().toString(), binding.edtDes.getText().toString(), categoryAdapter.category.getId());
             Bundle bundle = new Bundle();
             bundle.putSerializable("postProduct", product);
             bundle.putParcelableArrayList("imageUris", (ArrayList<Uri>) imageUris);
+            bundle.putString("category", categoryAdapter.category.getId());
             newFragment.setArguments(bundle);
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 

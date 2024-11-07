@@ -15,6 +15,7 @@ public class ProductRequest implements Serializable {
 
     @PropertyName("category_id")
     private String category;
+
     private String description;
 
     @PropertyName("images")

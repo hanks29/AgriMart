@@ -85,4 +85,3 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
         void onCategoryClick(Category category);
     }
 }
-

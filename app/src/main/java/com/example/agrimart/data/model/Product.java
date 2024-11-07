@@ -1,10 +1,13 @@
 package com.example.agrimart.data.model;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 public class Product implements Serializable {
+
     private String productId;
     private String name;
     private double price;
@@ -38,6 +41,45 @@ public class Product implements Serializable {
         this.weight = weight;
         this.width = width;
         this.soldQuantity = soldQuantity;
+    }
+
+    public static class Address {
+        private String city;
+        private String district;
+        private String street;
+        private String ward;
+
+        public String getCity() {
+            return city;
+        }
+
+        public void setCity(String city) {
+            this.city = city;
+        }
+
+        public String getDistrict() {
+            return district;
+        }
+
+        public void setDistrict(String district) {
+            this.district = district;
+        }
+
+        public String getStreet() {
+            return street;
+        }
+
+        public void setStreet(String street) {
+            this.street = street;
+        }
+
+        public String getWard() {
+            return ward;
+        }
+
+        public void setWard(String ward) {
+            this.ward = ward;
+        }
     }
 
     public Product(String imageUrl, String name, double price) {

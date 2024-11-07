@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,18 +94,27 @@ public class YourProductListingsFragment extends Fragment {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("products")
                     .whereEqualTo("storeId",uid)
-                    .whereEqualTo("status","approved")
+//                    .whereEqualTo("status","pending")
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
 
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                ProductRequest product = document.toObject(ProductRequest.class);
+//                                ProductRequest product = document.toObject(ProductRequest.class);
+                                String name=document.getData().get("name")!=null?document.getData().get("name").toString():"";
+                                double price=0;
+                                if(document.getData().get("price")!=null){
+                                    price=Double.parseDouble(document.getData().get("price").toString());
+                                }
+                                List<String> images= (List<String>) document.getData().get("images");
+                                String imageUrl=(images!=null && !images.isEmpty())?images.get(0):"https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/notfound.jpg?alt=media&token=40e61714-5a10-4352-918c-7e5e2643a1fe";
+
+                                Log.d("khanekhan", document.getId() + " => " + document.getData());
                                 productResponseList.add(
                                         new ProductResponse(
-                                                product.getName(),
-                                                product.getPrice(),
-                                                product.getImageUrls().isEmpty() ? "https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/notfound.jpg?alt=media&token=40e61714-5a10-4352-918c-7e5e2643a1fe" : product.getImageUrls().get(0)
+                                                name,
+                                                price,
+                                                imageUrl
                                         )
                                 );
                             }

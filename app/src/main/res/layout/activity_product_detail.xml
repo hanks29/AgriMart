@@ -11,7 +11,7 @@
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:padding="8dp">
 
         <ImageButton
@@ -41,7 +41,7 @@
             <com.denzcoskun.imageslider.ImageSlider
                 android:id="@+id/product_image"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="300dp"
                 android:background="@null"
                 app:iss_auto_cycle="true"
                 app:iss_period="1000"
@@ -276,7 +276,7 @@
                         android:id="@+id/user_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="User name"
+                        android:text="Huy Long"
                         android:textStyle="bold"
                         android:textSize="16sp"
                         android:textColor="#000000" />
@@ -285,7 +285,7 @@
                         android:id="@+id/userRating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:rating="3"
+                        android:rating="4.5"
                         style="?android:attr/ratingBarStyleIndicator"
                         android:progressTint="#FFCC01"/>
 
@@ -294,7 +294,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="@string/user_review"
+                        android:text="Ngon, giá hợp lý"
                         android:textSize="14sp"
                         android:textColor="#616161" />
                 </LinearLayout>

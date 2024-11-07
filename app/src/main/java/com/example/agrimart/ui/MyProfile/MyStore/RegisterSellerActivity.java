@@ -167,6 +167,7 @@ public class RegisterSellerActivity extends AppCompatActivity {
                                                         Log.w("Register", "Error updating document", e);
                                                     });
                                         }
+
                                     }
                                 });
                             }

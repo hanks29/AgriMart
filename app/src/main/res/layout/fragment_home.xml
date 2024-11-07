@@ -80,6 +80,7 @@
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/header">
@@ -138,17 +139,7 @@
                         android:fontFamily="@font/gabarito"
                         android:layout_marginStart="24dp" />
 
-                    <TextView
-                        android:id="@+id/see_all1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="24dp"
-                        android:layout_marginTop="24dp"
-                        android:fontFamily="@font/circular_std"
-                        android:text="@string/see_all"
-                        android:textColor="@color/black" />
+
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -158,6 +149,18 @@
                     android:layout_marginTop="10dp"
                     android:nestedScrollingEnabled="false"
                     android:padding="10dp"/>
+                <TextView
+                    android:id="@+id/see_all1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/circular_std"
+                    android:text="Đang tải..."
+                    android:layout_gravity="center"
+                    android:padding="8dp"
+                    android:textColor="@color/black" />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </RelativeLayout>

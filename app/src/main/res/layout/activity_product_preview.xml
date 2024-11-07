@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="viewModel"
+            type= "com.example.agrimart.viewmodel.ProductReviewViewModel"/>
+    </data>
+
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.PostProduct.ProductPreviewActivity">
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="17dp"
+            android:layout_marginTop="32dp"
+            android:orientation="horizontal">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:cardCornerRadius="100dp">
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/baseline_person_24" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:layout_gravity="center"
+                android:layout_marginStart="12dp"
+                android:text="KaneStore" />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="56dp"
+            android:layout_height="20dp"
+            android:layout_below="@id/linearLayout1"
+            android:layout_marginTop="12dp"
+            android:textColor="#D50000"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:background="#FFA7AD"
+            android:layout_marginHorizontal="17dp"
+            android:text="@{viewModel.price}"
+             />
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="15dp"
+            android:layout_below="@id/tvPrice"
+            android:layout_marginHorizontal="17dp"
+            android:background="#65424242" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/view"
+            android:layout_marginTop="12dp"
+            android:textSize="16sp"
+            android:layout_marginHorizontal="17dp"
+            android:textColor="#3A3A3A"
+            android:text="Mô tả sản phẩm " />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView7"
+            android:layout_marginTop="12dp"
+            android:textSize="14sp"
+            android:layout_marginHorizontal="17dp"
+            android:text="@{viewModel.description}"
+            android:textColor="#221F1F"/>
+        <View
+            android:id="@+id/view2"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="15dp"
+            android:layout_below="@id/textView10"
+            android:layout_marginHorizontal="17dp"
+            android:background="#65424242" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#3A3A3A"
+            android:textSize="14sp"
+            android:layout_below="@id/view2"
+            android:layout_marginTop="15dp"
+            android:layout_marginHorizontal="17dp"
+            android:text="Danh mục" />
+        <TextView
+            android:id="@+id/tvCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="@{viewModel.category}"
+            android:lineSpacingExtra="3sp"
+            android:gravity="center_vertical"
+            android:layout_below="@id/view2"
+            android:layout_marginTop="15dp"
+            android:layout_marginHorizontal="17dp"
+            android:layout_alignParentEnd="true"
+            />
+
+        <TextView
+            android:id="@+id/s_l_ng"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="Số lượng"
+            android:lineSpacingExtra="3sp"
+            android:layout_below="@id/tvCategory"
+            android:layout_marginTop="15dp"
+            android:layout_marginHorizontal="17dp"
+            android:gravity="center_vertical"
+            />
+        <TextView
+            android:id="@+id/tvStockQuantity"
+            android:layout_width="71dp"
+            android:layout_height="20dp"
+            android:text="@{viewModel.quantity}"
+            android:lineSpacingExtra="3sp"
+            android:layout_below="@id/tvCategory"
+            android:layout_marginTop="15dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginHorizontal="17dp"
+            android:gravity="center_vertical"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnHome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvStockQuantity"
+            android:layout_centerHorizontal="true"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:layout_margin="17dp"
+            android:layout_marginTop="16dp"
+            android:text="Về trang chủ" />
+
+    </RelativeLayout>
+</layout>

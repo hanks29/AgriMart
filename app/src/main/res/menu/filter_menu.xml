@@ -1,14 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/filter_option1"
+        android:id="@+id/filter_lowest_price"
         android:title="Giá thấp nhất"/>
     <item
-        android:id="@+id/filter_option2"
+        android:id="@+id/filter_highest_price"
         android:title="Giá cao nhất"/>
     <item
-        android:id="@+id/filter_option3"
+        android:id="@+id/filter_latest"
         android:title="Mới nhất"/>
     <item
-        android:id="@+id/filter_option4"
+        android:id="@+id/filter_oldest"
         android:title="Cũ nhất"/>
 </menu>

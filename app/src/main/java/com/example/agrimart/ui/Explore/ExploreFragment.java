@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +21,13 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.ViewPagerAdapter;
 import com.example.agrimart.databinding.FragmentExploreBinding;
+import com.example.agrimart.ui.Cart.CartFragment;
+import com.example.agrimart.ui.Homepage.HomeFragment;
+import com.example.agrimart.ui.MyProfile.MyProfileFragment;
+import com.example.agrimart.ui.Notification.NotificationFragment;
+import com.example.agrimart.viewmodel.CategoryViewModel;
 import com.example.agrimart.viewmodel.ExploreFragmentViewModel;
+import com.example.agrimart.viewmodel.SharedViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -33,6 +41,7 @@ public class ExploreFragment extends Fragment {
     private FragmentExploreBinding binding;
     private ExploreFragmentViewModel viewModel;
     private String categoryID;
+    private SharedViewModel sharedViewModel;
 
     public ExploreFragment(String categoryID) {
         this.categoryID = categoryID;
@@ -55,7 +64,7 @@ public class ExploreFragment extends Fragment {
         filterIcon = view.findViewById(R.id.filter_icon);
 
         viewModel.getData();
-
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
             List<Fragment> fragments = new ArrayList<>();
             List<String> titles = new ArrayList<>();
@@ -98,6 +107,26 @@ public class ExploreFragment extends Fragment {
         PopupMenu popup = new PopupMenu(getContext(), v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.filter_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(this::filterMenuItemSelected);
         popup.show();
     }
+
+    private boolean filterMenuItemSelected(MenuItem item) {
+        String sortOrder = null;
+        if (item.getItemId() == R.id.filter_lowest_price) {
+            sortOrder = "lowest_price";
+            Log.d("ExploreFragment", "Sort order set to: " + sortOrder);
+        } else if (item.getItemId() == R.id.filter_highest_price) {
+            sortOrder = "highest_price";
+        } else if (item.getItemId() == R.id.filter_latest) {
+            sortOrder = "latest";
+        } else if (item.getItemId() == R.id.filter_oldest) {
+            sortOrder = "oldest";
+        } else {
+            return false;
+        }
+        sharedViewModel.setSortOrder(sortOrder);
+        return true;
+    }
+
 }

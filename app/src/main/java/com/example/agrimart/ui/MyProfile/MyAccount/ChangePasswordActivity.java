@@ -77,8 +77,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 return;
             }
 
-
-
             changePassword(newPassword);
         });
     }

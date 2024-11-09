@@ -88,7 +88,18 @@
                 android:layout_gravity="center"
                 android:src="@drawable/erase" />
         </LinearLayout>
-
+        <TextView
+            android:id="@+id/tvUserNameError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="gone"
+            android:layout_marginTop="5dp"
+            android:text="lỗi"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"/>
         <TextView
             android:id="@+id/text_view12"
             android:layout_width="wrap_content"
@@ -96,7 +107,7 @@
             android:layout_weight="1"
             android:gravity="end"
             android:layout_marginTop="10dp"
-            android:layout_marginStart="15dp"
+            android:layout_marginStart="20dp"
             android:text="100 characters only"
             android:textColor="#99000000"
             android:textSize="14sp" />

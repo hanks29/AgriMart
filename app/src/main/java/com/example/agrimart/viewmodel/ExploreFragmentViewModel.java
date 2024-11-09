@@ -27,4 +27,5 @@ public class ExploreFragmentViewModel extends ViewModel {
                     }
                 });
     }
+
 }

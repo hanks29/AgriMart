@@ -68,7 +68,7 @@
                 android:layout_marginEnd="4dp"
                 android:background="@color/green"
                 android:src="@drawable/filter"
-                android:tint="@color/black" />
+                />
 
         </LinearLayout>
 
@@ -77,7 +77,6 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_below="@id/header"
-            android:paddingStart="5dp"
             android:paddingEnd="5dp"
             android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"

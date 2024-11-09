@@ -1,4 +1,3 @@
-// User.java
 package com.example.agrimart.data.model;
 
 import com.google.gson.annotations.SerializedName;
@@ -14,6 +13,10 @@ public class User implements Serializable {
     private String fullName;
     @SerializedName("email")
     private String email;
+    @SerializedName("sex")
+    private String sex;
+    @SerializedName("birthDate")
+    private String birthDate;
     @SerializedName("phoneNumber")
     private String phoneNumber;
     @SerializedName("password")
@@ -34,9 +37,11 @@ public class User implements Serializable {
     private Date createdAt;
     @SerializedName("updatedAt")
     private Date updatedAt;
+    @SerializedName("userImage")
+    private String userImage;
 
-    // No-argument constructor
     public User() {
+
     }
 
     public User(String userId, String role, String fullName, String email, String phoneNumber, String password, Address address, String storeName, Address storeAddress, String storeImage, double storeRating, PaymentAccount paymentAccount, Date createdAt, Date updatedAt) {
@@ -62,6 +67,14 @@ public class User implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 
     public String getRole() {
@@ -168,6 +181,32 @@ public class User implements Serializable {
         this.updatedAt = updatedAt;
     }
 
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(String userImage) {
+        this.userImage = userImage;
+    }
+
+//    public static class Address {
+//        @SerializedName("street")
+//        private String street;
+//        @SerializedName("district")
+//        private String district;
+//        @SerializedName("city")
+//        private String city;
+//
+//        // Constructors, getters, and setters...
+//    }
     public static class Address {
         @SerializedName("street")
         private String street;

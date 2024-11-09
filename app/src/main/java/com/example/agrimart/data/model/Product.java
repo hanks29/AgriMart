@@ -1,7 +1,5 @@
 package com.example.agrimart.data.model;
 
-import com.google.firebase.firestore.PropertyName;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +20,8 @@ public class Product implements Serializable {
     private int weight;
     private int width;
     private int soldQuantity;
+    private String created_at;
+
 
     public Product() {
     }
@@ -42,6 +42,15 @@ public class Product implements Serializable {
         this.width = width;
         this.soldQuantity = soldQuantity;
     }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
 
     public static class Address {
         private String city;

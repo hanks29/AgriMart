@@ -160,12 +160,7 @@ public class HomeFragment extends Fragment {
         binding.rvProducts.setAdapter(productAdapter);
 
 
-        binding.seeAll1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getMoreProducts();
-            }
-        });
+
 
 
 
@@ -289,6 +284,7 @@ public class HomeFragment extends Fragment {
                         if(currentPage==totalPages){
                             binding.seeAll1.setVisibility(View.GONE);
                         }
+                        binding.seeAll1.setVisibility(View.GONE);
 
                     }
                 });

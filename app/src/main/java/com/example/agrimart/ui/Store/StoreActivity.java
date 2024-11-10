@@ -1,6 +1,7 @@
 package com.example.agrimart.ui.Store;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -41,7 +42,7 @@ public class StoreActivity extends AppCompatActivity {
     private String storeId;
     private ProductDetailViewModel viewModel;
     private HomeFragmentViewModel productViewModel;
-
+    private SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +51,8 @@ public class StoreActivity extends AppCompatActivity {
         setupWindowInsets();
         addControls();
         db = FirebaseFirestore.getInstance();
-
-        storeId = getIntent().getStringExtra("storeId");
+        sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        storeId = sharedPreferences.getString("user_id", "");
 
         viewModel = new ProductDetailViewModel();
         productViewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);
@@ -94,7 +95,7 @@ public class StoreActivity extends AppCompatActivity {
         storeName = findViewById(R.id.storeName);
         storeRating = findViewById(R.id.store_rating);
         storeAddress = findViewById(R.id.storeAddress);
-        rvProducts = findViewById(R.id.rvProducts);
+        rvProducts = findViewById(R.id.rv_products);
     }
 
     private void updateStoreInfo(Store store) {

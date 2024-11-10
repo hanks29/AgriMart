@@ -1,25 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.Homepage.SearchActivity" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".ui.SearchPage.SearchFragment">
 
+<!--   <LinearLayout-->
+<!--       android:layout_width="match_parent"-->
+<!--       android:layout_height="wrap_content"-->
+<!--       android:layout_marginEnd="16dp"-->
+<!--       android:gravity="end"-->
+<!--       android:orientation="horizontal">-->
 
-    <ScrollView
-        android:id="@+id/sc"
-        android:layout_width="match_parent"
-        android:layout_height="900dp"
-        android:layout_marginTop="25dp">
+<!--      <TextView-->
+<!--          android:id="@+id/tvSortText"-->
+<!--          android:layout_width="wrap_content"-->
+<!--          android:layout_height="wrap_content"-->
+<!--          android:layout_gravity="end|center_vertical"-->
+<!--          android:layout_marginStart="8dp"-->
+<!--          android:text="Liên quan nhất"-->
+<!--          android:textColor="@android:color/black"-->
+<!--          android:textSize="16sp" />-->
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvCategories"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-        >
+<!--      <ImageButton-->
+<!--          android:id="@+id/btnSort"-->
+<!--          android:layout_width="40dp"-->
+<!--          android:layout_height="40dp"-->
+<!--          android:background="@color/transparent"-->
+<!--          android:src="@drawable/sort_down" />-->
+<!--   </LinearLayout>-->
 
-        </androidx.recyclerview.widget.RecyclerView>
-    </ScrollView>
+   <com.google.android.material.tabs.TabLayout
+       android:id="@+id/tabLayout"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       app:tabMode="scrollable"
+       app:tabGravity="fill"
+       app:tabTextColor="@color/black"
+       app:tabSelectedTextColor="@color/green"
+       app:tabSelectedTextAppearance="@color/transparent"
+       app:tabTextAppearance="@style/TabTextAppearance"
+       app:tabRippleColor="@null" />
 
+   <androidx.recyclerview.widget.RecyclerView
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:id="@+id/rvResult"
+       android:layout_marginTop="10dp"/>
 
-</RelativeLayout>
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:id="@+id/tvNoResult"
+       android:layout_gravity="center"
+       android:text="@string/no_reslut"
+       android:visibility="gone"
+       android:textSize="16sp"/>
+
+   <TextView
+       android:id="@+id/tvLoading"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:text="Đang tải..."
+       android:textSize="16sp"
+       android:gravity="center"
+       android:visibility="gone"/>
+</LinearLayout>

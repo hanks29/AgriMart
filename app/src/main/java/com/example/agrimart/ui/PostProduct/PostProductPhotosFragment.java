@@ -157,7 +157,9 @@ public class PostProductPhotosFragment extends Fragment {
         });
 
         loadCategory();
-        categoryAdapter = new CategoryAdapter(categories);
+        categoryAdapter = new CategoryAdapter(categories, category -> {
+            // Handle category click
+        });
         binding.rvCategories.setAdapter(categoryAdapter);
         binding.rvCategories.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 

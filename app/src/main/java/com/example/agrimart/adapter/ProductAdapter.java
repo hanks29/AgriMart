@@ -24,6 +24,11 @@ import java.util.Locale;
         this.listener = listener;
     }
 
+    public void setProducts(List<Product> products) {
+        this.products = products;
+        notifyDataSetChanged();
+    }
+
     public void updateProducts(List<Product> newProducts) {
          this.products = newProducts;
          notifyDataSetChanged();

@@ -22,7 +22,7 @@ public class ProductDetailViewModel extends ViewModel {
         return storeInfo;
     }
 
-    public void loadStoreInfo(String storeId) {
+   public void loadStoreInfo(String storeId) {
         if (storeListener != null) {
             storeListener.remove();
         }
@@ -40,11 +40,10 @@ public class ProductDetailViewModel extends ViewModel {
                     String city = snapshot.getString("store_address.city");
                     String phoneNumber = snapshot.getString("store_phone_number");
 
-                    Store info = new Store(name, avatarUrl, street, ward, district, city, phoneNumber);
+                    Store info = new Store(storeId, name, avatarUrl, street, ward, district, city, phoneNumber);
                     storeInfo.setValue(info);
                 });
     }
-
     @Override
     protected void onCleared() {
         super.onCleared();

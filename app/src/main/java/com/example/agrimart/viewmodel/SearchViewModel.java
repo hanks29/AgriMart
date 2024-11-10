@@ -1,29 +1,124 @@
 package com.example.agrimart.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.example.agrimart.data.model.Category;
 import com.example.agrimart.data.model.Product;
+import com.example.agrimart.data.model.Store;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SearchViewModel extends ViewModel {
-    private String inputText;
-    private MutableLiveData<List<Category>> categories;
-    private MutableLiveData<List<Product>> products=new MutableLiveData<>();
 
-    public void setCategories(List<Category> categories) {
-        this.categories.setValue(categories);
+    private MutableLiveData<List<Product>> filteredProducts = new MutableLiveData<>(new ArrayList<>());
+    private List<Product> originalProductList = new ArrayList<>(); // Lưu danh sách sản phẩm ban đầu
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    public LiveData<List<Product>> getFilteredProducts() {
+        return filteredProducts;
     }
 
-    public void setProducts(List<Product> products) {
-        this.products.setValue(products);
+    public void searchProductsByName(String query) {
+        db.collection("products")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Product> products = task.getResult().toObjects(Product.class);
+                        List<Product> filteredList = new ArrayList<>();
+                        List<Product> remainingList = new ArrayList<>();
+
+                        for (Product product : products) {
+                            if (product.getName() != null) {
+                                String productName = product.getName().toLowerCase();
+                                String lowerCaseQuery = query.toLowerCase();
+                                if (productName.startsWith(lowerCaseQuery)) {
+                                    filteredList.add(product);
+                                } else if (productName.contains(lowerCaseQuery)) {
+                                    remainingList.add(product);
+                                }
+                            }
+                        }
+                        filteredList.addAll(remainingList);
+                        originalProductList = new ArrayList<>(filteredList);
+                        filteredProducts.setValue(filteredList);
+                    } else {
+                        filteredProducts.setValue(new ArrayList<>());
+                    }
+                });
     }
 
-    public LiveData<Boolean> isProductsEmpty(){
-        return Transformations.map(products, List::isEmpty);
+    public void searchProductsByCategory(String categoryId) {
+        db.collection("products")
+                .whereEqualTo("category_id", categoryId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Product> products = task.getResult().toObjects(Product.class);
+                        originalProductList = new ArrayList<>(products);
+                        filteredProducts.setValue(products);
+                    } else {
+                        filteredProducts.setValue(new ArrayList<>());
+                    }
+                });
     }
+
+    public void searchProductsByStoreName(String storeName) {
+        db.collection("users")
+                .whereEqualTo("store_name", storeName)
+                .get()
+                .addOnCompleteListener(storeTask -> {
+                    if (storeTask.isSuccessful() && !storeTask.getResult().isEmpty()) {
+                        String storeId = storeTask.getResult().getDocuments().get(0).getId();
+                        db.collection("products")
+                                .whereEqualTo("storeId", storeId)
+                                .get()
+                                .addOnCompleteListener(productTask -> {
+                                    if (productTask.isSuccessful()) {
+                                        List<Product> products = productTask.getResult().toObjects(Product.class);
+                                        originalProductList = new ArrayList<>(products);
+                                        filteredProducts.setValue(products);
+                                    } else {
+                                        filteredProducts.setValue(new ArrayList<>());
+                                    }
+                                });
+                    } else {
+                        filteredProducts.setValue(new ArrayList<>());
+                    }
+                });
+    }
+
+    public void sortProducts(String sortBy) {
+        List<Product> currentProducts = filteredProducts.getValue() != null ? new ArrayList<>(filteredProducts.getValue()) : new ArrayList<>();
+
+        switch (sortBy) {
+            case "Liên quan nhất":
+                currentProducts = new ArrayList<>(originalProductList);
+                break;
+            case "Mới nhất":
+                Collections.sort(currentProducts, (p1, p2) -> p2.getCreated_at().compareTo(p1.getCreated_at()));
+                break;
+            case "Cũ nhất":
+                Collections.sort(currentProducts, (p1, p2) -> p1.getCreated_at().compareTo(p2.getCreated_at()));
+                break;
+            case "Giá cao nhất":
+                Collections.sort(currentProducts, (p1, p2) -> Double.compare(p2.getPrice(), p1.getPrice()));
+                break;
+            case "Giá thấp nhất":
+                Collections.sort(currentProducts, (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()));
+                break;
+            default:
+                break;
+        }
+
+        filteredProducts.setValue(currentProducts);
+    }
+
 }

@@ -144,4 +144,7 @@
     </string>
     <string name="verify">Email xác nhận đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra email và nhấn vào liên kết xác nhận để hoàn tất đăng ký.</string>
     <string name="new_product">Mới nhất</string>
+    <string name="goi_y">Gợi ý cho bạn</string>
+    <string name="no_reslut">Không tìm thấy sản phẩm với từ khoá đã nhập</string>
+    <string name="tim_kiem">Tìm kiếm sản phẩm</string>
 </resources>

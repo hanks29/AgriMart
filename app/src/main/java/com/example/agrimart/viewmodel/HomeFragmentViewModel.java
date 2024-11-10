@@ -32,7 +32,7 @@ public class HomeFragmentViewModel extends ViewModel {
         lastVisible=new MutableLiveData<>();
     }
 
-    public void getData() {
+    public void getCategories() {
         db.collection("categories")
                 .orderBy("id")
                 .get()

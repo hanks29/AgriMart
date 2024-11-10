@@ -64,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getUserInfo(mAuth.getCurrentUser());
+    }
+
     private void navigateToHome() {
         loadFragment(new HomeFragment());
     }
@@ -116,6 +122,20 @@ public class MainActivity extends AppCompatActivity {
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String role = documentSnapshot.getString("role");
+                if (role != null) {
+                    saveUserToSharedPreferences(role);
+                }
+            }
+        }).addOnFailureListener(e -> {
+        });
+    }
+
+    private void getUserInfo(FirebaseUser user) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("users").document(user.getUid());
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String role = documentSnapshot.getString("userId");
                 if (role != null) {
                     saveUserToSharedPreferences(role);
                 }

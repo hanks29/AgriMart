@@ -1,15 +1,22 @@
 package com.example.agrimart.data.model;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 public class Product implements Serializable {
 
+    @PropertyName("product_id")
     private String productId;
     private String name;
     private double price;
+
+    @PropertyName("status")
     private String active;
+
+    @PropertyName("category_id")
     private String category;
     private String description;
     private int height;
@@ -97,10 +104,12 @@ public class Product implements Serializable {
         this.price = price;
     }
 
+    @PropertyName("product_id")
     public String getProductId() {
         return productId;
     }
 
+    @PropertyName("product_id")
     public void setProductId(String productId) {
         this.productId = productId;
     }
@@ -121,18 +130,22 @@ public class Product implements Serializable {
         this.price = price;
     }
 
+    @PropertyName("status")
     public String getActive() {
         return active;
     }
 
+    @PropertyName("status")
     public void setActive(String active) {
         this.active = active;
     }
 
+    @PropertyName("category_id")
     public String getCategory() {
         return category;
     }
 
+    @PropertyName("category_id")
     public void setCategory(String category) {
         this.category = category;
     }

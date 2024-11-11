@@ -76,6 +76,7 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("products")
+                .whereEqualTo("status", "available")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -101,7 +102,7 @@ public class HomeFragment extends Fragment {
         }
 
         viewModel.getCategories();
-        viewModel.getFirstProducts();
+//        viewModel.getFirstProducts();
 
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
             if (categories != null) {
@@ -241,7 +242,7 @@ public class HomeFragment extends Fragment {
     public void getFirstProducts(){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query first= db.collection("products")
-                .orderBy("product_id")
+                .whereEqualTo("status", "available")
                 .limit(10);
 
         first.get()
@@ -261,7 +262,7 @@ public class HomeFragment extends Fragment {
     public void getMoreProducts(){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query next= db.collection("products")
-                .orderBy("product_id")
+                .whereEqualTo("status", "available")
                 .startAfter(lastVisible)
                 .limit(10);
 

@@ -19,7 +19,7 @@ import java.util.List;
 public class SearchViewModel extends ViewModel {
 
     private MutableLiveData<List<Product>> filteredProducts = new MutableLiveData<>(new ArrayList<>());
-    private List<Product> originalProductList = new ArrayList<>(); // Lưu danh sách sản phẩm ban đầu
+    private List<Product> originalProductList = new ArrayList<>();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public LiveData<List<Product>> getFilteredProducts() {

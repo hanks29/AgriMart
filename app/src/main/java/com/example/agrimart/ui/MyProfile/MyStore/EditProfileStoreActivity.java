@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -35,7 +36,7 @@ public class EditProfileStoreActivity extends AppCompatActivity {
     private EditProfileStoreViewModel viewModel;
     private ActivityEditProfileStoreBinding binding;
 
-    private Uri imageUri;
+    private Uri imageUri=null;
     private Uri storeImageUri;
     private String selectedProvinceName="";
     private String provinceId;
@@ -104,12 +105,18 @@ public class EditProfileStoreActivity extends AppCompatActivity {
             }
         });
         binding.btnUpdate.setOnClickListener(v -> {
-            storeName=binding.edtNameStore.getText().toString();
-            phoneNumber=binding.edtPhoneNumber.getText().toString();
-            street=binding.edtStreet.getText().toString();
-            viewModel.updateProfile(storeName,phoneNumber,street,selectedProvinceName,selectedDistrictName,selectedWardName,imageUri);
-            Intent intent=new Intent(EditProfileStoreActivity.this, MyStoreActivity.class);
-            startActivity(intent);
+            if (imageUri==null) {
+                Toast.makeText(this, "Vui lòng chọn ảnh", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                storeName=binding.edtNameStore.getText().toString();
+                phoneNumber=binding.edtPhoneNumber.getText().toString();
+                street=binding.edtStreet.getText().toString();
+                viewModel.updateProfile(storeName,phoneNumber,street,selectedProvinceName,selectedDistrictName,selectedWardName,imageUri);
+                Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                Intent intent=new Intent(EditProfileStoreActivity.this, MyStoreActivity.class);
+                startActivity(intent);
+            }
         });
         binding.btnBack.setOnClickListener(v -> {
             finish();

@@ -13,11 +13,13 @@ import com.example.agrimart.data.model.Commune;
 import com.example.agrimart.data.model.District;
 import com.example.agrimart.data.model.Province;
 import com.example.agrimart.data.model.User;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 
 import java.util.List;
@@ -170,23 +172,52 @@ public class EditProfileStoreViewModel extends ViewModel {
                     .update("store_phone_number",phoneNumber);
         }
 
-        if(imageUri!=null){
+        if(imageUri!=null ){
 
             StorageReference storageRefDel= FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(this.nameStore.getValue());
             storageRefDel.delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("EditProfileStoreViewModel123", "updateProfile: "+"Delete success");
+                    })
                     .addOnFailureListener(e -> {
                         Log.d("EditProfileStoreViewModel123", "updateProfile: "+e.getMessage());
                     });
 
-            StorageReference storageRef= FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(String.valueOf(System.currentTimeMillis()));
+            StorageReference storageRef= FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(storeName);
             storageRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                            db.collection("users").document(user.getUid())
-                                    .update("store_avatar",uri.toString());
-                        });
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                db.collection("users").document(user.getUid())
+                                        .update("store_avatar",uri.toString());
+                            });
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("EditProfileStoreViewModel123", "updateProfile: "+e.getMessage());
                     });
         }
+//        if (imageUri == null ) {
+//            StorageReference storageRefDel= FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(this.nameStore.getValue());
+//            storageRefDel.delete()
+//                    .addOnSuccessListener(aVoid -> {
+//                        Log.d("EditProfileStoreViewModel123", "updateProfile: "+"Delete success");
+//                    })
+//                    .addOnFailureListener(e -> {
+//                        Log.d("EditProfileStoreViewModel123", "updateProfile: "+e.getMessage());
+//                    });
+//            StorageReference storageRef= FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(storeName);
+//            Uri newImageUri = Uri.parse();
+//
+//            storageRef.putFile(Uri.parse(this.storeImage.getValue()))
+//                    .addOnSuccessListener(taskSnapshot -> {
+//                        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+//                            db.collection("users").document(user.getUid())
+//                                    .update("store_avatar",uri.toString());
+//                        });
+//                    });
+//        }
 
         if(!street.isEmpty() && !street.equals(this.street.getValue())){
             db.collection("users").document(user.getUid())

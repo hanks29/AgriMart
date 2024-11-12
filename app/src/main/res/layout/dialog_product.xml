@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@color/color_item_selected"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:text="Bạn có muốn xóa sản phẩm này không" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/textView"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Hủy"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            app:strokeColor="@color/green"
+            style="@style/Widget.Material3.Button.OutlinedButton" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCreateSeller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Tạo cửa hàng"
+            android:textSize="14sp"
+            android:textColor="@color/background_green"
+            android:backgroundTint="@color/background_light_blur"
+            style="@style/Widget.Material3.Button.TonalButton" />
+    </LinearLayout>
+
+</RelativeLayout>

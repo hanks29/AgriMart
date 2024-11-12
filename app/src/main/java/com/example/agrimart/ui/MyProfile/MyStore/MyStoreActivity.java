@@ -19,7 +19,7 @@ import com.example.agrimart.ui.Store.StoreActivity;
 
 public class MyStoreActivity extends AppCompatActivity {
 
-    CardView postProduct, orderManagement,myProduct;
+    CardView postProduct, orderManagement,myProduct,profileSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +47,7 @@ public class MyStoreActivity extends AppCompatActivity {
         postProduct = findViewById(R.id.postProduct);
         orderManagement = findViewById(R.id.orderManagement);
         myProduct = findViewById(R.id.productsManagement);
+        profileSetting=findViewById(R.id.profileSetting);
     }
 
     private void addEvent() {
@@ -63,6 +64,10 @@ public class MyStoreActivity extends AppCompatActivity {
         myProduct.setOnClickListener(v -> {
             Intent intent = new Intent(MyStoreActivity.this, StoreActivity.class);
             startActivity(intent);
+        });
+
+        profileSetting.setOnClickListener(v -> {
+
         });
     }
 

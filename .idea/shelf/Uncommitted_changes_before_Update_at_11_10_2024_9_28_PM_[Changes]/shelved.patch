@@ -1,0 +1,792 @@
+Index: app/src/main/java/com/example/agrimart/ui/Homepage/HomeFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.Homepage;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Build;\r\nimport android.os.Bundle;\r\nimport androidx.annotation.NonNull;\r\nimport androidx.core.content.ContextCompat;\r\nimport androidx.databinding.DataBindingUtil;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.lifecycle.MutableLiveData;\r\nimport androidx.lifecycle.ViewModelProvider;\r\nimport androidx.recyclerview.widget.GridLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport android.os.Handler;\r\nimport android.os.Looper;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.view.Window;\r\nimport android.view.WindowManager;\r\nimport android.widget.ImageButton;\r\nimport android.widget.TextView;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.SpacesItemDecoration;\r\nimport com.example.agrimart.adapter.CategoryAdapter;\r\nimport com.example.agrimart.adapter.EndlessRecyclerViewScrollListener;\r\nimport com.example.agrimart.adapter.ProductAdapter;\r\nimport com.example.agrimart.data.model.Product;\r\nimport com.example.agrimart.databinding.FragmentHomeBinding;\r\nimport com.example.agrimart.ui.ProductPage.ProductDetailActivity;\r\nimport com.example.agrimart.viewmodel.HomeFragmentViewModel;\r\nimport com.google.android.gms.tasks.OnSuccessListener;\r\nimport com.google.firebase.firestore.DocumentSnapshot;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\nimport com.google.firebase.firestore.Query;\r\nimport com.google.firebase.firestore.QuerySnapshot;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class HomeFragment extends Fragment {\r\n    private static final String TAG = \"HomeFragment\";\r\n    ImageButton btnSearch;\r\n    TextView search;\r\n    HomeFragmentViewModel viewModel;\r\n    FragmentHomeBinding binding;\r\n    EndlessRecyclerViewScrollListener scrollListener;\r\n    private int totalPages;\r\n    private int currentPage = 1;\r\n    private List<Product> products=new ArrayList<>();\r\n    private DocumentSnapshot lastVisible;\r\n    ProductAdapter productAdapter;\r\n    private boolean isLoading = false;\r\n\r\n    public HomeFragment() {\r\n\r\n    }\r\n\r\n    public static HomeFragment newInstance() {\r\n        return new HomeFragment();\r\n    }\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n        db.collection(\"products\")\r\n                .get()\r\n                .addOnCompleteListener(task -> {\r\n                    if (task.isSuccessful()) {\r\n                        totalPages= (task.getResult().size()/10)+1;\r\n                    }\r\n                });\r\n    }\r\n\r\n\r\n    @Override\r\n    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {\r\n        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);\r\n        viewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);\r\n\r\n        int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.spacing);\r\n        binding.setViewmodel(viewModel);\r\n        View view = binding.getRoot();\r\n\r\n        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {\r\n            Window window = getActivity().getWindow();\r\n            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);\r\n            window.setStatusBarColor(ContextCompat.getColor(getActivity(), R.color.green));\r\n        }\r\n\r\n        viewModel.getData();\r\n        viewModel.getFirstProducts();\r\n\r\n        viewModel.categories.observe(getViewLifecycleOwner(), categories -> {\r\n            if (categories != null) {\r\n                CategoryAdapter categoryAdapter = new CategoryAdapter(categories);\r\n                binding.rvCategories.setAdapter(categoryAdapter);\r\n                binding.rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));\r\n                Log.d(TAG, \"Categories loaded: \" + categories.size());\r\n            }\r\n        });\r\n\r\n//        viewModel.products.observe(getViewLifecycleOwner(), products -> {\r\n//            if (products != null) {\r\n//                productAdapter = new ProductAdapter(products, product -> {\r\n//                    try {\r\n//                        Intent intent = new Intent(getContext(), ProductDetailActivity.class);\r\n//                        intent.putExtra(\"product\", product);\r\n//                        intent.putExtra(\"storeId\", product.getStoreId());\r\n//                        startActivity(intent);\r\n//                    } catch (Exception e) {\r\n//\r\n//                    }\r\n//                });\r\n//                GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);\r\n//                binding.rvProducts.setLayoutManager(gridLayoutManager);\r\n//                binding.rvProducts.addItemDecoration(new SpacesItemDecoration(spacingInPixels));\r\n//                binding.rvProducts.setAdapter(productAdapter);\r\n//\r\n//            }\r\n//        });\r\n        getFirstProducts();\r\n        productAdapter= new ProductAdapter(products, product -> {\r\n            try {\r\n                Intent intent = new Intent(getContext(), ProductDetailActivity.class);\r\n                intent.putExtra(\"product\", product);\r\n                intent.putExtra(\"storeId\", product.getStoreId());\r\n                startActivity(intent);\r\n            } catch (Exception e) {\r\n\r\n            }\r\n        });\r\n        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);\r\n        binding.rvProducts.setLayoutManager(gridLayoutManager);\r\n        binding.rvProducts.addItemDecoration(new SpacesItemDecoration(spacingInPixels));\r\n        binding.rvProducts.setAdapter(productAdapter);\r\n\r\n\r\n        binding.seeAll1.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                getMoreProducts();\r\n            }\r\n        });\r\n\r\n\r\n\r\n        binding.scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {\r\n            @Override\r\n            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {\r\n                int scrollViewHeight = binding.scrollView.getChildAt(0).getMeasuredHeight();\r\n                int scrollViewVisibleHeight = binding.scrollView.getHeight();\r\n\r\n                if (scrollY + scrollViewVisibleHeight >= scrollViewHeight) {\r\n\r\n                    if (!isLoading) {\r\n                        isLoading = true;\r\n                        binding.seeAll1.setVisibility(View.VISIBLE);\r\n\r\n                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {\r\n                            @Override\r\n                            public void run() {\r\n                                getMoreProducts();\r\n                            }\r\n                        }, 2000);\r\n                    }\r\n                }\r\n            }\r\n        });\r\n        addControls(view);\r\n        addEvents();\r\n\r\n\r\n        return view;\r\n    }\r\n\r\n    private void addEvents() {\r\n        btnSearch.setOnClickListener(v -> {\r\n            Intent intent = new Intent(getActivity(), SearchActivity.class);\r\n            getActivity().startActivity(intent);\r\n        });\r\n\r\n        search.setOnClickListener(v -> {\r\n            Intent intent = new Intent(getContext(), SearchActivity.class);\r\n            startActivity(intent);\r\n        });\r\n    }\r\n\r\n    private void addControls(View view) {\r\n        btnSearch = view.findViewById(R.id.search_icon);\r\n        search = view.findViewById(R.id.search_input);\r\n    }\r\n\r\n    private void loadFragment(Fragment fragment) {\r\n        getActivity().getSupportFragmentManager().beginTransaction()\r\n                .replace(R.id.fragment_container, fragment)\r\n                .commit();\r\n    }\r\n    public void getFirstProducts(){\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n        Query first= db.collection(\"products\")\r\n                .orderBy(\"product_id\")\r\n                .limit(10);\r\n\r\n        first.get()\r\n                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {\r\n                    @Override\r\n                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {\r\n                        List<Product> productList = queryDocumentSnapshots.toObjects(Product.class);\r\n                        products.addAll(productList);\r\n                        productAdapter.notifyDataSetChanged();\r\n\r\n                        lastVisible=queryDocumentSnapshots.getDocuments()\r\n                                .get(queryDocumentSnapshots.size()-1);\r\n                    }\r\n                });\r\n    }\r\n\r\n    public void getMoreProducts(){\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n        Query next= db.collection(\"products\")\r\n                .orderBy(\"product_id\")\r\n                .startAfter(lastVisible)\r\n                .limit(10);\r\n\r\n        next.get()\r\n                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {\r\n                    @Override\r\n                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {\r\n\r\n                        List<Product> newList = queryDocumentSnapshots.toObjects(Product.class);\r\n\r\n                        products.addAll(newList);\r\n                        productAdapter.notifyDataSetChanged();\r\n                        isLoading=false;\r\n\r\n                        if(!newList.isEmpty()){\r\n                            lastVisible=queryDocumentSnapshots.getDocuments()\r\n                                    .get(queryDocumentSnapshots.size()-1);\r\n                        }\r\n                        currentPage+=1;\r\n                        if(currentPage==totalPages){\r\n                            binding.seeAll1.setVisibility(View.GONE);\r\n                        }\r\n\r\n                    }\r\n                });\r\n    }\r\n\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/Homepage/HomeFragment.java b/app/src/main/java/com/example/agrimart/ui/Homepage/HomeFragment.java
+--- a/app/src/main/java/com/example/agrimart/ui/Homepage/HomeFragment.java	(revision a3cdf937850f3e876b8c4b346f23b1d458484b02)
++++ b/app/src/main/java/com/example/agrimart/ui/Homepage/HomeFragment.java	(date 1731081251319)
+@@ -140,12 +140,7 @@
+         binding.rvProducts.setAdapter(productAdapter);
+ 
+ 
+-        binding.seeAll1.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View view) {
+-                getMoreProducts();
+-            }
+-        });
++
+ 
+ 
+ 
+@@ -246,6 +241,7 @@
+                         if(currentPage==totalPages){
+                             binding.seeAll1.setVisibility(View.GONE);
+                         }
++                        binding.seeAll1.setVisibility(View.GONE);
+ 
+                     }
+                 });
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM__Changes_.xml	(revision a3cdf937850f3e876b8c4b346f23b1d458484b02)
++++ /dev/null	(revision a3cdf937850f3e876b8c4b346f23b1d458484b02)
+@@ -1,9 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM_[Changes]" date="1730455722172" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 11/1/2024 5:08 PM [Changes]" />
+-  <binary>
+-    <option name="BEFORE_PATH" />
+-    <option name="AFTER_PATH" value="app/src/main/res/drawable/email.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM_[Changes]/email.png" />
+-  </binary>
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_11_1_2024_5_08_PM_[Changes]/shelved.patch	(revision a3cdf937850f3e876b8c4b346f23b1d458484b02)
++++ /dev/null	(revision a3cdf937850f3e876b8c4b346f23b1d458484b02)
+@@ -1,736 +0,0 @@
+-Index: app/src/main/java/com/example/agrimart/viewmodel/SignUpViewModel.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.agrimart.viewmodel;\r\n\r\nimport android.app.Application;\r\nimport androidx.annotation.NonNull;\r\nimport androidx.lifecycle.AndroidViewModel;\r\nimport androidx.lifecycle.MutableLiveData;\r\nimport com.google.firebase.auth.FirebaseAuth;\r\nimport com.google.firebase.auth.FirebaseUser;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\n\r\nimport java.util.Date;\r\nimport java.util.HashMap;\r\nimport java.util.Map;\r\n\r\npublic class SignUpViewModel extends AndroidViewModel {\r\n    private FirebaseAuth mAuth;\r\n    private FirebaseFirestore firestore;\r\n    private MutableLiveData<Boolean> signUpSuccess;\r\n    private MutableLiveData<Boolean> emailVerificationSent;\r\n\r\n    public SignUpViewModel(@NonNull Application application) {\r\n        super(application);\r\n        mAuth = FirebaseAuth.getInstance();\r\n        firestore = FirebaseFirestore.getInstance();\r\n        signUpSuccess = new MutableLiveData<>();\r\n        emailVerificationSent = new MutableLiveData<>();\r\n    }\r\n\r\n    public MutableLiveData<Boolean> getSignUpSuccess() {\r\n        return signUpSuccess;\r\n    }\r\n\r\n    public MutableLiveData<Boolean> getEmailVerificationSent() {\r\n        return emailVerificationSent;\r\n    }\r\n\r\n    public void signUpWithEmail(String email, String password) {\r\n        mAuth.createUserWithEmailAndPassword(email, password)\r\n            .addOnCompleteListener(task -> {\r\n                if (task.isSuccessful()) {\r\n                    FirebaseUser user = mAuth.getCurrentUser();\r\n                    if (user != null) {\r\n                        sendEmailVerification(user);\r\n                    }\r\n                    signUpSuccess.setValue(true);\r\n                } else {\r\n                    signUpSuccess.setValue(false);\r\n                }\r\n            });\r\n    }\r\n\r\n    public void sendEmailVerification(FirebaseUser user) { // Changed to public\r\n        user.sendEmailVerification()\r\n            .addOnCompleteListener(task -> {\r\n                if (task.isSuccessful()) {\r\n                    emailVerificationSent.setValue(true);\r\n                } else {\r\n                    emailVerificationSent.setValue(false);\r\n                }\r\n            });\r\n    }\r\n\r\n    public void saveUserToFirestore(FirebaseUser firebaseUser) {\r\n        firestore.collection(\"users\").document(firebaseUser.getUid())\r\n            .get()\r\n            .addOnSuccessListener(documentSnapshot -> {\r\n                String role = \"customer\";\r\n                if (documentSnapshot.exists() && documentSnapshot.contains(\"role\")) {\r\n                    role = documentSnapshot.getString(\"role\");\r\n                }\r\n\r\n                Map<String, Object> userMap = new HashMap<>();\r\n                userMap.put(\"userId\", firebaseUser.getUid());\r\n                userMap.put(\"role\", role);\r\n                if (firebaseUser.getDisplayName() != null) {\r\n                    userMap.put(\"fullName\", firebaseUser.getDisplayName());\r\n                }\r\n                if (firebaseUser.getEmail() != null) {\r\n                    userMap.put(\"email\", firebaseUser.getEmail());\r\n                }\r\n                if (firebaseUser.getPhoneNumber() != null) {\r\n                    userMap.put(\"phoneNumber\", firebaseUser.getPhoneNumber());\r\n                }\r\n                userMap.put(\"createdAt\", new Date());\r\n                userMap.put(\"updatedAt\", new Date());\r\n\r\n                firestore.collection(\"users\").document(firebaseUser.getUid())\r\n                    .set(userMap)\r\n                    .addOnSuccessListener(aVoid -> {\r\n                    })\r\n                    .addOnFailureListener(e -> {\r\n                    });\r\n            })\r\n            .addOnFailureListener(e -> {\r\n            });\r\n    }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/agrimart/viewmodel/SignUpViewModel.java b/app/src/main/java/com/example/agrimart/viewmodel/SignUpViewModel.java
+---- a/app/src/main/java/com/example/agrimart/viewmodel/SignUpViewModel.java	(revision 6a809528d747061069ce0672a9c8a28c130149ba)
+-+++ b/app/src/main/java/com/example/agrimart/viewmodel/SignUpViewModel.java	(date 1730453351683)
+-@@ -1,10 +1,13 @@
+- package com.example.agrimart.viewmodel;
+- 
+- import android.app.Application;
+-+import android.widget.Toast;
+-+
+- import androidx.annotation.NonNull;
+- import androidx.lifecycle.AndroidViewModel;
+- import androidx.lifecycle.MutableLiveData;
+- import com.google.firebase.auth.FirebaseAuth;
+-+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+- import com.google.firebase.auth.FirebaseUser;
+- import com.google.firebase.firestore.FirebaseFirestore;
+- 
+-@@ -34,64 +37,68 @@
+-         return emailVerificationSent;
+-     }
+- 
+--    public void signUpWithEmail(String email, String password) {
+-+    public void signUpWithEmail(String email, String password, String fullName) {
+-         mAuth.createUserWithEmailAndPassword(email, password)
+--            .addOnCompleteListener(task -> {
+--                if (task.isSuccessful()) {
+--                    FirebaseUser user = mAuth.getCurrentUser();
+--                    if (user != null) {
+--                        sendEmailVerification(user);
+--                    }
+--                    signUpSuccess.setValue(true);
+--                } else {
+--                    signUpSuccess.setValue(false);
+--                }
+--            });
+-+                .addOnCompleteListener(task -> {
+-+                    if (task.isSuccessful()) {
+-+                        FirebaseUser user = mAuth.getCurrentUser();
+-+                        if (user != null) {
+-+                            sendEmailVerification(user);
+-+                            saveUserToFirestore(user, fullName);
+-+                        }
+-+                        signUpSuccess.setValue(true);
+-+                    } else {
+-+                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+-+                            Toast.makeText(getApplication(), "Email đã tồn tại", Toast.LENGTH_SHORT).show();
+-+                        } else {
+-+                            signUpSuccess.setValue(false);
+-+                        }
+-+                    }
+-+                });
+-     }
+- 
+--    public void sendEmailVerification(FirebaseUser user) { // Changed to public
+-+    public void sendEmailVerification(FirebaseUser user) {
+-         user.sendEmailVerification()
+--            .addOnCompleteListener(task -> {
+--                if (task.isSuccessful()) {
+--                    emailVerificationSent.setValue(true);
+--                } else {
+--                    emailVerificationSent.setValue(false);
+--                }
+--            });
+-+                .addOnCompleteListener(task -> {
+-+                    if (task.isSuccessful()) {
+-+                        emailVerificationSent.setValue(true);
+-+                    } else {
+-+                        emailVerificationSent.setValue(false);
+-+                    }
+-+                });
+-     }
+- 
+--    public void saveUserToFirestore(FirebaseUser firebaseUser) {
+-+    public void saveUserToFirestore(FirebaseUser firebaseUser, String fullName) {
+-         firestore.collection("users").document(firebaseUser.getUid())
+--            .get()
+--            .addOnSuccessListener(documentSnapshot -> {
+--                String role = "customer";
+--                if (documentSnapshot.exists() && documentSnapshot.contains("role")) {
+--                    role = documentSnapshot.getString("role");
+--                }
+-+                .get()
+-+                .addOnSuccessListener(documentSnapshot -> {
+-+                    String role = "customer";
+-+                    if (documentSnapshot.exists() && documentSnapshot.contains("role")) {
+-+                        role = documentSnapshot.getString("role");
+-+                    }
+- 
+--                Map<String, Object> userMap = new HashMap<>();
+--                userMap.put("userId", firebaseUser.getUid());
+--                userMap.put("role", role);
+--                if (firebaseUser.getDisplayName() != null) {
+--                    userMap.put("fullName", firebaseUser.getDisplayName());
+--                }
+--                if (firebaseUser.getEmail() != null) {
+--                    userMap.put("email", firebaseUser.getEmail());
+--                }
+--                if (firebaseUser.getPhoneNumber() != null) {
+--                    userMap.put("phoneNumber", firebaseUser.getPhoneNumber());
+--                }
+--                userMap.put("createdAt", new Date());
+--                userMap.put("updatedAt", new Date());
+-+                    Map<String, Object> userMap = new HashMap<>();
+-+                    userMap.put("userId", firebaseUser.getUid());
+-+                    userMap.put("role", role);
+-+                    userMap.put("fullName", fullName);
+-+                    if (firebaseUser.getEmail() != null) {
+-+                        userMap.put("email", firebaseUser.getEmail());
+-+                    }
+-+                    if (firebaseUser.getPhoneNumber() != null) {
+-+                        userMap.put("phoneNumber", firebaseUser.getPhoneNumber());
+-+                    }
+-+                    userMap.put("createdAt", new Date());
+-+                    userMap.put("updatedAt", new Date());
+- 
+--                firestore.collection("users").document(firebaseUser.getUid())
+--                    .set(userMap)
+--                    .addOnSuccessListener(aVoid -> {
+--                    })
+--                    .addOnFailureListener(e -> {
+--                    });
+--            })
+--            .addOnFailureListener(e -> {
+--            });
+-+                    firestore.collection("users").document(firebaseUser.getUid())
+-+                            .set(userMap)
+-+                            .addOnSuccessListener(aVoid -> {
+-+                            })
+-+                            .addOnFailureListener(e -> {
+-+                            });
+-+                })
+-+                .addOnFailureListener(e -> {
+-+                });
+-     }
+-+
+- }
+-\ No newline at end of file
+-Index: app/src/main/java/com/example/agrimart/utils/Valid.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.agrimart.utils;\r\n\r\nimport android.widget.TextView;\r\nimport android.util.Patterns;\r\n\r\npublic class Valid {\r\n    public static boolean isValidEmail(String email) {\r\n        return !email.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches();\r\n    }\r\n\r\n    public static boolean isValidPassword(String password) {\r\n        return !password.isEmpty() && password.length() >= 8 && password.matches(\".*[A-Z].*\") && password.matches(\".*\\\\d.*\");\r\n    }\r\n\r\n    public static boolean isValidName(String name) {\r\n        return !name.isEmpty() && name.length() >= 3 && !name.matches(\".*\\\\d.*\");\r\n    }\r\n\r\n    public static boolean validateInputs(String email, String password, String name, TextView tvEmailError, TextView tvPasswordError, TextView tvNameError) {\r\n        boolean isValid = true;\r\n\r\n        if (!isValidEmail(email)) {\r\n            tvEmailError.setText(\"Email không hợp lệ\");\r\n            isValid = false;\r\n        } else {\r\n            tvEmailError.setText(\"\");\r\n        }\r\n\r\n        if (!isValidPassword(password)) {\r\n            tvPasswordError.setText(\"Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa và số\");\r\n            isValid = false;\r\n        } else {\r\n            tvPasswordError.setText(\"\");\r\n        }\r\n\r\n        if (!isValidName(name)) {\r\n            tvNameError.setText(\"Tên phải có ít nhất 3 ký tự và không được chứa số\");\r\n            isValid = false;\r\n        } else {\r\n            tvNameError.setText(\"\");\r\n        }\r\n\r\n        return isValid;\r\n    }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/agrimart/utils/Valid.java b/app/src/main/java/com/example/agrimart/utils/Valid.java
+---- a/app/src/main/java/com/example/agrimart/utils/Valid.java	(revision 6a809528d747061069ce0672a9c8a28c130149ba)
+-+++ b/app/src/main/java/com/example/agrimart/utils/Valid.java	(date 1730455032461)
+-@@ -16,30 +16,7 @@
+-         return !name.isEmpty() && name.length() >= 3 && !name.matches(".*\\d.*");
+-     }
+- 
+--    public static boolean validateInputs(String email, String password, String name, TextView tvEmailError, TextView tvPasswordError, TextView tvNameError) {
+--        boolean isValid = true;
+--
+--        if (!isValidEmail(email)) {
+--            tvEmailError.setText("Email không hợp lệ");
+--            isValid = false;
+--        } else {
+--            tvEmailError.setText("");
+--        }
+--
+--        if (!isValidPassword(password)) {
+--            tvPasswordError.setText("Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa và số");
+--            isValid = false;
+--        } else {
+--            tvPasswordError.setText("");
+--        }
+--
+--        if (!isValidName(name)) {
+--            tvNameError.setText("Tên phải có ít nhất 3 ký tự và không được chứa số");
+--            isValid = false;
+--        } else {
+--            tvNameError.setText("");
+--        }
+--
+--        return isValid;
+--    }
+--}
+-\ No newline at end of file
+-+    public static boolean isPasswordMatching(String password, String confirmPassword) {
+-+        return password.equals(confirmPassword);
+-+    }
+-+}
+-Index: app/src/main/res/layout/activity_forgot_password.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:id=\"@+id/main1\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"@color/white\"\r\n    tools:context=\".ui.Account.ForgotPasswordActivity\">\r\n\r\n    <ImageButton\r\n        android:id=\"@+id/btn_back\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"32dp\"\r\n        android:background=\"@color/white\"\r\n        android:src=\"@drawable/chevron_left\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintHorizontal_bias=\"0.077\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        tools:ignore=\"MissingConstraints\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/textView2\"\r\n        style=\"@style/title\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"96dp\"\r\n        android:fontFamily=\"@font/gabarito\"\r\n        android:text=\"Đặt lại mật khẩu\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintHorizontal_bias=\"0.15\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\" />\r\n\r\n    <com.google.android.material.textfield.TextInputLayout\r\n        android:id=\"@+id/textInputLayout2\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginStart=\"24dp\"\r\n        android:layout_marginTop=\"30dp\"\r\n        android:layout_marginEnd=\"24dp\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/textView2\"\r\n        app:boxBackgroundColor=\"@color/white\"\r\n        app:startIconDrawable=\"@drawable/telephone\"\r\n        app:boxBackgroundMode=\"outline\">\r\n\r\n        <com.google.android.material.textfield.TextInputEditText\r\n            android:id=\"@+id/edtPhoneNumber\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:background=\"@null\"\r\n            android:hint=\"Nhập số điện thoại của bạn\"\r\n            android:inputType=\"phone\" />\r\n    </com.google.android.material.textfield.TextInputLayout>\r\n\r\n    <Button\r\n        android:id=\"@+id/btn_continue\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"36dp\"\r\n        android:backgroundTint=\"@color/green\"\r\n        android:text=\"Tiếp tục\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintHorizontal_bias=\"0.905\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:cornerRadius=\"24dp\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/textInputLayout2\" />\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/layout/activity_forgot_password.xml b/app/src/main/res/layout/activity_forgot_password.xml
+---- a/app/src/main/res/layout/activity_forgot_password.xml	(revision 6a809528d747061069ce0672a9c8a28c130149ba)
+-+++ b/app/src/main/res/layout/activity_forgot_password.xml	(date 1730450605012)
+-@@ -45,16 +45,16 @@
+-         app:layout_constraintStart_toStartOf="parent"
+-         app:layout_constraintTop_toBottomOf="@+id/textView2"
+-         app:boxBackgroundColor="@color/white"
+--        app:startIconDrawable="@drawable/telephone"
+-+        app:startIconDrawable="@drawable/email"
+-         app:boxBackgroundMode="outline">
+- 
+-         <com.google.android.material.textfield.TextInputEditText
+--            android:id="@+id/edtPhoneNumber"
+-+            android:id="@+id/edtEmail"
+-             android:layout_width="match_parent"
+-             android:layout_height="wrap_content"
+-             android:background="@null"
+--            android:hint="Nhập số điện thoại của bạn"
+--            android:inputType="phone" />
+-+            android:hint="Nhập email của bạn"
+-+            android:inputType="textEmailAddress" />
+-     </com.google.android.material.textfield.TextInputLayout>
+- 
+-     <Button
+-Index: app/src/main/java/com/example/agrimart/ui/Account/ForgotPasswordActivity.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.agrimart.ui.Account;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.view.View;\r\nimport android.widget.Button;\r\nimport android.widget.ImageButton;\r\n\r\nimport androidx.activity.EdgeToEdge;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.graphics.Insets;\r\nimport androidx.core.view.ViewCompat;\r\nimport androidx.core.view.WindowInsetsCompat;\r\n\r\nimport com.example.agrimart.R;\r\n\r\npublic class ForgotPasswordActivity extends AppCompatActivity {\r\n    Button btnContinue;\r\n    ImageButton btnBack;\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        EdgeToEdge.enable(this);\r\n        setContentView(R.layout.activity_forgot_password);\r\n        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main1), (v, insets) -> {\r\n            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());\r\n            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);\r\n            return insets;\r\n        });\r\n\r\n    }\r\n\r\n    @Override\r\n    protected void onStart() {\r\n        super.onStart();\r\n        addControls();\r\n        addEvents();\r\n    }\r\n\r\n    public void addControls() {\r\n        btnContinue = findViewById(R.id.btn_continue);\r\n        btnBack = findViewById(R.id.btn_back);\r\n    }\r\n\r\n    public void addEvents() {\r\n        btnContinue.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Intent intent = new Intent(ForgotPasswordActivity.this, EnterOTPActivity.class);\r\n                startActivity(intent);\r\n            }\r\n        });\r\n        btnBack.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                finish();\r\n            }\r\n        });\r\n\r\n    }\r\n\r\n\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/agrimart/ui/Account/ForgotPasswordActivity.java b/app/src/main/java/com/example/agrimart/ui/Account/ForgotPasswordActivity.java
+---- a/app/src/main/java/com/example/agrimart/ui/Account/ForgotPasswordActivity.java	(revision 6a809528d747061069ce0672a9c8a28c130149ba)
+-+++ b/app/src/main/java/com/example/agrimart/ui/Account/ForgotPasswordActivity.java	(date 1730438788971)
+-@@ -4,7 +4,9 @@
+- import android.os.Bundle;
+- import android.view.View;
+- import android.widget.Button;
+-+import android.widget.EditText;
+- import android.widget.ImageButton;
+-+import android.widget.Toast;
+- 
+- import androidx.activity.EdgeToEdge;
+- import androidx.appcompat.app.AppCompatActivity;
+-@@ -13,10 +15,13 @@
+- import androidx.core.view.WindowInsetsCompat;
+- 
+- import com.example.agrimart.R;
+-+import com.google.firebase.auth.FirebaseAuth;
+- 
+- public class ForgotPasswordActivity extends AppCompatActivity {
+-     Button btnContinue;
+-     ImageButton btnBack;
+-+    EditText edtEmail;
+-+    private FirebaseAuth mAuth;
+-     @Override
+-     protected void onCreate(Bundle savedInstanceState) {
+-         super.onCreate(savedInstanceState);
+-@@ -27,7 +32,7 @@
+-             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+-             return insets;
+-         });
+--
+-+        mAuth = FirebaseAuth.getInstance();
+-     }
+- 
+-     @Override
+-@@ -40,14 +45,20 @@
+-     public void addControls() {
+-         btnContinue = findViewById(R.id.btn_continue);
+-         btnBack = findViewById(R.id.btn_back);
+-+        edtEmail = findViewById(R.id.edtEmail);
+-     }
+- 
+-     public void addEvents() {
+-         btnContinue.setOnClickListener(new View.OnClickListener() {
+-             @Override
+-             public void onClick(View v) {
+--                Intent intent = new Intent(ForgotPasswordActivity.this, EnterOTPActivity.class);
+--                startActivity(intent);
+-+                String email = edtEmail.getText().toString().trim();
+-+                if (email.isEmpty()) {
+-+                    Toast.makeText(ForgotPasswordActivity.this, "Hãy nhập email của bạn", Toast.LENGTH_SHORT).show();
+-+                } else {
+-+                    sendPasswordResetEmail(email);
+-+                    finish();
+-+                }
+-             }
+-         });
+-         btnBack.setOnClickListener(new View.OnClickListener() {
+-@@ -59,5 +70,15 @@
+- 
+-     }
+- 
+-+    private void sendPasswordResetEmail(String email) {
+-+        mAuth.sendPasswordResetEmail(email)
+-+                .addOnCompleteListener(task -> {
+-+                    if (task.isSuccessful()) {
+-+                        Toast.makeText(ForgotPasswordActivity.this, "Email đặt lại mật khẩu đã được gửi", Toast.LENGTH_SHORT).show();
+-+                    } else {
+-+                        Toast.makeText(ForgotPasswordActivity.this, "Gửi email thất bại", Toast.LENGTH_SHORT).show();
+-+                    }
+-+                });
+-+    }
+- 
+- }
+-\ No newline at end of file
+-Index: app/src/main/java/com/example/agrimart/ui/Account/SignUpActivity.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.agrimart.ui.Account;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.widget.Button;\r\nimport android.widget.EditText;\r\nimport android.widget.ImageButton;\r\nimport android.widget.ProgressBar;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.lifecycle.ViewModelProvider;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.utils.Valid;\r\nimport com.example.agrimart.viewmodel.SignUpViewModel;\r\n\r\npublic class SignUpActivity extends AppCompatActivity {\r\n    private EditText edtEmail, edtPassword, edtName;\r\n    private TextView tvEmailError, tvPasswordError, tvNameError;\r\n    private Button btnSignUp;\r\n    private ImageButton btnBack;\r\n    private TextView tvHaveAccount;\r\n    private ProgressBar progressBar;\r\n\r\n    private SignUpViewModel viewModel;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_sign_up);\r\n\r\n        initViews();\r\n        initViewModel();\r\n    }\r\n\r\n    private void initViews() {\r\n        edtEmail = findViewById(R.id.edtEmail);\r\n        edtPassword = findViewById(R.id.edtPassword);\r\n        edtName = findViewById(R.id.edtUsername);\r\n        tvEmailError = findViewById(R.id.tvEmailError);\r\n        tvPasswordError = findViewById(R.id.tvPasswordError);\r\n        tvNameError = findViewById(R.id.tvNameError);\r\n        btnSignUp = findViewById(R.id.btn_signin);\r\n        btnBack = findViewById(R.id.btn_back);\r\n        tvHaveAccount = findViewById(R.id.haveAccount);\r\n        progressBar = findViewById(R.id.progressBar);\r\n    }\r\n\r\n    private void initViewModel() {\r\n        viewModel = new ViewModelProvider(this).get(SignUpViewModel.class);\r\n\r\n        viewModel.getSignUpSuccess().observe(this, success -> {\r\n            if (success) {\r\n                Toast.makeText(this, \"Đăng ký thành công. Vui lòng kiểm tra email để xác nhận tài khoản.\", Toast.LENGTH_SHORT).show();\r\n                startActivity(new Intent(SignUpActivity.this, VerifyActivity.class));\r\n                finish();\r\n            } else {\r\n                Toast.makeText(this, \"Lỗi khi đăng ký\", Toast.LENGTH_SHORT).show();\r\n            }\r\n        });\r\n\r\n        viewModel.getEmailVerificationSent().observe(this, sent -> {\r\n            if (sent) {\r\n                Toast.makeText(this, \"Mail xác nhận đã được gửi đến email của bạn\", Toast.LENGTH_SHORT).show();\r\n            } else {\r\n                Toast.makeText(this, \"Lỗi khi gửi mail\", Toast.LENGTH_SHORT).show();\r\n            }\r\n        });\r\n\r\n        btnSignUp.setOnClickListener(v -> {\r\n            String email = edtEmail.getText().toString().trim();\r\n            String password = edtPassword.getText().toString().trim();\r\n            String name = edtName.getText().toString().trim();\r\n            if (Valid.validateInputs(email, password, name, tvEmailError, tvPasswordError, tvNameError)) {\r\n                viewModel.signUpWithEmail(email, password);\r\n            } else {\r\n                Toast.makeText(this, \"Thông tin không hợp lệ\", Toast.LENGTH_SHORT).show();\r\n            }\r\n        });\r\n\r\n        tvHaveAccount.setOnClickListener(v -> {\r\n            Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);\r\n            startActivity(intent);\r\n        });\r\n\r\n        btnBack.setOnClickListener(v -> finish());\r\n    }\r\n}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/agrimart/ui/Account/SignUpActivity.java b/app/src/main/java/com/example/agrimart/ui/Account/SignUpActivity.java
+---- a/app/src/main/java/com/example/agrimart/ui/Account/SignUpActivity.java	(revision 6a809528d747061069ce0672a9c8a28c130149ba)
+-+++ b/app/src/main/java/com/example/agrimart/ui/Account/SignUpActivity.java	(date 1730455099523)
+-@@ -2,6 +2,8 @@
+- 
+- import android.content.Intent;
+- import android.os.Bundle;
+-+import android.util.Patterns;
+-+import android.view.View;
+- import android.widget.Button;
+- import android.widget.EditText;
+- import android.widget.ImageButton;
+-@@ -17,8 +19,8 @@
+- import com.example.agrimart.viewmodel.SignUpViewModel;
+- 
+- public class SignUpActivity extends AppCompatActivity {
+--    private EditText edtEmail, edtPassword, edtName;
+--    private TextView tvEmailError, tvPasswordError, tvNameError;
+-+    private EditText edtEmail, edtPassword, edtName, edtConfirmPassword;
+-+    private TextView tvEmailError, tvPasswordError, tvNameError, tvConfirmPasswordError;
+-     private Button btnSignUp;
+-     private ImageButton btnBack;
+-     private TextView tvHaveAccount;
+-@@ -31,24 +33,26 @@
+-         super.onCreate(savedInstanceState);
+-         setContentView(R.layout.activity_sign_up);
+- 
+--        initViews();
+--        initViewModel();
+-+        addControls();
+-+        addEvents();
+-     }
+- 
+--    private void initViews() {
+-+    private void addControls() {
+-         edtEmail = findViewById(R.id.edtEmail);
+-         edtPassword = findViewById(R.id.edtPassword);
+-         edtName = findViewById(R.id.edtUsername);
+-+        edtConfirmPassword = findViewById(R.id.edtConfirmPassword);
+-         tvEmailError = findViewById(R.id.tvEmailError);
+-         tvPasswordError = findViewById(R.id.tvPasswordError);
+-         tvNameError = findViewById(R.id.tvNameError);
+-+        tvConfirmPasswordError = findViewById(R.id.tvConfirmPasswordError);
+-         btnSignUp = findViewById(R.id.btn_signin);
+-         btnBack = findViewById(R.id.btn_back);
+-         tvHaveAccount = findViewById(R.id.haveAccount);
+-         progressBar = findViewById(R.id.progressBar);
+-     }
+- 
+--    private void initViewModel() {
+-+    private void addEvents() {
+-         viewModel = new ViewModelProvider(this).get(SignUpViewModel.class);
+- 
+-         viewModel.getSignUpSuccess().observe(this, success -> {
+-@@ -61,20 +65,14 @@
+-             }
+-         });
+- 
+--        viewModel.getEmailVerificationSent().observe(this, sent -> {
+--            if (sent) {
+--                Toast.makeText(this, "Mail xác nhận đã được gửi đến email của bạn", Toast.LENGTH_SHORT).show();
+--            } else {
+--                Toast.makeText(this, "Lỗi khi gửi mail", Toast.LENGTH_SHORT).show();
+--            }
+--        });
+--
+-         btnSignUp.setOnClickListener(v -> {
+--            String email = edtEmail.getText().toString().trim();
+--            String password = edtPassword.getText().toString().trim();
+--            String name = edtName.getText().toString().trim();
+--            if (Valid.validateInputs(email, password, name, tvEmailError, tvPasswordError, tvNameError)) {
+--                viewModel.signUpWithEmail(email, password);
+-+            if (validateInputs()) {
+-+                progressBar.setVisibility(View.VISIBLE);
+-+                String email = edtEmail.getText().toString().trim();
+-+                String password = edtPassword.getText().toString().trim();
+-+                String name = edtName.getText().toString().trim();
+-+
+-+                viewModel.signUpWithEmail(email, password, name);
+-             } else {
+-                 Toast.makeText(this, "Thông tin không hợp lệ", Toast.LENGTH_SHORT).show();
+-             }
+-@@ -87,4 +85,61 @@
+- 
+-         btnBack.setOnClickListener(v -> finish());
+-     }
+-+
+-+    private boolean validateInputs() {
+-+        boolean isValid = true;
+-+
+-+        tvEmailError.setVisibility(View.GONE);
+-+        tvPasswordError.setVisibility(View.GONE);
+-+        tvNameError.setVisibility(View.GONE);
+-+        tvConfirmPasswordError.setVisibility(View.GONE);
+-+
+-+        String email = edtEmail.getText().toString().trim();
+-+        String password = edtPassword.getText().toString().trim();
+-+        String confirmPassword = edtConfirmPassword.getText().toString().trim();
+-+        String name = edtName.getText().toString().trim();
+-+
+-+        if (email.isEmpty()) {
+-+            tvEmailError.setText("Email không được để trống");
+-+            tvEmailError.setVisibility(View.VISIBLE);
+-+            isValid = false;
+-+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+-+            tvEmailError.setText("Email không hợp lệ");
+-+            tvEmailError.setVisibility(View.VISIBLE);
+-+            isValid = false;
+-+        }
+-+
+-+        if (password.isEmpty()) {
+-+            tvPasswordError.setText("Mật khẩu không được để trống");
+-+            tvPasswordError.setVisibility(View.VISIBLE);
+-+            isValid = false;
+-+        } else if (password.length() < 8 || !password.matches(".*[A-Z].*") || !password.matches(".*\\d.*")) {
+-+            tvPasswordError.setText("Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa và số");
+-+            tvPasswordError.setVisibility(View.VISIBLE);
+-+            isValid = false;
+-+        }
+-+
+-+        if (confirmPassword.isEmpty()) {
+-+            tvConfirmPasswordError.setText("Không được để trống");
+-+            tvConfirmPasswordError.setVisibility(View.VISIBLE);
+-+            isValid = false;
+-+        } else if (!confirmPassword.equals(password)) {
+-+            tvConfirmPasswordError.setText("Mật khẩu xác nhận không khớp");
+-+            tvConfirmPasswordError.setVisibility(View.VISIBLE);
+-+            isValid = false;
+-+        }
+-+
+-+        if (name.isEmpty()) {
+-+            tvNameError.setText("Tên không được để trống");
+-+            tvNameError.setVisibility(View.VISIBLE);
+-+            isValid = false;
+-+        } else if (name.length() < 3 || name.matches(".*\\d.*")) {
+-+            tvNameError.setText("Tên phải có ít nhất 3 ký tự và không được chứa số");
+-+            tvNameError.setVisibility(View.VISIBLE);
+-+            isValid = false;
+-+        }
+-+
+-+        return isValid;
+-+    }
+-+
+- }
+-Index: app/src/main/java/com/example/agrimart/ui/Account/SignInActivity.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.agrimart.ui.Account;\r\n\r\nimport android.content.Intent;\r\nimport android.content.SharedPreferences;\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\nimport android.widget.Button;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.activity.result.ActivityResultLauncher;\r\nimport androidx.activity.result.contract.ActivityResultContracts;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.graphics.Insets;\r\nimport androidx.core.view.ViewCompat;\r\nimport androidx.core.view.WindowInsetsCompat;\r\nimport androidx.lifecycle.ViewModelProvider;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.ui.MainActivity;\r\nimport com.example.agrimart.viewmodel.SignInViewModel;\r\nimport com.facebook.AccessToken;\r\nimport com.facebook.CallbackManager;\r\nimport com.facebook.FacebookCallback;\r\nimport com.facebook.FacebookException;\r\nimport com.facebook.FacebookSdk;\r\nimport com.facebook.login.LoginManager;\r\nimport com.facebook.login.LoginResult;\r\nimport com.facebook.login.widget.LoginButton;\r\nimport com.google.android.gms.auth.api.signin.GoogleSignIn;\r\nimport com.google.android.gms.auth.api.signin.GoogleSignInAccount;\r\nimport com.google.android.gms.auth.api.signin.GoogleSignInOptions;\r\nimport com.google.android.gms.common.api.ApiException;\r\nimport com.google.android.gms.tasks.Task;\r\nimport com.google.firebase.auth.AuthCredential;\r\nimport com.google.firebase.auth.FirebaseAuth;\r\nimport com.google.firebase.auth.FirebaseUser;\r\nimport com.google.firebase.auth.FacebookAuthProvider;\r\nimport com.google.firebase.auth.GoogleAuthProvider;\r\n\r\npublic class SignInActivity extends AppCompatActivity {\r\n    private static final String TAG = \"SignInActivity\";\r\n    private SignInViewModel signInViewModel;\r\n    private ActivityResultLauncher<Intent> googleSignInLauncher;\r\n    private GoogleSignInOptions gso;\r\n    private SharedPreferences sharedPreferences;\r\n    private FirebaseAuth mAuth;\r\n    private CallbackManager callbackManager;\r\n\r\n    private TextView tvDonthaveAccount;\r\n    private TextView forgotPass;\r\n    private Button btnSignIn;\r\n    private Button btnSignInGoogle, btnSignInFacebook;\r\n    private TextView edtEmail, edtPassword;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_sign_in);\r\n        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main1), (v, insets) -> {\r\n            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());\r\n            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);\r\n            return insets;\r\n        });\r\n\r\n        sharedPreferences = getSharedPreferences(\"user_prefs\", MODE_PRIVATE);\r\n        mAuth = FirebaseAuth.getInstance();\r\n\r\n        if (sharedPreferences.getBoolean(\"is_logged_in\", false)) {\r\n            FirebaseUser currentUser = mAuth.getCurrentUser();\r\n            if (currentUser != null) {\r\n                navigateToMain();\r\n                return;\r\n            }\r\n        }\r\n\r\n        signInViewModel = new ViewModelProvider(this).get(SignInViewModel.class);\r\n\r\n        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)\r\n            .requestIdToken(getString(R.string.default_web_client_id))\r\n            .requestEmail()\r\n            .build();\r\n\r\n        googleSignInLauncher = registerForActivityResult(\r\n            new ActivityResultContracts.StartActivityForResult(),\r\n            result -> {\r\n                if (result.getResultCode() == RESULT_OK) {\r\n                    Intent data = result.getData();\r\n                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);\r\n                    try {\r\n                        GoogleSignInAccount account = task.getResult(ApiException.class);\r\n                        handleGoogleAccessToken(account);\r\n                    } catch (ApiException e) {\r\n                        Toast.makeText(this, \"Đăng nhập thất bại\", Toast.LENGTH_SHORT).show();\r\n                    }\r\n                } else {\r\n                    Toast.makeText(this, \"Đăng nhập bị từ chối\", Toast.LENGTH_SHORT).show();\r\n                }\r\n            });\r\n\r\n        FacebookSdk.sdkInitialize(getApplicationContext());\r\n        callbackManager = CallbackManager.Factory.create();\r\n\r\n        addControls();\r\n        addEvents();\r\n    }\r\n\r\n    public void addControls() {\r\n        tvDonthaveAccount = findViewById(R.id.dontHaveAccount);\r\n        forgotPass = findViewById(R.id.forgotPassword);\r\n        btnSignIn = findViewById(R.id.btnSignIn);\r\n        btnSignInGoogle = findViewById(R.id.btnSignInGoogle);\r\n        edtEmail = findViewById(R.id.edtEmail);\r\n        edtPassword = findViewById(R.id.edtPassword);\r\n        btnSignInFacebook = findViewById(R.id.btnSignInFacebook);\r\n    }\r\n\r\n    public void addEvents() {\r\n        tvDonthaveAccount.setOnClickListener(v -> {\r\n            Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);\r\n            startActivity(intent);\r\n        });\r\n\r\n        forgotPass.setOnClickListener(v -> {\r\n            Intent intent = new Intent(SignInActivity.this, ForgotPasswordActivity.class);\r\n            startActivity(intent);\r\n        });\r\n\r\n        btnSignIn.setOnClickListener(v -> {\r\n            String email = edtEmail.getText().toString().trim();\r\n            String password = edtPassword.getText().toString().trim();\r\n            if (!email.isEmpty() && !password.isEmpty()) {\r\n                signInViewModel.signInWithEmail(email, password, this::navigateToMain);\r\n            } else {\r\n                Toast.makeText(SignInActivity.this, \"Email hoặc mật khẩu không hợp lệ\", Toast.LENGTH_SHORT).show();\r\n            }\r\n        });\r\n\r\n        btnSignInGoogle.setOnClickListener(v -> {\r\n            Intent signInIntent = GoogleSignIn.getClient(this, gso).getSignInIntent();\r\n            googleSignInLauncher.launch(signInIntent);\r\n        });\r\n\r\n        btnSignInFacebook.setOnClickListener(v -> {\r\n            LoginButton loginButton = new LoginButton(this);\r\n            loginButton.setPermissions(\"email\", \"public_profile\");\r\n            loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {\r\n                @Override\r\n                public void onSuccess(LoginResult loginResult) {\r\n                    handleFacebookAccessToken(loginResult.getAccessToken());\r\n                }\r\n\r\n                @Override\r\n                public void onCancel() {\r\n                    Toast.makeText(SignInActivity.this, \"Facebook login canceled\", Toast.LENGTH_SHORT).show();\r\n                }\r\n\r\n                @Override\r\n                public void onError(FacebookException error) {\r\n                    Toast.makeText(SignInActivity.this, \"Facebook login failed\", Toast.LENGTH_SHORT).show();\r\n                }\r\n            });\r\n            loginButton.performClick();\r\n        });\r\n    }\r\n\r\n    private boolean isUserDataExists() {\r\n        String email = sharedPreferences.getString(\"user_email\", null);\r\n        return email != null;\r\n    }\r\n\r\n    private void saveUserData(FirebaseUser user) {\r\n        SharedPreferences.Editor editor = sharedPreferences.edit();\r\n        editor.putString(\"user_email\", user.getEmail());\r\n        editor.putString(\"user_name\", user.getDisplayName());\r\n        editor.apply();\r\n    }\r\n\r\n    private void handleGoogleAccessToken(GoogleSignInAccount account) {\r\n        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);\r\n        signInViewModel.signInWithGoogle(credential, () -> {\r\n            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();\r\n            if (user != null) {\r\n                if (!isUserDataExists()) {\r\n                    saveUserData(user);\r\n                }\r\n                setLoginState(true);\r\n            } else {\r\n            }\r\n            navigateToMain();\r\n        });\r\n    }\r\n\r\nprivate void handleFacebookAccessToken(AccessToken token) {\r\n    AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());\r\n    signInViewModel.signInWithFacebook(credential, () -> {\r\n        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();\r\n        if (user != null) {\r\n            if (!isUserDataExists()) {\r\n                saveUserData(user);\r\n            }\r\n            setLoginState(true);\r\n        } else {\r\n            Log.w(TAG, \"Facebook login successful but user is null\");\r\n        }\r\n        navigateToMain();\r\n    });\r\n}\r\n\r\n    @Override\r\n    protected void onActivityResult(int requestCode, int resultCode, Intent data) {\r\n        super.onActivityResult(requestCode, resultCode, data);\r\n        callbackManager.onActivityResult(requestCode, resultCode, data);\r\n    }\r\n\r\n    private void navigateToMain() {\r\n        Intent intent = new Intent(SignInActivity.this, MainActivity.class);\r\n        startActivity(intent);\r\n        finish();\r\n    }\r\n\r\n    public void signOutFromFacebook() {\r\n    LoginManager.getInstance().logOut();\r\n    FirebaseAuth.getInstance().signOut();\r\n    setLoginState(false);\r\n    navigateToSignIn();\r\n}\r\n\r\n    private void navigateToSignIn() {\r\n        Intent intent = new Intent(SignInActivity.this, SignInActivity.class);\r\n        startActivity(intent);\r\n        finish();\r\n    }\r\n\r\n    private void setLoginState(boolean isLoggedIn) {\r\n        SharedPreferences.Editor editor = sharedPreferences.edit();\r\n        editor.putBoolean(\"is_logged_in\", isLoggedIn);\r\n        editor.apply();\r\n    }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/agrimart/ui/Account/SignInActivity.java b/app/src/main/java/com/example/agrimart/ui/Account/SignInActivity.java
+---- a/app/src/main/java/com/example/agrimart/ui/Account/SignInActivity.java	(revision 6a809528d747061069ce0672a9c8a28c130149ba)
+-+++ b/app/src/main/java/com/example/agrimart/ui/Account/SignInActivity.java	(date 1730455530347)
+-@@ -77,26 +77,26 @@
+-         signInViewModel = new ViewModelProvider(this).get(SignInViewModel.class);
+- 
+-         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+--            .requestIdToken(getString(R.string.default_web_client_id))
+--            .requestEmail()
+--            .build();
+-+                .requestIdToken(getString(R.string.default_web_client_id))
+-+                .requestEmail()
+-+                .build();
+- 
+-         googleSignInLauncher = registerForActivityResult(
+--            new ActivityResultContracts.StartActivityForResult(),
+--            result -> {
+--                if (result.getResultCode() == RESULT_OK) {
+--                    Intent data = result.getData();
+--                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+--                    try {
+--                        GoogleSignInAccount account = task.getResult(ApiException.class);
+--                        handleGoogleAccessToken(account);
+--                    } catch (ApiException e) {
+--                        Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+--                    }
+--                } else {
+--                    Toast.makeText(this, "Đăng nhập bị từ chối", Toast.LENGTH_SHORT).show();
+--                }
+--            });
+-+                new ActivityResultContracts.StartActivityForResult(),
+-+                result -> {
+-+                    if (result.getResultCode() == RESULT_OK) {
+-+                        Intent data = result.getData();
+-+                        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+-+                        try {
+-+                            GoogleSignInAccount account = task.getResult(ApiException.class);
+-+                            handleGoogleAccessToken(account);
+-+                        } catch (ApiException e) {
+-+                            Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+-+                        }
+-+                    } else {
+-+                        Toast.makeText(this, "Đăng nhập bị từ chối", Toast.LENGTH_SHORT).show();
+-+                    }
+-+                });
+- 
+-         FacebookSdk.sdkInitialize(getApplicationContext());
+-         callbackManager = CallbackManager.Factory.create();
+-@@ -130,7 +130,7 @@
+-             String email = edtEmail.getText().toString().trim();
+-             String password = edtPassword.getText().toString().trim();
+-             if (!email.isEmpty() && !password.isEmpty()) {
+--                signInViewModel.signInWithEmail(email, password, this::navigateToMain);
+-+                signInViewModel.signInWithEmail(email, password, () -> checkEmailVerification(true));
+-             } else {
+-                 Toast.makeText(SignInActivity.this, "Email hoặc mật khẩu không hợp lệ", Toast.LENGTH_SHORT).show();
+-             }
+-@@ -148,22 +148,40 @@
+-                 @Override
+-                 public void onSuccess(LoginResult loginResult) {
+-                     handleFacebookAccessToken(loginResult.getAccessToken());
+-+                    Toast.makeText(SignInActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+-                 }
+- 
+-                 @Override
+-                 public void onCancel() {
+--                    Toast.makeText(SignInActivity.this, "Facebook login canceled", Toast.LENGTH_SHORT).show();
+-+                    Toast.makeText(SignInActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+-                 }
+- 
+-                 @Override
+-                 public void onError(FacebookException error) {
+--                    Toast.makeText(SignInActivity.this, "Facebook login failed", Toast.LENGTH_SHORT).show();
+-+                    Toast.makeText(SignInActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+-                 }
+-             });
+-             loginButton.performClick();
+-         });
+-     }
+- 
+-+    private void checkEmailVerification(boolean isEmailSignIn) {
+-+        FirebaseUser user = mAuth.getCurrentUser();
+-+        if (user != null) {
+-+            if (!isEmailSignIn || user.isEmailVerified()) {
+-+                navigateToMain();
+-+            } else {
+-+                Toast.makeText(SignInActivity.this, "Vui lòng xác thực email của bạn trước khi đăng nhập", Toast.LENGTH_SHORT).show();
+-+                signOut();
+-+            }
+-+        }
+-+    }
+-+
+-+    private void signOut() {
+-+        mAuth.signOut();
+-+        setLoginState(false);
+-+    }
+-+
+-     private boolean isUserDataExists() {
+-         String email = sharedPreferences.getString("user_email", null);
+-         return email != null;
+-@@ -183,29 +201,30 @@
+-             if (user != null) {
+-                 if (!isUserDataExists()) {
+-                     saveUserData(user);
+-+                    Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+-                 }
+--                setLoginState(true);
+-+                checkEmailVerification(false);
+-             } else {
+-+                Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+-             }
+--            navigateToMain();
+-         });
+-     }
+- 
+--private void handleFacebookAccessToken(AccessToken token) {
+--    AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+--    signInViewModel.signInWithFacebook(credential, () -> {
+--        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+--        if (user != null) {
+--            if (!isUserDataExists()) {
+--                saveUserData(user);
+--            }
+--            setLoginState(true);
+--        } else {
+--            Log.w(TAG, "Facebook login successful but user is null");
+--        }
+--        navigateToMain();
+--    });
+--}
+-+    private void handleFacebookAccessToken(AccessToken token) {
+-+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+-+        signInViewModel.signInWithFacebook(credential, () -> {
+-+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+-+            if (user != null) {
+-+                if (!isUserDataExists()) {
+-+                    saveUserData(user);
+-+                    Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+-+                }
+-+                checkEmailVerification(false);
+-+            } else {
+-+                Toast.makeText(this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
+-+            }
+-+        });
+-+    }
+- 
+-     @Override
+-     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+-@@ -218,23 +237,10 @@
+-         startActivity(intent);
+-         finish();
+-     }
+--
+--    public void signOutFromFacebook() {
+--    LoginManager.getInstance().logOut();
+--    FirebaseAuth.getInstance().signOut();
+--    setLoginState(false);
+--    navigateToSignIn();
+--}
+--
+--    private void navigateToSignIn() {
+--        Intent intent = new Intent(SignInActivity.this, SignInActivity.class);
+--        startActivity(intent);
+--        finish();
+--    }
+- 
+-     private void setLoginState(boolean isLoggedIn) {
+-         SharedPreferences.Editor editor = sharedPreferences.edit();
+-         editor.putBoolean("is_logged_in", isLoggedIn);
+-         editor.apply();
+-     }
+--}
+-\ No newline at end of file
+-+}
+-Index: app/src/main/java/com/example/agrimart/ui/Account/VerifyActivity.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.agrimart.ui.Account;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.os.Handler;\r\nimport android.widget.Button;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.lifecycle.ViewModelProvider;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.ui.MainActivity;\r\nimport com.example.agrimart.viewmodel.SignUpViewModel;\r\nimport com.google.firebase.auth.FirebaseAuth;\r\nimport com.google.firebase.auth.FirebaseUser;\r\n\r\npublic class VerifyActivity extends AppCompatActivity {\r\n    private SignUpViewModel viewModel;\r\n    private FirebaseAuth mAuth;\r\n    private Handler handler;\r\n    private Runnable checkEmailVerifiedRunnable;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_verify);\r\n\r\n        mAuth = FirebaseAuth.getInstance();\r\n        viewModel = new ViewModelProvider(this).get(SignUpViewModel.class);\r\n        handler = new Handler();\r\n\r\n        Button btnResendEmail = findViewById(R.id.btnResendEmail);\r\n        Button btnBackToLogin = findViewById(R.id.btnBackToLogin);\r\n\r\n        btnResendEmail.setOnClickListener(v -> {\r\n            FirebaseUser user = mAuth.getCurrentUser();\r\n            if (user != null) {\r\n                viewModel.sendEmailVerification(user);\r\n                Toast.makeText(this, \"Email xác nhận đã được gửi lại\", Toast.LENGTH_SHORT).show();\r\n            }\r\n        });\r\n\r\n        btnBackToLogin.setOnClickListener(v -> {\r\n            startActivity(new Intent(VerifyActivity.this, SignInActivity.class));\r\n            finish();\r\n        });\r\n\r\n        checkEmailVerification();\r\n    }\r\n\r\n    private void checkEmailVerification() {\r\n        checkEmailVerifiedRunnable = new Runnable() {\r\n            @Override\r\n            public void run() {\r\n                FirebaseUser user = mAuth.getCurrentUser();\r\n                if (user != null) {\r\n                    user.reload().addOnCompleteListener(task -> {\r\n                        if (user.isEmailVerified()) {\r\n                            viewModel.saveUserToFirestore(user);\r\n                            Toast.makeText(VerifyActivity.this, \"Đăng kí thành công\", Toast.LENGTH_SHORT).show();\r\n                            startActivity(new Intent(VerifyActivity.this, MainActivity.class));\r\n                            finish();\r\n                        } else {\r\n                            handler.postDelayed(checkEmailVerifiedRunnable, 3000);\r\n                        }\r\n                    });\r\n                }\r\n            }\r\n        };\r\n        handler.post(checkEmailVerifiedRunnable);\r\n    }\r\n\r\n    @Override\r\n    protected void onDestroy() {\r\n        super.onDestroy();\r\n        handler.removeCallbacks(checkEmailVerifiedRunnable);\r\n    }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/agrimart/ui/Account/VerifyActivity.java b/app/src/main/java/com/example/agrimart/ui/Account/VerifyActivity.java
+---- a/app/src/main/java/com/example/agrimart/ui/Account/VerifyActivity.java	(revision 6a809528d747061069ce0672a9c8a28c130149ba)
+-+++ b/app/src/main/java/com/example/agrimart/ui/Account/VerifyActivity.java	(date 1730452246225)
+-@@ -20,6 +20,7 @@
+-     private FirebaseAuth mAuth;
+-     private Handler handler;
+-     private Runnable checkEmailVerifiedRunnable;
+-+    private String fullname;
+- 
+-     @Override
+-     protected void onCreate(Bundle savedInstanceState) {
+-@@ -33,6 +34,8 @@
+-         Button btnResendEmail = findViewById(R.id.btnResendEmail);
+-         Button btnBackToLogin = findViewById(R.id.btnBackToLogin);
+- 
+-+        fullname = getIntent().getStringExtra("fullname");
+-+
+-         btnResendEmail.setOnClickListener(v -> {
+-             FirebaseUser user = mAuth.getCurrentUser();
+-             if (user != null) {
+-@@ -57,7 +60,7 @@
+-                 if (user != null) {
+-                     user.reload().addOnCompleteListener(task -> {
+-                         if (user.isEmailVerified()) {
+--                            viewModel.saveUserToFirestore(user);
+-+                            viewModel.saveUserToFirestore(user, fullname);
+-                             Toast.makeText(VerifyActivity.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
+-                             startActivity(new Intent(VerifyActivity.this, MainActivity.class));
+-                             finish();
+-Index: app/src/main/java/com/example/agrimart/ui/MainActivity.java
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.agrimart.ui;\r\n\r\nimport android.content.Intent;\r\nimport android.content.SharedPreferences;\r\nimport android.os.Bundle;\r\nimport android.view.MenuItem;\r\nimport androidx.activity.EdgeToEdge;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.graphics.Insets;\r\nimport androidx.core.view.ViewCompat;\r\nimport androidx.core.view.WindowInsetsCompat;\r\nimport androidx.fragment.app.Fragment;\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.ui.Account.SignInActivity;\r\nimport com.example.agrimart.ui.Cart.CartFragment;\r\nimport com.example.agrimart.ui.Explore.ExploreFragment;\r\nimport com.example.agrimart.ui.Homepage.HomeFragment;\r\nimport com.example.agrimart.ui.MyProfile.MyProfileFragment;\r\nimport com.example.agrimart.ui.Notification.NotificationFragment;\r\nimport com.google.android.material.bottomnavigation.BottomNavigationView;\r\nimport com.google.firebase.auth.FirebaseAuth;\r\nimport com.google.firebase.auth.FirebaseUser;\r\nimport com.google.firebase.firestore.DocumentReference;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\n\r\npublic class MainActivity extends AppCompatActivity {\r\n\r\n    private SharedPreferences sharedPreferences;\r\n    private FirebaseAuth mAuth;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        EdgeToEdge.enable(this);\r\n        setContentView(R.layout.activity_main);\r\n        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main1), (v, insets) -> {\r\n            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());\r\n            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);\r\n            return insets;\r\n        });\r\n\r\n        sharedPreferences = getSharedPreferences(\"user_prefs\", MODE_PRIVATE);\r\n        mAuth = FirebaseAuth.getInstance();\r\n\r\n        if (sharedPreferences.getBoolean(\"is_logged_in\", false)) {\r\n            FirebaseUser currentUser = mAuth.getCurrentUser();\r\n            if (currentUser != null) {\r\n                navigateToHome();\r\n                fetchUserRoleAndSave(currentUser);\r\n            } else {\r\n                clearLoginState();\r\n                navigateToLogin();\r\n            }\r\n        } else {\r\n            navigateToLogin();\r\n        }\r\n\r\n        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);\r\n        bottomNavigationView.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);\r\n\r\n        if (savedInstanceState == null) {\r\n            loadFragment(new HomeFragment());\r\n            bottomNavigationView.setSelectedItemId(R.id.home);\r\n        }\r\n    }\r\n\r\n    private void navigateToHome() {\r\n        loadFragment(new HomeFragment());\r\n    }\r\n\r\n    private void navigateToLogin() {\r\n        Intent intent = new Intent(MainActivity.this, SignInActivity.class);\r\n        startActivity(intent);\r\n        finish();\r\n    }\r\n\r\n    private void clearLoginState() {\r\n        SharedPreferences.Editor editor = sharedPreferences.edit();\r\n        editor.clear();\r\n        editor.apply();\r\n    }\r\n\r\n    private void loadFragment(Fragment fragment) {\r\n        getSupportFragmentManager().beginTransaction()\r\n                .replace(R.id.fragment_container, fragment)\r\n                .commit();\r\n    }\r\n\r\n    private boolean onNavigationItemSelected(MenuItem item) {\r\n        Fragment selectedFragment = null;\r\n\r\n        if (item.getItemId() == R.id.home) {\r\n            selectedFragment = new HomeFragment();\r\n        } else if (item.getItemId() == R.id.category) {\r\n            selectedFragment = new ExploreFragment();\r\n        } else if (item.getItemId() == R.id.notification) {\r\n            selectedFragment = new NotificationFragment();\r\n        } else if (item.getItemId() == R.id.profile) {\r\n            selectedFragment = new MyProfileFragment();\r\n        } else if (item.getItemId() == R.id.cart) {\r\n            selectedFragment = new CartFragment();\r\n        } else {\r\n            return false;\r\n        }\r\n\r\n        if (selectedFragment != null) {\r\n            loadFragment(selectedFragment);\r\n        }\r\n\r\n        return true;\r\n    }\r\n\r\n    private void fetchUserRoleAndSave(FirebaseUser user) {\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n        DocumentReference docRef = db.collection(\"users\").document(user.getUid());\r\n        docRef.get().addOnSuccessListener(documentSnapshot -> {\r\n            if (documentSnapshot.exists()) {\r\n                String role = documentSnapshot.getString(\"role\");\r\n                if (role != null) {\r\n                    saveUserToSharedPreferences(role);\r\n                }\r\n            }\r\n        }).addOnFailureListener(e -> {\r\n        });\r\n    }\r\n\r\n    private void saveUserToSharedPreferences(String role) {\r\n        SharedPreferences.Editor editor = sharedPreferences.edit();\r\n        editor.putString(\"user_role\", role);\r\n        editor.apply();\r\n    }\r\n}
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/agrimart/ui/MainActivity.java b/app/src/main/java/com/example/agrimart/ui/MainActivity.java
+---- a/app/src/main/java/com/example/agrimart/ui/MainActivity.java	(revision 6a809528d747061069ce0672a9c8a28c130149ba)
+-+++ b/app/src/main/java/com/example/agrimart/ui/MainActivity.java	(date 1730377522637)
+-@@ -46,7 +46,7 @@
+-             FirebaseUser currentUser = mAuth.getCurrentUser();
+-             if (currentUser != null) {
+-                 navigateToHome();
+--                fetchUserRoleAndSave(currentUser);
+-+                getUserRole(currentUser);
+-             } else {
+-                 clearLoginState();
+-                 navigateToLogin();
+-@@ -110,7 +110,7 @@
+-         return true;
+-     }
+- 
+--    private void fetchUserRoleAndSave(FirebaseUser user) {
+-+    private void getUserRole(FirebaseUser user) {
+-         FirebaseFirestore db = FirebaseFirestore.getInstance();
+-         DocumentReference docRef = db.collection("users").document(user.getUid());
+-         docRef.get().addOnSuccessListener(documentSnapshot -> {
+-Index: app/src/main/res/values/strings.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><resources>\r\n    <string name=\"app_name\">AgriMart</string>\r\n    <string name=\"categories\">Danh mục sản phẩm</string>\r\n    <string name=\"see_all\">Xem thêm</string>\r\n    <string name=\"top_selling\">Bán chạy nhất</string>\r\n    <string name=\"home\">Trang chủ</string>\r\n    <string name=\"profile\">Tôi</string>\r\n    <string name=\"order\">Order</string>\r\n    <string name=\"newsfeed\">Tin mới</string>\r\n    <string name=\"post\">Đăng bài</string>\r\n    <string name=\"cart\">Giỏ hàng</string>\r\n    <string name=\"ng_b_n\">Đăng bán</string>\r\n    <string name=\"cho\">Chợ</string>\r\n    <string name=\"search_hint\">tim kiem san pham</string>\r\n    <string name=\"search\">Tìm kiếm sản phẩm</string>\r\n    <string name=\"ng_nh_p\">Đăng nhập</string>\r\n    <string name=\"ch_a_c_t_i_kho_n\"><u>Chưa có tài khoản?</u></string>\r\n    <string name=\"m_t_kh_u\">Mật khẩu</string>\r\n    <string name=\"continue_with_google\"> Đăng nhập bằng Google</string>\r\n    <string name=\"dang_ky\">Chưa có tài khoản? <b>Đăng ký</b></string>\r\n    <string name=\"c_t_i_kho_n\"><u>Đã có tài khoản?</u></string>\r\n    <string name=\"ng_k_b_ng_s_i_n_tho_i\">Đăng ký bằng số điện thoại</string>\r\n    <string name=\"ng_k_b_ng_email\">Đăng ký bằng email</string>\r\n    <string name=\"qu_n_m_t_kh_u\">Quên mật khẩu?</string>\r\n    <string name=\"nh_p_email_ho_c_s_i_n_tho_i\">Nhập email hoặc số điện thoại</string>\r\n    <string name=\"sodienthoai\">Số điện thoại</string>\r\n    <string name=\"g_i_l_i\"><u>Gửi lại</u></string>\r\n\r\n\r\n    <!-- PostProduct -->\r\n    <string name=\"nh_p_s_l_ng_c_n_b_n\">Your desired text here</string>\r\n    <string name=\"desc_vegetable\">Rau củ quả</string>\r\n    <string name=\"desc_fruit\">Trái cây</string>\r\n    <string name=\"desc_meat_eggs\">Trứng, thịt</string>\r\n    <string name=\"desc_milk\">Sữa, bơ, phô mai</string>\r\n    <string name=\"desc_sweets\">Bánh kẹo</string>\r\n    <string name=\"nh_s_n_ph_m_th_c_t\">Ảnh sản phẩm thực tế</string>\r\n    <string name=\"th_m_nh\">Thêm ảnh</string>\r\n    <string name=\"todo\">TODO</string>\r\n    <string name=\"t_n_s_n_ph_m\">Tên sản phẩm</string>\r\n    <string name=\"c_i_t_n_n_i_l_n_t_t_c_s_gi_p_ch_r_t_nhi_u_y\">Cái tên nói lên tất cả sẽ giúp ích rất nhiều đấy</string>\r\n    <string name=\"m_t_s_n_ph_m\">Mô tả sản phẩm</string>\r\n    <string name=\"m_t_o_n_v_n_m_t_y_s_gi_p_s_n_ph_m_c_a_b_n_b_n_d_h_n\">Một đoạn văn mô tả đầy đủ sẽ giúp sản phẩm của bạn bán dễ hơn</string>\r\n    <string name=\"ph_n_lo_i_s_n_ph_m\">Phân loại sản phẩm</string>\r\n    <string name=\"rau_c\">Rau củ</string>\r\n    <string name=\"tr_i_c_y\">Trái cây</string>\r\n    <string name=\"th_t_tr_ng\">Thịt, Trứng</string>\r\n    <string name=\"s_a_b_ph_mai\">Sữa, bơ, phô mai</string>\r\n    <string name=\"ng_t\">Đồ ngọt</string>\r\n    <string name=\"ti_p_t_c\">Tiếp tục</string>\r\n    <string name=\"gi_b_n\">Giá bán</string>\r\n    <string name=\"n_v\">Đơn vị </string>\r\n    <string name=\"hi_n_c\">Hiện có</string>\r\n    <string name=\"nh_p_gi_b_n\">Nhập giá bán</string>\r\n    <string name=\"nh_p_n_v_kg_ch_c_c_i\">Nhập đơn vị (kg, chục, cái)</string>\r\n    <string name=\"_200kg\">200kg</string>\r\n    <string name=\"s_u_ri_ng_lan_t_a\">Sầu riêng lan tỏa</string>\r\n    <string name=\"_20_ng_i_ang_h_i\">20 người đang hỏi</string>\r\n    <string name=\"dang_san_pham\">ĐĂNG SẢN PHẨM</string>\r\n    <string name=\"frash_fruits_vegetable\"><![CDATA[Frash Fruits & Vegetable]]></string>\r\n    <string name=\"add_cart\">Thêm vào giỏ hàng</string>\r\n    <string name=\"product_name\">Tên sản phẩm</string>\r\n    <string name=\"price\">50.000đ</string>\r\n    <string name=\"address\">123 Lê Trọng Tấn, Quận Tân Phú, TP.HCM</string>\r\n    <string name=\"description\">Mô tả chi tiết</string>\r\n    <string name=\"descriptions\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>\r\n    <string name=\"user_review\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</string>\r\n    <string name=\"my_cart\">Giỏ hàng</string>\r\n    <string name=\"notification_time\">1 phút trước</string>\r\n    <string name=\"notification_message\">Khánh vừa đặt mua sản phẩm của bạn: Chuối nhà trồng...</string>\r\n    <string name=\"cate\">Gian hàng</string>\r\n    <string name=\"t_m_theo_danh_m_c\">Tìm theo danh mục</string>\r\n    <string name=\"thong_bao\">Thông báo</string>\r\n    <string name=\"n_h_ng\">Đơn hàng</string>\r\n    <string name=\"_0\">0</string>\r\n    <string name=\"ch_l_y_h_ng\">Chờ lấy hàng</string>\r\n    <string name=\"n_h_y\">Đơn hủy</string>\r\n    <string name=\"tr_h_ng_ho_n_ti_n\">Trả hàng/Hoàn tiền</string>\r\n\r\n    <string-array name=\"filter_options\">\r\n        <item>Sort by Price</item>\r\n        <item>Newest</item>\r\n        <item>Oldest</item>\r\n    </string-array>\r\n\r\n    <style name=\"TabTextAppearance\" parent=\"TextAppearance.Design.Tab\">\r\n        <item name=\"android:textSize\">16sp</item>\r\n        <item name=\"android:textColor\">@color/black</item>\r\n        <item name=\"android:textStyle\">bold</item>\r\n    </style>\r\n\r\n    <string name=\"default_web_client_id\">689266518488-dggpokj3cbc4t7hoa53j2vsa6vt59qi4.apps.googleusercontent.com</string>\r\n    <!-- TODO: Remove or change this placeholder text -->\r\n    <string name=\"hello_blank_fragment\">Hello blank fragment</string>\r\n    <string name=\"email\">Email</string>\r\n\r\n    //facebook\r\n    <string name=\"loginwithfacebook\">Đăng nhập bằng Facebook</string>\r\n    <string name=\"facebook_app_id\">456355280794721</string>\r\n    <string name=\"fb_login_protocol_scheme\">fb456355280794721</string>\r\n    <string name=\"facebook_client_token\">fbc7722b3ad7a34dbf443766e81403c1</string>\r\n    <string name=\"facebook_app_secret\">239308944b7f4f13d8ed33f56b79c7cc</string>\r\n    <!-- Strings used for fragments for navigation -->\r\n    <string name=\"first_fragment_label\">First Fragment</string>\r\n    <string name=\"second_fragment_label\">Second Fragment</string>\r\n    <string name=\"next\">Next</string>\r\n    <string name=\"previous\">Previous</string>\r\n\r\n    <string name=\"lorem_ipsum\">\r\n        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris\r\n        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus\r\n        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad\r\n        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend\r\n        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,\r\n        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\\n\\n\r\n        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus\r\n        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed\r\n        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada\r\n        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,\r\n        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor\r\n        bibendum, vel congue leo egestas.\\n\\n\r\n        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit\r\n        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,\r\n        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer\r\n        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at\r\n        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,\r\n        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque\r\n        est.\\n\\n\r\n        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.\r\n        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui\r\n        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In\r\n        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,\r\n        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra\r\n        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a\r\n        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus\r\n        convallis.\\n\\n\r\n        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et\r\n        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa\r\n        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,\r\n        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper\r\n        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus\r\n        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus\r\n        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.\r\n    </string>\r\n</resources>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+---- a/app/src/main/res/values/strings.xml	(revision 6a809528d747061069ce0672a9c8a28c130149ba)
+-+++ b/app/src/main/res/values/strings.xml	(date 1730448311644)
+-@@ -142,4 +142,5 @@
+-         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+-         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+-     </string>
+-+    <string name="verify">Email xác nhận đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra email và nhấn vào liên kết xác nhận để hoàn tất đăng ký.</string>
+- </resources>
+-\ No newline at end of file
+-Index: app/src/main/res/layout/activity_verify.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:id=\"@+id/main\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".ui.Account.VerifyActivity\">\r\n\r\n    <TextView\r\n        android:id=\"@+id/tvVerifyTitle\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"32dp\"\r\n        android:text=\"Xác nhận Email\"\r\n        android:textSize=\"24sp\"\r\n        android:textStyle=\"bold\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/tvVerifyMessage\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"16dp\"\r\n        android:layout_marginStart=\"24dp\"\r\n        android:layout_marginEnd=\"24dp\"\r\n        android:text=\"Một email xác nhận đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra email và nhấn vào liên kết xác nhận để hoàn tất đăng ký.\"\r\n        android:textSize=\"16sp\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/tvVerifyTitle\" />\r\n\r\n    <Button\r\n        android:id=\"@+id/btnResendEmail\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"24dp\"\r\n        android:text=\"Gửi lại email\"\r\n        android:backgroundTint=\"@color/green\"\r\n        app:cornerRadius=\"24dp\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/tvVerifyMessage\" />\r\n\r\n    <Button\r\n        android:id=\"@+id/btnBackToLogin\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"12dp\"\r\n        android:backgroundTint=\"@color/green\"\r\n        android:text=\"Quay lại đăng nhập\"\r\n        app:cornerRadius=\"24dp\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/btnResendEmail\" />\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/res/layout/activity_verify.xml b/app/src/main/res/layout/activity_verify.xml
+---- a/app/src/main/res/layout/activity_verify.xml	(revision 6a809528d747061069ce0672a9c8a28c130149ba)
+-+++ b/app/src/main/res/layout/activity_verify.xml	(date 1730448311653)
+-@@ -26,7 +26,7 @@
+-         android:layout_marginTop="16dp"
+-         android:layout_marginStart="24dp"
+-         android:layout_marginEnd="24dp"
+--        android:text="Một email xác nhận đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra email và nhấn vào liên kết xác nhận để hoàn tất đăng ký."
+-+        android:text="@string/verify"
+-         android:textSize="16sp"
+-         app:layout_constraintEnd_toEndOf="parent"
+-         app:layout_constraintStart_toStartOf="parent"

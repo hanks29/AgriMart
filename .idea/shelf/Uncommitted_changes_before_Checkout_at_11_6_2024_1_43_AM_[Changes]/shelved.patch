@@ -1,0 +1,152 @@
+Index: app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPhotosFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.PostProduct;\r\n\r\nimport android.net.Uri;\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.activity.result.ActivityResultLauncher;\r\nimport androidx.activity.result.PickVisualMediaRequest;\r\nimport androidx.activity.result.contract.ActivityResultContracts;\r\nimport androidx.appcompat.widget.AppCompatButton;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.fragment.app.FragmentTransaction;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.adapter.CategoryAdapter;\r\nimport com.example.agrimart.data.model.Category;\r\nimport com.example.agrimart.data.model.PostProduct;\r\nimport com.example.agrimart.data.model.ProductRequest;\r\nimport com.example.agrimart.databinding.FragmentPostProductPhotosBinding;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\n\r\nimport java.io.File;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Objects;\r\n\r\n\r\n/**\r\n * A simple {@link Fragment} subclass.\r\n * Use the {@link PostProductPhotosFragment#newInstance} factory method to\r\n * create an instance of this fragment.\r\n */\r\npublic class PostProductPhotosFragment extends Fragment {\r\n\r\n    // TODO: Rename parameter arguments, choose names that match\r\n    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER\r\n    private static final String ARG_PARAM1 = \"param1\";\r\n    private static final String ARG_PARAM2 = \"param2\";\r\n\r\n    // TODO: Rename and change types of parameters\r\n    private String mParam1;\r\n    private String mParam2;\r\n    FragmentPostProductPhotosBinding binding;\r\n    private List<Uri> imageUris=new ArrayList<>();\r\n    private List<Category> categories=new ArrayList<>();\r\n    private CategoryAdapter categoryAdapter;\r\n    public PostProductPhotosFragment() {\r\n        // Required empty public constructor\r\n    }\r\n\r\n    /**\r\n     * Use this factory method to create a new instance of\r\n     * this fragment using the provided parameters.\r\n     *\r\n     * @param param1 Parameter 1.\r\n     * @param param2 Parameter 2.\r\n     * @return A new instance of fragment PostPhotosFragment.\r\n     */\r\n    // TODO: Rename and change types and number of parameters\r\n    public static PostProductPhotosFragment newInstance(String param1, String param2) {\r\n        PostProductPhotosFragment fragment = new PostProductPhotosFragment();\r\n        Bundle args = new Bundle();\r\n        args.putString(ARG_PARAM1, param1);\r\n        args.putString(ARG_PARAM2, param2);\r\n        fragment.setArguments(args);\r\n        return fragment;\r\n    }\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        if (getArguments() != null) {\r\n            mParam1 = getArguments().getString(ARG_PARAM1);\r\n            mParam2 = getArguments().getString(ARG_PARAM2);\r\n        }\r\n    }\r\n\r\n    AppCompatButton button_post_product_continue;\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        // Inflate the layout for this fragment\r\n        View view = inflater.inflate(R.layout.fragment_post_product_photos, container, false);\r\n        binding = FragmentPostProductPhotosBinding.bind(view);\r\n        addControl(view);\r\n        addEvents(view);\r\n\r\n        ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia =\r\n                registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(4), uris -> {\r\n                    // Callback is invoked after the user selects media items or closes the\r\n                    // photo picker.\r\n                    if (!uris.isEmpty()) {\r\n                        imageUris.clear();\r\n                        imageUris.addAll(uris);\r\n                        if(uris.size()>0 && imageUris.size()>0){\r\n                            Glide.with(this).load(imageUris.get(0)).into(binding.imageView5);\r\n                            binding.frameLayout1.setVisibility(View.VISIBLE);\r\n                        }\r\n                        if(uris.size()>1 && imageUris.size()>1){\r\n                            Glide.with(this).load(imageUris.get(1)).into(binding.imageView6);\r\n                            binding.frameLayout2.setVisibility(View.VISIBLE);\r\n                        }\r\n                        if(uris.size()>2 && imageUris.size()>2){\r\n                            Glide.with(this).load(imageUris.get(2)).into(binding.imageView7);\r\n                            binding.frameLayout3.setVisibility(View.VISIBLE);\r\n                        }\r\n                        if(uris.size()>3 && imageUris.size()>3){\r\n                            Glide.with(this).load(imageUris.get(3)).into(binding.imageView8);\r\n                            binding.frameLayout4.setVisibility(View.VISIBLE);\r\n                        }\r\n                        binding.linearLayout.setVisibility(View.VISIBLE);\r\n\r\n                    } else {\r\n                        Log.d(\"PhotoPicker\", \"No media selected\");\r\n                    }\r\n                });\r\n        binding.imageButtonCamera.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                if(!Objects.isNull(imageUris) || !imageUris.isEmpty() || imageUris.size()<4){\r\n                    pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()\r\n                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)\r\n                            .build());\r\n                }\r\n                else{\r\n                    Toast.makeText(getContext(), \"Vui long xóa ảnh đã chọn để thêm ảnh mới\", Toast.LENGTH_SHORT).show();\r\n                }\r\n\r\n            }\r\n        });\r\n        binding.imageButton3.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                binding.imageView5.setImageURI(null);\r\n                binding.frameLayout1.setVisibility(View.GONE);\r\n                binding.imageButton3.setVisibility(View.GONE);\r\n\r\n                if(!imageUris.isEmpty()){\r\n                    imageUris.remove(0);\r\n                }\r\n                if(imageUris.isEmpty()){\r\n                    binding.linearLayout.setVisibility(View.GONE);\r\n                }\r\n            }\r\n        });\r\n        binding.imageButton4.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                binding.imageView6.setImageURI(null);\r\n                binding.frameLayout2.setVisibility(View.GONE);\r\n                binding.imageButton4.setVisibility(View.GONE);\r\n\r\n                if(!imageUris.isEmpty()){\r\n                    imageUris.remove(1);\r\n                }\r\n                if(imageUris.isEmpty()){\r\n                    binding.linearLayout.setVisibility(View.GONE);\r\n                }\r\n            }\r\n        });\r\n        binding.imageButton5.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                binding.imageView7.setImageURI(null);\r\n                binding.frameLayout3.setVisibility(View.GONE);\r\n                binding.imageButton5.setVisibility(View.GONE);\r\n\r\n                if(!imageUris.isEmpty()){\r\n                    imageUris.remove(2);\r\n                }\r\n                if(imageUris.isEmpty()){\r\n                    binding.linearLayout.setVisibility(View.GONE);\r\n                }\r\n            }\r\n        });\r\n        binding.imageButton6.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                binding.imageView8.setImageURI(null);\r\n                binding.imageView8.setVisibility(View.GONE);\r\n                binding.imageButton6.setVisibility(View.GONE);\r\n\r\n\r\n                if(!imageUris.isEmpty()){\r\n                    imageUris.remove(0);\r\n                }\r\n                if(imageUris.isEmpty()){\r\n                    binding.linearLayout.setVisibility(View.GONE);\r\n                }\r\n            }\r\n        });\r\n\r\n\r\n\r\n        loadCategory();\r\n        categoryAdapter = new CategoryAdapter(categories);\r\n        binding.rvCategories.setAdapter(categoryAdapter);\r\n        binding.rvCategories.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));\r\n\r\n\r\n\r\n        return binding.getRoot();\r\n\r\n    }\r\n\r\n\r\n\r\n    void addControl(View v)\r\n    {\r\n        button_post_product_continue = v.findViewById(R.id.button_post_product_continue);\r\n    }\r\n\r\n    void addEvents(View v) {\r\n        button_post_product_continue.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                // Tạo một instance của Fragment mới\r\n                Fragment newFragment = new PostProductPriceFragment();\r\n                if(categoryAdapter.category==null){\r\n                    Toast.makeText(getContext(), \"Vui long chon danh muc\", Toast.LENGTH_SHORT).show();\r\n                    return;\r\n                }\r\n                ProductRequest product = new ProductRequest(binding.edtName.getText().toString(),binding.edtDes.getText().toString(),categoryAdapter.category.getId());\r\n                Bundle bundle = new Bundle();\r\n                bundle.putSerializable(\"postProduct\",product);\r\n                bundle.putParcelableArrayList(\"imageUris\", (ArrayList<Uri>) imageUris);\r\n                newFragment.setArguments(bundle);\r\n                // Lấy FragmentManager và bắt đầu giao dịch\r\n                FragmentTransaction transaction = getFragmentManager().beginTransaction();\r\n\r\n                // Thay thế fragment hiện tại bằng fragment mới\r\n                transaction.replace(R.id.fragmentPostProduct, newFragment);\r\n\r\n                // Nếu bạn muốn quay lại fragment cũ khi nhấn nút \"Back\", hãy thêm giao dịch vào back stack\r\n                transaction.addToBackStack(null);\r\n                // Hoàn tất giao dịch\r\n                transaction.commit();\r\n            }\r\n        });\r\n    }\r\n\r\n    void loadCategory(){\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n        db.collection(\"categories\")\r\n                .orderBy(\"id\")\r\n                .get().addOnCompleteListener(task -> {\r\n                    if (task.isSuccessful()) {\r\n                        List<Category> categoryList = task.getResult().toObjects(Category.class);\r\n                        categories.addAll(categoryList);\r\n                        categoryAdapter.notifyDataSetChanged();\r\n                    } else {\r\n                        Log.e(\"HomeFragmentViewModel\", \"Error getting documents: \", task.getException());\r\n                    }\r\n                });\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPhotosFragment.java b/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPhotosFragment.java
+--- a/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPhotosFragment.java	
++++ b/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPhotosFragment.java	
+@@ -96,25 +96,53 @@
+                     // Callback is invoked after the user selects media items or closes the
+                     // photo picker.
+                     if (!uris.isEmpty()) {
+-                        imageUris.clear();
+-                        imageUris.addAll(uris);
+-                        if(uris.size()>0 && imageUris.size()>0){
+-                            Glide.with(this).load(imageUris.get(0)).into(binding.imageView5);
+-                            binding.frameLayout1.setVisibility(View.VISIBLE);
+-                        }
+-                        if(uris.size()>1 && imageUris.size()>1){
+-                            Glide.with(this).load(imageUris.get(1)).into(binding.imageView6);
+-                            binding.frameLayout2.setVisibility(View.VISIBLE);
+-                        }
+-                        if(uris.size()>2 && imageUris.size()>2){
+-                            Glide.with(this).load(imageUris.get(2)).into(binding.imageView7);
+-                            binding.frameLayout3.setVisibility(View.VISIBLE);
+-                        }
+-                        if(uris.size()>3 && imageUris.size()>3){
+-                            Glide.with(this).load(imageUris.get(3)).into(binding.imageView8);
+-                            binding.frameLayout4.setVisibility(View.VISIBLE);
+-                        }
+-                        binding.linearLayout.setVisibility(View.VISIBLE);
++                        if(imageUris.isEmpty() || Objects.isNull(imageUris)){
++                            imageUris.clear();
++                            if(uris.size()>0 ){
++                                Glide.with(this).load(uris.get(0)).into(binding.imageView5);
++                                binding.frameLayout1.setVisibility(View.VISIBLE);
++                            }
++                            if(uris.size()>1 ){
++                                Glide.with(this).load(uris.get(1)).into(binding.imageView6);
++                                binding.frameLayout2.setVisibility(View.VISIBLE);
++                            }
++                            if(uris.size()>2 ){
++                                Glide.with(this).load(uris.get(2)).into(binding.imageView7);
++                                binding.frameLayout3.setVisibility(View.VISIBLE);
++                            }
++                            if(uris.size()>3) {
++                                Glide.with(this).load(uris.get(3)).into(binding.imageView8);
++                                binding.frameLayout4.setVisibility(View.VISIBLE);
++                            }
++                            binding.linearLayout.setVisibility(View.VISIBLE);
++                        }
++                        else{
++                            if(imageUris.size()==3 && uris.size()>0){
++                                imageUris.add(uris.get(0));
++                            }
++                            else if(imageUris.size()==2 && uris.size()>1){
++                                imageUris.add(uris.get(0));
++                                imageUris.add(uris.get(1));
++                            }
++                            else if(imageUris.size()==2 && uris.size()>0){
++                                imageUris.add(uris.get(0));
++                            }
++                            else if(imageUris.size()==1 && uris.size()>2){
++                                imageUris.add(uris.get(0));
++                                imageUris.add(uris.get(1));
++                                imageUris.add(uris.get(2));
++                            }
++                            else if(imageUris.size()==1 && uris.size()>1){
++                                imageUris.add(uris.get(0));
++                                imageUris.add(uris.get(1));
++                            }
++                            else if(imageUris.size()==1 && uris.size()>0){
++                                imageUris.add(uris.get(0));
++                            }
++                            else{
++                                imageUris.addAll(uris);
++                            }
++                        }
+ 
+                     } else {
+                         Log.d("PhotoPicker", "No media selected");
+@@ -141,12 +169,12 @@
+                 binding.frameLayout1.setVisibility(View.GONE);
+                 binding.imageButton3.setVisibility(View.GONE);
+ 
+-                if(!imageUris.isEmpty()){
++                if(!imageUris.isEmpty() && imageUris.size()>0){
+                     imageUris.remove(0);
+                 }
+-                if(imageUris.isEmpty()){
+-                    binding.linearLayout.setVisibility(View.GONE);
+-                }
++//                if(imageUris.isEmpty()){
++//                    binding.linearLayout.setVisibility(View.GONE);
++//                }
+             }
+         });
+         binding.imageButton4.setOnClickListener(new View.OnClickListener() {
+@@ -156,12 +184,12 @@
+                 binding.frameLayout2.setVisibility(View.GONE);
+                 binding.imageButton4.setVisibility(View.GONE);
+ 
+-                if(!imageUris.isEmpty()){
++                if(!imageUris.isEmpty() && imageUris.size()>1){
+                     imageUris.remove(1);
+                 }
+-                if(imageUris.isEmpty()){
+-                    binding.linearLayout.setVisibility(View.GONE);
+-                }
++//                if(imageUris.isEmpty()){
++//                    binding.linearLayout.setVisibility(View.GONE);
++//                }
+             }
+         });
+         binding.imageButton5.setOnClickListener(new View.OnClickListener() {
+@@ -171,12 +199,12 @@
+                 binding.frameLayout3.setVisibility(View.GONE);
+                 binding.imageButton5.setVisibility(View.GONE);
+ 
+-                if(!imageUris.isEmpty()){
++                if(!imageUris.isEmpty() && imageUris.size()>2){
+                     imageUris.remove(2);
+                 }
+-                if(imageUris.isEmpty()){
+-                    binding.linearLayout.setVisibility(View.GONE);
+-                }
++//                if(imageUris.isEmpty()){
++//                    binding.linearLayout.setVisibility(View.GONE);
++//                }
+             }
+         });
+         binding.imageButton6.setOnClickListener(new View.OnClickListener() {
+@@ -187,12 +215,12 @@
+                 binding.imageButton6.setVisibility(View.GONE);
+ 
+ 
+-                if(!imageUris.isEmpty()){
+-                    imageUris.remove(0);
++                if(!imageUris.isEmpty() && imageUris.size()>3){
++                    imageUris.remove(3);
+                 }
+-                if(imageUris.isEmpty()){
+-                    binding.linearLayout.setVisibility(View.GONE);
+-                }
++//                if(imageUris.isEmpty()){
++//                    binding.linearLayout.setVisibility(View.GONE);
++//                }
+             }
+         });
+ 

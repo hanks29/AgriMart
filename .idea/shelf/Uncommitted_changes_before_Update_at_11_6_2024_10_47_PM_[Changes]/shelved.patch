@@ -1,0 +1,304 @@
+Index: app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPriceFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.PostProduct;\r\n\r\nimport android.app.DatePickerDialog;\r\nimport android.content.Intent;\r\nimport android.net.Uri;\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.DatePicker;\r\nimport android.widget.LinearLayout;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.annotation.Nullable;\r\nimport androidx.appcompat.widget.AppCompatButton;\r\nimport androidx.fragment.app.Fragment;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.data.model.AddressRequestProduct;\r\nimport com.example.agrimart.data.model.PostProduct;\r\nimport com.example.agrimart.data.model.ProductRequest;\r\nimport com.example.agrimart.databinding.FragmentPostProductPriceBinding;\r\nimport com.google.android.gms.tasks.OnCompleteListener;\r\nimport com.google.android.gms.tasks.OnSuccessListener;\r\nimport com.google.android.gms.tasks.Task;\r\nimport com.google.firebase.auth.FirebaseAuth;\r\nimport com.google.firebase.auth.FirebaseUser;\r\nimport com.google.firebase.firestore.DocumentReference;\r\nimport com.google.firebase.firestore.DocumentSnapshot;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\nimport com.google.firebase.firestore.QuerySnapshot;\r\nimport com.google.firebase.storage.FirebaseStorage;\r\nimport com.google.firebase.storage.StorageReference;\r\nimport com.google.firebase.storage.UploadTask;\r\n\r\nimport java.text.SimpleDateFormat;\r\nimport java.util.ArrayList;\r\nimport java.util.Calendar;\r\nimport java.util.Date;\r\nimport java.util.List;\r\nimport java.util.Map;\r\n\r\npublic class PostProductPriceFragment extends Fragment {\r\n\r\n    private TextView textViewDate;\r\n    private ProductRequest product=new ProductRequest();\r\n    private List<Uri> imageUris;\r\n\r\n    private int count = 0;\r\n    public PostProductPriceFragment() {\r\n    }\r\n    private FragmentPostProductPriceBinding binding;\r\n\r\n    public static PostProductPriceFragment newInstance(String param1, String param2) {\r\n        PostProductPriceFragment fragment = new PostProductPriceFragment();\r\n        Bundle args = new Bundle();\r\n        args.putString(\"param1\", param1);\r\n        args.putString(\"param2\", param2);\r\n        fragment.setArguments(args);\r\n        return fragment;\r\n    }\r\n\r\n    @Override\r\n    public void onCreate(@Nullable Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        if (getArguments() != null) {\r\n            product= (ProductRequest) getArguments().getSerializable(\"postProduct\");\r\n            product.setImageUrls(new ArrayList<>());\r\n            imageUris=getArguments().getParcelableArrayList(\"imageUris\");\r\n        }\r\n    }\r\n\r\n\r\n    @Override\r\n    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,\r\n                             @Nullable Bundle savedInstanceState) {\r\n        View view = inflater.inflate(R.layout.fragment_post_product_price, container, false);\r\n        binding = FragmentPostProductPriceBinding.bind(view);\r\n        AppCompatButton btnPostProduct = view.findViewById(R.id.btnPostPro);\r\n\r\n\r\n\r\n\r\n\r\n\r\n        binding.btnPostPro.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                uploadImages();\r\n            }\r\n        });\r\n        return binding.getRoot();\r\n    }\r\n\r\n\r\n\r\n\r\n    private void uploadImages() {\r\n\r\n        for (Uri imageUri : imageUris) {\r\n            StorageReference imageRef = FirebaseStorage.getInstance().getReference().child(\"products\").child(String.valueOf(System.currentTimeMillis()));\r\n            imageRef.putFile(imageUri)\r\n                    .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {\r\n                        @Override\r\n                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {\r\n                            if (task.isSuccessful()) {\r\n                                if (task.isComplete()) {\r\n                                    imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {\r\n                                        @Override\r\n                                        public void onSuccess(Uri uri) {\r\n                                            count++;\r\n                                            product.getImageUrls().add(uri.toString());\r\n                                            if(count==imageUris.size()){\r\n                                                product.setPrice(Double.parseDouble(binding.edtPrice.getText().toString()));\r\n                                                product.setQuantity(Integer.parseInt(binding.edtQuantity.getText().toString()));\r\n                                                product.setStatus(\"pending\");\r\n\r\n                                                SimpleDateFormat sdf = new SimpleDateFormat(\"yyyy-MM-dd\");\r\n                                                String currentDate = sdf.format(new Date());\r\n                                                String createdDate = String.valueOf(currentDate);\r\n                                                product.setCreatedAt(createdDate);\r\n                                                FirebaseFirestore db=FirebaseFirestore.getInstance();\r\n\r\n                                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();\r\n\r\n                                                if(user!=null){\r\n                                                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();\r\n                                                    product.setStoreId(uid);\r\n                                                }\r\n                                                DocumentReference newProductRef = db.collection(\"products\").document();\r\n                                                String productId = newProductRef.getId();\r\n                                                db.collection(\"users\")\r\n                                                        .whereEqualTo(\"email\", FirebaseAuth.getInstance().getCurrentUser().getEmail())\r\n                                                        .get()\r\n                                                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {\r\n                                                            @Override\r\n                                                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {\r\n                                                                if(queryDocumentSnapshots.getDocuments().size()>0){\r\n                                                                    DocumentSnapshot document=queryDocumentSnapshots.getDocuments().get(0);\r\n                                                                    Map<String,Object> storeAddress= (Map<String, Object>) document.get(\"store_address\");\r\n\r\n                                                                    if (storeAddress != null) {\r\n                                                                        String city = (String) storeAddress.get(\"city\");\r\n                                                                        String district = (String) storeAddress.get(\"district\");\r\n                                                                        String ward = (String) storeAddress.get(\"ward\");\r\n                                                                        String street = (String) storeAddress.get(\"street\");\r\n                                                                        product.setAddress(new AddressRequestProduct(city, district, ward, street));\r\n                                                                        // Use the retrieved values as needed\r\n                                                                        Log.d(\"Firestore\", \"City: \" + city);\r\n                                                                        Log.d(\"Firestore\", \"District: \" + district);\r\n                                                                        Log.d(\"Firestore\", \"Ward: \" + ward);\r\n                                                                        Log.d(\"Firestore\", \"Street: \" + street);\r\n                                                                        product.setProductId(productId);\r\n                                                                        newProductRef.set(product)\r\n                                                                                .addOnSuccessListener(documentReference -> {\r\n                                                                                    Toast.makeText(requireContext(), \"Tạo sản phẩm thành công\", Toast.LENGTH_SHORT).show();\r\n                                                                                    Intent intent = new Intent(requireContext(), YourProductListingsActivity.class);\r\n                                                                                    startActivity(intent);\r\n                                                                                })\r\n                                                                                .addOnFailureListener(e -> {\r\n                                                                                    Toast.makeText(requireContext(), \"Tạo sản phẩm thất bại\", Toast.LENGTH_SHORT).show();\r\n                                                                                });\r\n                                                                    }\r\n                                                                } else {\r\n                                                                    Log.d(\"Firestore\", \"No such document\");\r\n                                                                }\r\n\r\n                                                            }\r\n                                                        });\r\n\r\n                                            }\r\n\r\n\r\n\r\n                                        }\r\n                                    });\r\n\r\n                                }\r\n                            }\r\n                        }\r\n                    });\r\n\r\n        }\r\n\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPriceFragment.java b/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPriceFragment.java
+--- a/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPriceFragment.java	(revision 5b4c00b78ad02311c82710a3767e4978c137039c)
++++ b/app/src/main/java/com/example/agrimart/ui/PostProduct/PostProductPriceFragment.java	(date 1730907912935)
+@@ -157,7 +157,10 @@
+                                                                         newProductRef.set(product)
+                                                                                 .addOnSuccessListener(documentReference -> {
+                                                                                     Toast.makeText(requireContext(), "Tạo sản phẩm thành công", Toast.LENGTH_SHORT).show();
+-                                                                                    Intent intent = new Intent(requireContext(), YourProductListingsActivity.class);
++                                                                                    Intent intent = new Intent(requireContext(), ProductPreviewActivity.class);
++//                                                                                    Bundle bundle = new Bundle();
++//                                                                                    bundle.putSerializable("product", product);
++//                                                                                    intent.putExtras(bundle);
+                                                                                     startActivity(intent);
+                                                                                 })
+                                                                                 .addOnFailureListener(e -> {
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-feature\r\n        android:name=\"android.hardware.telephony\"\r\n        android:required=\"false\" />\r\n\r\n    <uses-permission android:name=\"android.permission.INTERNET\" />\r\n    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\r\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\r\n    <uses-permission android:name=\"android.permission.GET_ACCOUNTS\" />\r\n    <uses-permission android:name=\"android.permission.USE_CREDENTIALS\" />\r\n    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\r\n    <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />\r\n    <uses-permission android:name=\"android.permission.READ_MEDIA_IMAGES\" />\r\n    <uses-permission android:name=\"android.permission.SEND_SMS\" />\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@drawable/logo_icon\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@drawable/logo_icon\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.AgriMart\"\r\n        tools:ignore=\"ExtraText\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".ui.ProductPage.CategoryActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyAddress.GetAddressActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyAccount.EditNumberPhoneActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyAccount.ChangePasswordActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyAccount.VerifyWithPasswordActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyAccount.EditUserNameActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\"com.yalantis.ucrop.UCropActivity\"\r\n            android:theme=\"@style/Theme.AppCompat.NoActionBar\"\r\n            tools:replace=\"android:theme\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyAddress.EditAddressActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyAddress.NewAddressActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyStore.RegisterSellerActivity\"\r\n            android:exported=\"false\"\r\n            android:theme=\"@style/Theme.AgriMart\" />\r\n        <activity\r\n            android:name=\".ui.Account.VerifyActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyStore.MyStoreActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.PurchasedOrders.PurchasedOrdersActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyAddress.MyAddressActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyAccount.MyAccountActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.Store.StoreActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MyProfile.MyStore.OrderManagementActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.Homepage.SearchActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.Cart.CheckoutActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.ProductPage.ProductDetailActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.PostProduct.YourProductListingsActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.PostProduct.PostProductActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.MainActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.Account.EnterOTPActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.Account.ForgotPasswordActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.Account.SignUpActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.Homepage.HomeFragment\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".ui.Account.SignInActivity\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n\r\n        <meta-data\r\n            android:name=\"com.facebook.sdk.ApplicationId\"\r\n            android:value=\"@string/facebook_app_id\" />\r\n        <meta-data\r\n            android:name=\"com.facebook.sdk.ClientToken\"\r\n            android:value=\"@string/facebook_client_token\" />\r\n\r\n        <activity\r\n            android:name=\"com.facebook.FacebookActivity\"\r\n            android:configChanges=\"keyboard|keyboardHidden|screenLayout|screenSize|orientation\"\r\n            android:label=\"@string/app_name\"\r\n            android:screenOrientation=\"portrait\"\r\n            tools:ignore=\"DiscouragedApi\" />\r\n        <activity\r\n            android:name=\"com.facebook.CustomTabActivity\"\r\n            android:exported=\"true\"\r\n            android:screenOrientation=\"portrait\"\r\n            tools:ignore=\"DiscouragedApi\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.VIEW\" />\r\n\r\n                <category android:name=\"android.intent.category.DEFAULT\" />\r\n                <category android:name=\"android.intent.category.BROWSABLE\" />\r\n\r\n                <data android:scheme=\"@string/fb_login_protocol_scheme\" />\r\n            </intent-filter>\r\n        </activity>\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 5b4c00b78ad02311c82710a3767e4978c137039c)
++++ b/app/src/main/AndroidManifest.xml	(date 1730902170136)
+@@ -28,6 +28,9 @@
+         tools:ignore="ExtraText"
+         tools:targetApi="31">
+         <activity
++            android:name=".ui.PostProduct.ProductPreviewActivity"
++            android:exported="false" />
++        <activity
+             android:name=".ui.ProductPage.CategoryActivity"
+             android:exported="false" />
+         <activity
+Index: app/src/main/java/com/example/agrimart/viewmodel/ProductReviewViewModel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/viewmodel/ProductReviewViewModel.java b/app/src/main/java/com/example/agrimart/viewmodel/ProductReviewViewModel.java
+new file mode 100644
+--- /dev/null	(date 1730907664750)
++++ b/app/src/main/java/com/example/agrimart/viewmodel/ProductReviewViewModel.java	(date 1730907664750)
+@@ -0,0 +1,29 @@
++package com.example.agrimart.viewmodel;
++
++import androidx.lifecycle.LiveData;
++import androidx.lifecycle.MutableLiveData;
++import androidx.lifecycle.Transformations;
++import androidx.lifecycle.ViewModel;
++
++import com.example.agrimart.data.model.ProductRequest;
++
++import java.util.List;
++
++public class ProductReviewViewModel extends ViewModel {
++    private MutableLiveData<ProductRequest> products;
++
++    public LiveData<String> price;
++    public ProductReviewViewModel() {
++        this.products = new MutableLiveData<>();
++    }
++
++    public void setProduct(ProductRequest product) {
++        products.setValue(product);
++        price = Transformations.map(products, product1 ->
++                product1 != null ? String.valueOf(product.getPrice()) : ""
++        );
++    }
++
++
++
++}
+Index: app/src/main/res/layout/activity_product_preview.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_product_preview.xml b/app/src/main/res/layout/activity_product_preview.xml
+new file mode 100644
+--- /dev/null	(date 1730907837019)
++++ b/app/src/main/res/layout/activity_product_preview.xml	(date 1730907837019)
+@@ -0,0 +1,153 @@
++<?xml version="1.0" encoding="utf-8"?>
++<layout>
++
++    <data>
++        <variable
++            name="viewModel"
++            type= "com.example.agrimart.viewmodel.ProductReviewViewModel"/>
++    </data>
++
++
++    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
++        xmlns:app="http://schemas.android.com/apk/res-auto"
++        xmlns:tools="http://schemas.android.com/tools"
++        android:id="@+id/main"
++        android:layout_width="match_parent"
++        android:layout_height="match_parent"
++        android:padding="17dp"
++        tools:context=".ui.PostProduct.ProductPreviewActivity">
++
++        <LinearLayout
++            android:id="@+id/linearLayout1"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++
++            android:orientation="horizontal">
++
++            <androidx.cardview.widget.CardView
++                android:layout_width="48dp"
++                android:layout_height="48dp"
++                app:cardCornerRadius="100dp">
++
++                <ImageView
++                    android:id="@+id/imageView4"
++                    android:layout_width="match_parent"
++                    android:layout_height="match_parent"
++                    android:scaleType="centerCrop"
++                    app:srcCompat="@drawable/baseline_person_24" />
++            </androidx.cardview.widget.CardView>
++
++            <TextView
++                android:id="@+id/textView5"
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:textSize="18sp"
++                android:textColor="@color/black"
++                android:layout_gravity="center"
++                android:layout_marginStart="12dp"
++                android:text="KaneStore" />
++
++
++        </LinearLayout>
++
++        <TextView
++            android:id="@+id/tvPrice"
++            android:layout_width="56dp"
++            android:layout_height="20dp"
++            android:layout_below="@id/linearLayout1"
++            android:layout_marginTop="12dp"
++            android:textColor="#D50000"
++            android:textSize="14sp"
++            android:gravity="center"
++            android:background="#FFA7AD"
++             />
++        <View
++            android:id="@+id/view"
++            android:layout_width="match_parent"
++            android:layout_height="2dp"
++            android:layout_marginTop="15dp"
++            android:layout_below="@id/tvPrice"
++            android:background="#65424242" />
++
++        <TextView
++            android:id="@+id/textView7"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:layout_below="@id/view"
++            android:layout_marginTop="12dp"
++            android:textSize="16sp"
++            android:textColor="#3A3A3A"
++            android:text="Mô tả sản phẩm " />
++
++        <TextView
++            android:id="@+id/textView10"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:layout_below="@id/textView7"
++            android:layout_marginTop="12dp"
++            android:textSize="14sp"
++            android:textColor="#221F1F"/>
++        <View
++            android:id="@+id/view2"
++            android:layout_width="match_parent"
++            android:layout_height="2dp"
++            android:layout_marginTop="15dp"
++            android:layout_below="@id/textView10"
++            android:background="#65424242" />
++
++        <TextView
++            android:id="@+id/textView11"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:textColor="#3A3A3A"
++            android:textSize="14sp"
++            android:layout_below="@id/view2"
++            android:layout_marginTop="15dp"
++            android:text="Danh mục" />
++        <TextView
++            android:id="@+id/tvCategory"
++            android:layout_width="wrap_content"
++            android:layout_height="20dp"
++            android:text="Trái cây"
++            android:lineSpacingExtra="3sp"
++            android:gravity="center_vertical"
++            android:layout_below="@id/view2"
++            android:layout_marginTop="15dp"
++            android:layout_alignParentEnd="true"
++            />
++
++        <TextView
++            android:id="@+id/s_l_ng"
++            android:layout_width="wrap_content"
++            android:layout_height="20dp"
++            android:text="Số lượng"
++            android:lineSpacingExtra="3sp"
++            android:layout_below="@id/tvCategory"
++            android:layout_marginTop="15dp"
++            android:gravity="center_vertical"
++            />
++        <TextView
++            android:id="@+id/tvStockQuantity"
++            android:layout_width="71dp"
++            android:layout_height="20dp"
++            android:text="Còn 156 sp"
++            android:lineSpacingExtra="3sp"
++            android:layout_below="@id/tvCategory"
++            android:layout_marginTop="15dp"
++            android:layout_alignParentEnd="true"
++            android:gravity="center_vertical"
++            />
++
++        <androidx.appcompat.widget.AppCompatButton
++            android:id="@+id/btnHome"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:layout_below="@id/tvStockQuantity"
++            android:layout_centerHorizontal="true"
++            android:textAllCaps="false"
++            android:textSize="18sp"
++            android:layout_marginTop="16dp"
++            android:text="Về trang chủ" />
++
++    </RelativeLayout>
++</layout>
+\ No newline at end of file
+Index: app/src/main/java/com/example/agrimart/ui/PostProduct/ProductPreviewActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/PostProduct/ProductPreviewActivity.java b/app/src/main/java/com/example/agrimart/ui/PostProduct/ProductPreviewActivity.java
+new file mode 100644
+--- /dev/null	(date 1730907186312)
++++ b/app/src/main/java/com/example/agrimart/ui/PostProduct/ProductPreviewActivity.java	(date 1730907186312)
+@@ -0,0 +1,48 @@
++package com.example.agrimart.ui.PostProduct;
++
++import android.content.Intent;
++import android.os.Bundle;
++
++import androidx.activity.EdgeToEdge;
++import androidx.appcompat.app.AppCompatActivity;
++import androidx.core.graphics.Insets;
++import androidx.core.view.ViewCompat;
++import androidx.core.view.WindowInsetsCompat;
++import androidx.lifecycle.ViewModelProvider;
++
++import com.example.agrimart.R;
++import com.example.agrimart.data.model.Product;
++import com.example.agrimart.data.model.ProductRequest;
++import com.example.agrimart.databinding.ActivityProductPreviewBinding;
++import com.example.agrimart.viewmodel.ProductReviewViewModel;
++
++public class ProductPreviewActivity extends AppCompatActivity {
++
++    private ActivityProductPreviewBinding binding;
++    private ProductRequest product;
++    private ProductReviewViewModel viewModel;
++    @Override
++    protected void onCreate(Bundle savedInstanceState) {
++
++        binding = ActivityProductPreviewBinding.inflate(getLayoutInflater());
++        viewModel=new ViewModelProvider(this).get(ProductReviewViewModel.class);
++        binding.setViewModel(viewModel);
++        super.onCreate(savedInstanceState);
++        EdgeToEdge.enable(this);
++        setContentView(binding.getRoot());
++        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
++            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
++            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
++            return insets;
++        });
++        Intent intent=getIntent();
++        if(intent!=null)
++        {
++            product = (ProductRequest) intent.getSerializableExtra("product");
++
++            viewModel.setProduct(product);
++
++        }
++
++    }
++}
+\ No newline at end of file

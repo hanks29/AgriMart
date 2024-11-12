@@ -67,7 +67,8 @@ public class MyStoreActivity extends AppCompatActivity {
         });
 
         profileSetting.setOnClickListener(v -> {
-
+            Intent intent = new Intent(MyStoreActivity.this, EditProfileStoreActivity.class);
+            startActivity(intent);
         });
     }
 

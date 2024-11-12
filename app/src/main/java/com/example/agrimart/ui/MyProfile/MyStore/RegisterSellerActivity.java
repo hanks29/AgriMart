@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -238,4 +237,6 @@ public class RegisterSellerActivity extends AppCompatActivity {
     private interface OnItemSelectedListener {
         void onItemSelected(int position);
     }
+
+
 }

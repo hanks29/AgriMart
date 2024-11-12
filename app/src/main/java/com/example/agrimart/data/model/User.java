@@ -1,5 +1,6 @@
 package com.example.agrimart.data.model;
 
+import com.google.firebase.firestore.PropertyName;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.Date;
@@ -17,26 +18,45 @@ public class User implements Serializable {
     private String sex;
     @SerializedName("birthDate")
     private String birthDate;
+
     @SerializedName("phoneNumber")
     private String phoneNumber;
+
     @SerializedName("password")
     private String password;
-    @SerializedName("address")
+
+    @PropertyName("addresses")
+    @SerializedName("addresses")
     private Address address;
-    @SerializedName("storeName")
+
+    @PropertyName("store_phone_number")
+    @SerializedName("store_phone_number")
+    private String phoneNumberStore;
+
+    @PropertyName("store_name")
+    @SerializedName("store_name")
     private String storeName;
-    @SerializedName("storeAddress")
+
+    @PropertyName("store_address")
+    @SerializedName("store_address")
     private Address storeAddress;
-    @SerializedName("storeImage")
+
+    @PropertyName("store_avatar")
+    @SerializedName("store_avatar")
     private String storeImage;
+
     @SerializedName("storeRating")
     private double storeRating;
     @SerializedName("paymentAccount")
     private PaymentAccount paymentAccount;
+
+    @PropertyName("createdAt")
     @SerializedName("createdAt")
     private Date createdAt;
     @SerializedName("updatedAt")
     private Date updatedAt;
+
+    @PropertyName("userImage")
     @SerializedName("userImage")
     private String userImage;
 
@@ -117,34 +137,46 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    @PropertyName("addresses")
     public Address getAddress() {
         return address;
     }
 
+    @PropertyName("addresses")
     public void setAddress(Address address) {
         this.address = address;
     }
 
+    @PropertyName("store_name")
     public String getStoreName() {
         return storeName;
     }
 
+    @PropertyName("store_name")
     public void setStoreName(String storeName) {
         this.storeName = storeName;
     }
 
+    @PropertyName("store_address")
+    @SerializedName("store_address")
     public Address getStoreAddress() {
         return storeAddress;
     }
 
+    @PropertyName("store_address")
+    @SerializedName("store_address")
     public void setStoreAddress(Address storeAddress) {
         this.storeAddress = storeAddress;
     }
 
+    @PropertyName("store_avatar")
+    @SerializedName("store_avatar")
     public String getStoreImage() {
         return storeImage;
     }
 
+    @PropertyName("store_avatar")
+    @SerializedName("store_avatar")
     public void setStoreImage(String storeImage) {
         this.storeImage = storeImage;
     }
@@ -189,15 +221,27 @@ public class User implements Serializable {
         this.birthDate = birthDate;
     }
 
+    @PropertyName("userImage")
     public String getUserImage() {
         return userImage;
     }
 
+    @PropertyName("userImage")
     public void setUserImage(String userImage) {
         this.userImage = userImage;
     }
 
-//    public static class Address {
+    @PropertyName("store_phone_number")
+    public String getPhoneNumberStore() {
+        return phoneNumberStore;
+    }
+
+    @PropertyName("store_phone_number")
+    public void setPhoneNumberStore(String phoneNumberStore) {
+        this.phoneNumberStore = phoneNumberStore;
+    }
+
+    //    public static class Address {
 //        @SerializedName("street")
 //        private String street;
 //        @SerializedName("district")
@@ -207,11 +251,13 @@ public class User implements Serializable {
 //
 //        // Constructors, getters, and setters...
 //    }
-    public static class Address {
+    public static class Address implements Serializable {
         @SerializedName("street")
         private String street;
         @SerializedName("district")
         private String district;
+        @SerializedName("ward")
+        private String ward;
         @SerializedName("city")
         private String city;
 
@@ -248,6 +294,14 @@ public class User implements Serializable {
 
         public void setCity(String city) {
             this.city = city;
+        }
+
+        public String getWard() {
+            return ward;
+        }
+
+        public void setWard(String ward) {
+            this.ward = ward;
         }
     }
 

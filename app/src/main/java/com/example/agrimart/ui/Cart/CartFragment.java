@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.StoreCartAdapter;
-import com.example.agrimart.data.model.StoreCart;
+import com.example.agrimart.data.model.Cart;
 import com.example.agrimart.viewmodel.CartFragmentViewModel;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class CartFragment extends Fragment {
         // Lấy dữ liệu từ Firestore và cập nhật RecyclerView
         viewModel.getStoreCartsByUserId(new CartFragmentViewModel.OnDataFetchedListener() {
             @Override
-            public void onDataFetched(List<StoreCart> storeCarts) {
+            public void onDataFetched(List<Cart> storeCarts) {
                 // Cập nhật RecyclerView với danh sách StoreCart
                 storeCartAdapter = new StoreCartAdapter(storeCarts);
                 rvCarts.setAdapter(storeCartAdapter);

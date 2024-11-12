@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Store {
     private String id;
-    private String name;
-    private String avatarUrl;
+    private String store_name;
+    private String store_avatar;
     private String street;
     private String ward;
     private String district;
@@ -19,8 +19,8 @@ public class Store {
 
     public Store(String id, String name, String avatarUrl, String street, String ward, String district, String city, String phoneNumber) {
         this.id = id;
-        this.name = name;
-        this.avatarUrl = avatarUrl;
+        this.store_name = name;
+        this.store_avatar = avatarUrl;
         this.street = street;
         this.ward = ward;
         this.district = district;
@@ -38,19 +38,19 @@ public class Store {
     }
 
     public String getName() {
-        return name;
+        return store_name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.store_name = name;
     }
 
     public String getAvatarUrl() {
-        return avatarUrl;
+        return store_avatar;
     }
 
     public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
+        this.store_avatar = avatarUrl;
     }
 
     public String getStreet() {

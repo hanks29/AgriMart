@@ -10,15 +10,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.agrimart.R;
-import com.example.agrimart.data.model.StoreCart;
+import com.example.agrimart.data.model.Cart;
+import com.example.agrimart.data.model.Product;
 
 import java.util.List;
 
 public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.StoreCartViewHolder> {
 
-    private List<StoreCart> storeCartList;
+    private List<Cart> storeCartList;
 
-    public StoreCartAdapter(List<StoreCart> storeCartList) {
+    public StoreCartAdapter(List<Cart> storeCartList) {
         this.storeCartList = storeCartList;
     }
 
@@ -32,11 +33,12 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
 
     @Override
     public void onBindViewHolder(@NonNull StoreCartViewHolder holder, int position) {
-        StoreCart storeCart = storeCartList.get(position);
-        holder.tvStoreName.setText(storeCart.getStoreId());
+        Cart storeCart = storeCartList.get(position);
+        holder.tvStoreName.setText(storeCart.getStore_name());
 
         // Cài đặt RecyclerView con cho danh sách sản phẩm
-        ProductCartAdapter productAdapter = new ProductCartAdapter((storeCart.getProducts()));
+        List<Product> products = storeCart.getProducts(); // Giả sử `getProducts()` trả về danh sách sản phẩm
+        ProductCartAdapter productAdapter = new ProductCartAdapter(products);
         holder.rvProducts.setAdapter(productAdapter);
         holder.rvProducts.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
     }

@@ -1,15 +1,23 @@
 package com.example.agrimart.data.model;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 public class Product implements Serializable {
 
+    private String product_id;
+    @PropertyName("product_id")
     private String productId;
     private String name;
     private double price;
+
+    @PropertyName("status")
     private String active;
+
+    @PropertyName("category_id")
     private String category;
     private String description;
     private int height;
@@ -26,8 +34,14 @@ public class Product implements Serializable {
     public Product() {
     }
 
-    public Product(String productId, String name, double price, String active, String category, String description, int height, List<String> images, int length, int quantity, String storeId, int weight, int width, int soldQuantity) {
-        this.productId = productId;
+    public Product(String name, double price, List<String> images) {
+        this.name = name;
+        this.price = price;
+        this.images = images;
+    }
+
+    public Product(String product_id, String name, double price, String active, String category, String description, int height, List<String> images, int length, int quantity, String storeId, int weight, int width, int soldQuantity) {
+        this.product_id = product_id;
         this.name = name;
         this.price = price;
         this.active = active;
@@ -49,6 +63,14 @@ public class Product implements Serializable {
 
     public void setCreated_at(String created_at) {
         this.created_at = created_at;
+    }
+
+    public String getProduct_id() {
+        return product_id;
+    }
+
+    public void setProduct_id(String product_id) {
+        this.product_id = product_id;
     }
 
 
@@ -97,13 +119,11 @@ public class Product implements Serializable {
         this.price = price;
     }
 
+    @PropertyName("product_id")
     public String getProductId() {
         return productId;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
 
     public String getName() {
         return name;
@@ -121,18 +141,22 @@ public class Product implements Serializable {
         this.price = price;
     }
 
+    @PropertyName("status")
     public String getActive() {
         return active;
     }
 
+    @PropertyName("status")
     public void setActive(String active) {
         this.active = active;
     }
 
+    @PropertyName("category_id")
     public String getCategory() {
         return category;
     }
 
+    @PropertyName("category_id")
     public void setCategory(String category) {
         this.category = category;
     }

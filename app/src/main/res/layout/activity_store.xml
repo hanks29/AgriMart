@@ -1,4 +1,4 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main1"
@@ -7,10 +7,9 @@
     tools:context=".ui.Store.StoreActivity">
 
     <RelativeLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:id="@+id/header"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_alignParentTop="true"
         android:background="@color/green">
 
@@ -18,9 +17,9 @@
             android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@null"
-            android:layout_marginTop="10dp"
             android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@null"
             android:src="@drawable/chevron_left" />
 
         <TextView
@@ -29,14 +28,9 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Cửa hàng"
+            android:textColor="@color/black"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            android:textStyle="bold" />
     </RelativeLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -45,23 +39,20 @@
         android:layout_height="80dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="68dp"
-        android:src="@drawable/user"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_below="@id/header"
+        android:src="@drawable/user" />
 
     <TextView
         android:id="@+id/storeName"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="66dp"
+        android:layout_below="@id/header"
+        android:layout_toEndOf="@id/storeAvatar"
         android:text="Tên cửa hàng"
         android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/storeAvatar"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/store_rating"
@@ -69,44 +60,62 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Đánh giá: 4.5"
-        app:layout_constraintStart_toEndOf="@id/storeAvatar"
-        app:layout_constraintTop_toBottomOf="@id/storeName" />
+        android:layout_below="@id/storeName"
+        android:layout_toEndOf="@id/storeAvatar"
+        android:text="Đánh giá: 4.5" />
 
     <TextView
         android:id="@+id/storeAddress"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Đia chỉ: 123, ABC, XYZ"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/storeAvatar"
-        app:layout_constraintTop_toBottomOf="@id/store_rating" />
+        android:layout_below="@id/store_rating"
+        android:layout_toEndOf="@id/storeAvatar"
+        android:text="Đia chỉ: 123, ABC, XYZ" />
 
     <TextView
         android:id="@+id/tvProductTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="Sản phẩm đang bán"
         android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/storeAvatar"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_below="@id/storeAvatar"
+        android:textStyle="bold" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/storeAvatar"
+        android:layout_alignParentEnd="true"
+        android:textAllCaps="false"
+        android:background="@null"
+        android:text="Edit" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_products"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvProductTitle"
-        app:layout_constraintVertical_bias="0.0"
-        android:padding="10dp"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_below="@id/tvProductTitle"
+        android:padding="10dp" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:text="Delete"
+        android:visibility="gone"
+        android:textSize="14sp"
+        android:layout_below="@id/storeAvatar"
+        android:layout_toEndOf="@id/tvProductTitle"
+        android:textColor="@color/background_green"
+        android:backgroundTint="@color/background_light_blur"
+        style="@style/Widget.Material3.Button.TonalButton" />
+</RelativeLayout>

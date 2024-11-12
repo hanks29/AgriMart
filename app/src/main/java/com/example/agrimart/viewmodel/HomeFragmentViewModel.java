@@ -46,16 +46,16 @@ public class HomeFragmentViewModel extends ViewModel {
                 });
     }
 
-    public void getProducts() {
+    public void getProducts(String storeId) {
         db.collection("products")
-                .orderBy("product_id")
+                .whereEqualTo("storeId", storeId)
+                .whereEqualTo("status", "available")
                 .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<Product> productList = task.getResult().toObjects(Product.class);
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<Product> productList = queryDocumentSnapshots.toObjects(Product.class);
                         products.setValue(productList);
-                    } else {
-                        Log.e("HomeFragmentViewModel", "Error getting products: ", task.getException());
                     }
                 });
     }
@@ -63,7 +63,7 @@ public class HomeFragmentViewModel extends ViewModel {
     public void getFirstProducts(){
         MutableLiveData<List<Product>> firstProducts = new MutableLiveData<>();
         Query first= db.collection("products")
-                .orderBy("product_id")
+                .whereEqualTo("status", "available")
                 .limit(10);
 
         first.get()
@@ -72,7 +72,6 @@ public class HomeFragmentViewModel extends ViewModel {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<Product> productList = queryDocumentSnapshots.toObjects(Product.class);
                         products.setValue(productList);
-
                         lastVisible.setValue(queryDocumentSnapshots.getDocuments()
                                 .get(queryDocumentSnapshots.size()-1));
                     }
@@ -81,7 +80,7 @@ public class HomeFragmentViewModel extends ViewModel {
 
     public void getMoreProducts(){
         Query next= db.collection("products")
-                .orderBy("product_id")
+                .whereEqualTo("status", "available")
                 .startAfter(lastVisible)
                 .limit(10);
 
@@ -91,7 +90,7 @@ public class HomeFragmentViewModel extends ViewModel {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<Product> currentList = products.getValue();
                         List<Product> newList = queryDocumentSnapshots.toObjects(Product.class);
-
+                        Log.d("homefragmentkhanh", "Next products: " + newList.size());
                         if(currentList!=null){
                             currentList.addAll(newList);
                             products.setValue(currentList);

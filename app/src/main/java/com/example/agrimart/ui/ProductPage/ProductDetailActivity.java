@@ -2,6 +2,7 @@ package com.example.agrimart.ui.ProductPage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +25,7 @@ import com.example.agrimart.R;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.Store;
 import com.example.agrimart.ui.Store.StoreActivity;
+import com.example.agrimart.viewmodel.CartFragmentViewModel;
 import com.example.agrimart.viewmodel.ProductDetailViewModel;
 
 
@@ -37,6 +39,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private boolean isExpanded = false;
     private LinearLayout store;
     private ProductDetailViewModel viewModel;
+    private Button add_cart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         storeName = findViewById(R.id.store_name);
         storeAddress = findViewById(R.id.address);
         storeAvatar = findViewById(R.id.store_img);
+        add_cart = findViewById(R.id.add_cart);
 
         btn_back.setOnClickListener(v -> finish());
 
@@ -109,6 +113,12 @@ public class ProductDetailActivity extends AppCompatActivity {
             Intent storeIntent = new Intent(ProductDetailActivity.this, StoreActivity.class);
             storeIntent.putExtra("storeId", product.getStoreId());
             startActivity(storeIntent);
+        });
+
+        CartFragmentViewModel cartFragmentViewModel = new CartFragmentViewModel();
+        add_cart.setOnClickListener(v -> {
+            assert product != null;
+            cartFragmentViewModel.addProductToCart(product.getStoreId(),product);
         });
     }
 }

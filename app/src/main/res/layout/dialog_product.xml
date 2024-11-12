@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="100dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
@@ -9,15 +9,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
+        android:layout_marginTop="4dp"
         android:textColor="@color/color_item_selected"
         android:layout_centerHorizontal="true"
         android:textStyle="bold"
-        android:text="Bạn có muốn xóa sản phẩm này không" />
+        android:text="Vui lòng xác nhận xóa sản phẩm này" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
@@ -26,17 +29,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="Hủy"
+            android:layout_marginEnd="16dp"
             android:textSize="14sp"
             android:textColor="@color/black"
             app:strokeColor="@color/green"
             style="@style/Widget.Material3.Button.OutlinedButton" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCreateSeller"
+            android:id="@+id/btn_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="Tạo cửa hàng"
+            android:text="Xác nhận"
             android:textSize="14sp"
             android:textColor="@color/background_green"
             android:backgroundTint="@color/background_light_blur"

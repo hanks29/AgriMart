@@ -142,7 +142,7 @@ public class RegisterSellerActivity extends AppCompatActivity {
         updates.put("store_address",userAddress);
         editor.apply();
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(String.valueOf(System.currentTimeMillis()));
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(binding.edtNameStore.getText().toString());
         storageRef.putFile(imageUri)
                 .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override

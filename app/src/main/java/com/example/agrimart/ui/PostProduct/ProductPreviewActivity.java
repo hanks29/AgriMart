@@ -15,7 +15,9 @@ import com.bumptech.glide.Glide;
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.ProductRequest;
+import com.example.agrimart.data.model.ProductResponse;
 import com.example.agrimart.databinding.ActivityProductPreviewBinding;
+import com.example.agrimart.ui.MyProfile.MyStore.MyStoreActivity;
 import com.example.agrimart.viewmodel.ProductReviewViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,7 +28,7 @@ import java.util.Objects;
 public class ProductPreviewActivity extends AppCompatActivity {
 
     private ActivityProductPreviewBinding binding;
-    private ProductRequest product;
+    private ProductResponse product;
     private ProductReviewViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +47,12 @@ public class ProductPreviewActivity extends AppCompatActivity {
         Intent intent=getIntent();
         if(intent!=null)
         {
-            product = (ProductRequest) intent.getSerializableExtra("product");
-
+            product = (ProductResponse) intent.getSerializableExtra("product");
+            if (product == null) {
+                product = new ProductResponse();
+            }
             viewModel.setProduct(product);
-            viewModel.setCategory(intent.getStringExtra("category"));
+            viewModel.setCategory(product.getCategory());
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -77,6 +81,9 @@ public class ProductPreviewActivity extends AppCompatActivity {
 
 
         }
-
+        binding.btnHome.setOnClickListener(view -> {
+            Intent intent1 = new Intent(ProductPreviewActivity.this, MyStoreActivity.class);
+            startActivity(intent1);
+        });
     }
 }

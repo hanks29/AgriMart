@@ -45,14 +45,13 @@ public class StoreActivity extends AppCompatActivity {
     private ImageView storeAvatar;
     private TextView storeName, storeRating, storeAddress;
     private RecyclerView rvProducts;
-    private ProductManagerAdapter productAdapter;
+    private ProductAdapter productAdapter;
     private List<Product> productList;
     private FirebaseFirestore db;
     private String storeId;
     private ProductDetailViewModel viewModel;
     private HomeFragmentViewModel productViewModel;
     private SharedPreferences sharedPreferences;
-    private Button btnEditPro,btnDeletePro;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +67,11 @@ public class StoreActivity extends AppCompatActivity {
         productViewModel = new ViewModelProvider(this).get(HomeFragmentViewModel.class);
 
         productList = new ArrayList<>();
-        productAdapter = new ProductManagerAdapter(productList);
+        productAdapter = new ProductAdapter(productList, product -> {
+            Intent intent = new Intent(StoreActivity.this, ProductDetailActivity.class);
+            intent.putExtra("product", product);
+            startActivity(intent);
+        });
 
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
         rvProducts.setAdapter(productAdapter);
@@ -82,68 +85,9 @@ public class StoreActivity extends AppCompatActivity {
         loadStoreInfo();
         loadProducts(storeId);
 
-        btnEditPro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(btnEditPro.getText().equals("Cancel")){
-                    btnEditPro.setText("Edit");
-                    btnDeletePro.setVisibility(View.GONE);
-                    productAdapter.setEditMode(false);
-                    productAdapter.selectedProducts.clear();
-                } else {
-                    btnEditPro.setText("Cancel");
-                    btnDeletePro.setVisibility(View.VISIBLE);
-                    productAdapter.setEditMode(true);
-                }
-            }
-        });
-        btnDeletePro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(productAdapter.selectedProducts.size()<1){
-                    Toast.makeText(StoreActivity.this, "Chọn sản phẩm cần xóa", Toast.LENGTH_SHORT).show();
-                }else{
-                    deleteProducts();
-                }
-
-            }
-        });
     }
 
-    private void deleteProducts() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        productAdapter.setEditMode(false);
-        for (Product product : productAdapter.selectedProducts) {
-            DocumentReference productRef=db.collection("products").document(product.getProduct_id());
 
-            productRef.update("status","delete")
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Toast.makeText(StoreActivity.this, "Xóa sản phẩm thành công", Toast.LENGTH_SHORT).show();
-                            int productIndex = productList.indexOf(product);
-                            if (productIndex != -1) {
-                                productList.remove(productIndex);
-                                productAdapter.selectedProducts.remove(product);
-                                productAdapter.notifyItemRemoved(productIndex);
-                            }
-
-
-                            if (productAdapter.selectedProducts.isEmpty()) {
-                                btnEditPro.setText("Edit");
-                                btnDeletePro.setVisibility(View.GONE);
-                            }
-
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(StoreActivity.this, "Xóa sản phẩm thất bại", Toast.LENGTH_SHORT).show();
-                    });
-        }
-
-
-
-    }
 
     private void setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main1), (v, insets) -> {
@@ -165,8 +109,6 @@ public class StoreActivity extends AppCompatActivity {
         storeRating = findViewById(R.id.store_rating);
         storeAddress = findViewById(R.id.storeAddress);
         rvProducts = findViewById(R.id.rv_products);
-        btnEditPro = findViewById(R.id.btnEdit);
-        btnDeletePro=findViewById(R.id.btn_delete);
     }
 
     private void updateStoreInfo(Store store) {

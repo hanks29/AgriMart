@@ -1,6 +1,8 @@
 package com.example.agrimart.ui.PostProduct;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -29,5 +31,10 @@ public class YourProductListingsActivity extends AppCompatActivity {
             transaction.replace(R.id.fragment_container_post_product, productPostListFragment);
             transaction.commit();
         }
+
+        ImageButton btn_backPostList = findViewById(R.id.btn_backPostList);
+        btn_backPostList.setOnClickListener(v -> {
+            finish();
+        });
     }
 }

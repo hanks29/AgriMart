@@ -1,5 +1,6 @@
 package com.example.agrimart.viewmodel;
 
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,6 +16,8 @@ import com.example.agrimart.data.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 
 import java.util.List;
@@ -25,8 +28,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EditProfileStoreViewModel extends ViewModel {
-    public MutableLiveData<String> nameStore = new MutableLiveData<>("");
-    public MutableLiveData<String> phoneNumber = new MutableLiveData<>("");
+    public MutableLiveData<String> nameStore = new MutableLiveData<>("Kaha");
+    public MutableLiveData<String> phoneNumber = new MutableLiveData<>("gưgrwg");
 
     public MutableLiveData<List<Province>> provinces = new MutableLiveData<>();
     public MutableLiveData<List<District>> districts = new MutableLiveData<>();
@@ -36,7 +39,7 @@ public class EditProfileStoreViewModel extends ViewModel {
     public MutableLiveData<String> district = new MutableLiveData<>();
     public MutableLiveData<String> ward = new MutableLiveData<>();
     public MutableLiveData<String> street = new MutableLiveData<>("");
-    private MutableLiveData<String> storeImage = new MutableLiveData<>();
+    public MutableLiveData<String> storeImage = new MutableLiveData<>();
     private final ApiService apiService;
 
     public EditProfileStoreViewModel() {
@@ -145,6 +148,7 @@ public class EditProfileStoreViewModel extends ViewModel {
                                 district.setValue(user1.getStoreAddress().getDistrict());
                                 ward.setValue(user1.getStoreAddress().getWard());
                                 storeImage.setValue(user1.getStoreImage());
+                                Log.d("EditProfileStoreViewModel123", "getProfileStore: "+user1.getStoreName());
 
                         }
                     });
@@ -153,4 +157,58 @@ public class EditProfileStoreViewModel extends ViewModel {
     }
 
 
+    public void updateProfile(String storeName, String phoneNumber, String street, String selectedProvinceName, String selectedDistrictName, String selectedWardName, Uri imageUri) {
+        FirebaseFirestore db=FirebaseFirestore.getInstance();
+        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+
+        if(!storeName.isEmpty() && !storeName.equals(this.storeImage.getValue())){
+            db.collection("users").document(user.getUid())
+                    .update("store_name",storeName);
+        }
+        if(!phoneNumber.isEmpty() && !phoneNumber.equals(this.phoneNumber.getValue())){
+            db.collection("users").document(user.getUid())
+                    .update("store_phone_number",phoneNumber);
+        }
+
+        if(imageUri!=null){
+
+            StorageReference storageRefDel= FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(this.nameStore.getValue());
+            storageRefDel.delete()
+                    .addOnFailureListener(e -> {
+                        Log.d("EditProfileStoreViewModel123", "updateProfile: "+e.getMessage());
+                    });
+
+            StorageReference storageRef= FirebaseStorage.getInstance().getReference().child("users").child(user.getUid()).child(String.valueOf(System.currentTimeMillis()));
+            storageRef.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            db.collection("users").document(user.getUid())
+                                    .update("store_avatar",uri.toString());
+                        });
+                    });
+        }
+
+        if(!street.isEmpty() && !street.equals(this.street.getValue())){
+            db.collection("users").document(user.getUid())
+                    .update("store_address.street",street);
+        }
+
+        if(!selectedProvinceName.isEmpty() && !selectedProvinceName.equals(this.province.getValue())){
+            db.collection("users").document(user.getUid())
+                    .update("store_address.city",selectedProvinceName);
+        }
+
+        if(!selectedDistrictName.isEmpty() && !selectedDistrictName.equals(this.district.getValue())){
+            db.collection("users").document(user.getUid())
+                    .update("store_address.district",selectedDistrictName);
+        }
+
+
+        if(!selectedWardName.isEmpty() && !selectedWardName.equals(this.ward.getValue())){
+            db.collection("users").document(user.getUid())
+                    .update("store_address.ward",selectedWardName);
+        }
+
+
+    }
 }

@@ -146,13 +146,13 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRegister"
+                    android:id="@+id/btnUpdate"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="24dp"
                     android:backgroundTint="@color/green"
-                    android:text="Tạo cửa hàng"
+                    android:text="Cập nhật thông tin"
                     android:textColor="@color/background_green"
                     android:textSize="18sp"
                     android:layout_below="@id/street"

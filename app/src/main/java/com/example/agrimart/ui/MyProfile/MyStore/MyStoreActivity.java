@@ -15,6 +15,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.agrimart.R;
 import com.example.agrimart.ui.PostProduct.PostProductActivity;
+import com.example.agrimart.ui.PostProduct.YourProductListingsActivity;
+import com.example.agrimart.ui.PostProduct.YourProductListingsFragment;
 import com.example.agrimart.ui.Store.StoreActivity;
 
 public class MyStoreActivity extends AppCompatActivity {
@@ -62,7 +64,7 @@ public class MyStoreActivity extends AppCompatActivity {
         });
 
         myProduct.setOnClickListener(v -> {
-            Intent intent = new Intent(MyStoreActivity.this, StoreActivity.class);
+            Intent intent = new Intent(MyStoreActivity.this, YourProductListingsActivity.class);
             startActivity(intent);
         });
 

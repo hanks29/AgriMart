@@ -8,6 +8,11 @@ public class ProductCart {
         // Bắt buộc phải có constructor rỗng khi lấy dữ liệu từ Firebase
     }
 
+    public ProductCart(String product_id, int quantity)
+    {
+        this.product_id = product_id;
+        this.quantity = quantity;
+    }
 
     public int getQuantity() {
         return quantity;

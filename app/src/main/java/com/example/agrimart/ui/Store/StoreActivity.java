@@ -114,7 +114,7 @@ public class StoreActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         productAdapter.setEditMode(false);
         for (Product product : productAdapter.selectedProducts) {
-            DocumentReference productRef=db.collection("products").document(product.getProductId());
+            DocumentReference productRef=db.collection("products").document(product.getProduct_id());
 
             productRef.update("status","delete")
                     .addOnSuccessListener(new OnSuccessListener<Void>() {

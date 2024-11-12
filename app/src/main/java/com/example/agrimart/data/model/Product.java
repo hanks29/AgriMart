@@ -9,8 +9,6 @@ import java.util.List;
 public class Product implements Serializable {
 
     private String product_id;
-    @PropertyName("product_id")
-    private String productId;
     private String name;
     private double price;
 
@@ -119,10 +117,7 @@ public class Product implements Serializable {
         this.price = price;
     }
 
-    @PropertyName("product_id")
-    public String getProductId() {
-        return productId;
-    }
+
 
 
     public String getName() {

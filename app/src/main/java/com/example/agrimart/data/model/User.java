@@ -47,12 +47,15 @@ public class User implements Serializable {
 
     @SerializedName("storeRating")
     private double storeRating;
+
+    @PropertyName("paymentAccount")
     @SerializedName("paymentAccount")
     private PaymentAccount paymentAccount;
 
     @PropertyName("createdAt")
     @SerializedName("createdAt")
     private Date createdAt;
+
     @SerializedName("updatedAt")
     private Date updatedAt;
 

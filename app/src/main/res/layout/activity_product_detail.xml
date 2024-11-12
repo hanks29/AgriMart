@@ -316,6 +316,7 @@
         android:padding="16dp">
 
         <Button
+            android:id="@+id/add_cart"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginStart="48dp"

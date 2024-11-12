@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         DocumentReference docRef = db.collection("users").document(user.getUid());
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                String role = documentSnapshot.getString("userId");
+                String role = documentSnapshot.getString("role");
                 if (role != null) {
                     saveUserToSharedPreferences(role);
                 }

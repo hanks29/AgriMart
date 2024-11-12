@@ -31,9 +31,6 @@
             android:name=".ui.PostProduct.ProductPreviewActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.ProductPage.CategoryActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.MyProfile.MyAddress.GetAddressActivity"
             android:exported="false" />
         <activity

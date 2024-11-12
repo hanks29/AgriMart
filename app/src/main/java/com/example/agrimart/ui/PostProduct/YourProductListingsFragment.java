@@ -1,5 +1,7 @@
 package com.example.agrimart.ui.PostProduct;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,14 +14,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.PostProductsAdapter;
 import com.example.agrimart.data.model.PostProduct;
+import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.ProductRequest;
 import com.example.agrimart.data.model.ProductResponse;
+import com.example.agrimart.databinding.ActivityYourProductListingsBinding;
+import com.example.agrimart.databinding.FragmentYourProductListingsBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -39,6 +48,10 @@ public class YourProductListingsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private PostProductsAdapter postProductsAdapter;
+    private List<ProductResponse> productResponseList;
+
+    private FragmentYourProductListingsBinding binding;
     public YourProductListingsFragment() {
         // Required empty public constructor
     }
@@ -61,29 +74,35 @@ public class YourProductListingsFragment extends Fragment {
         }
     }
 
-    private RecyclerView recyclerView;
-    private PostProductsAdapter postProductsAdapter;
-    private List<PostProduct> postProductList;
-    private List<ProductResponse> productResponseList;
+    ;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_your_product_listings, container, false);
+        binding = FragmentYourProductListingsBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = view.findViewById(R.id.recyclerView);
-        postProductList = new ArrayList<>();
 
         productResponseList = new ArrayList<>();
 
-        postProductsAdapter = new PostProductsAdapter(productResponseList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(postProductsAdapter);
+        postProductsAdapter = new PostProductsAdapter(productResponseList,product -> {
+            Intent intent = new Intent(getContext(), ProductPreviewActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("product", product);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        });
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerView.setAdapter(postProductsAdapter);
         loadData();
+
+
+
     }
 
     private void loadData(){
@@ -94,33 +113,49 @@ public class YourProductListingsFragment extends Fragment {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("products")
                     .whereEqualTo("storeId",uid)
-//                    .whereEqualTo("status","pending")
+                    .whereEqualTo("status","available")
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
 
                             for (QueryDocumentSnapshot document : task.getResult()) {
-//                                ProductRequest product = document.toObject(ProductRequest.class);
-                                String name=document.getData().get("name")!=null?document.getData().get("name").toString():"";
-                                double price=0;
-                                if(document.getData().get("price")!=null){
-                                    price=Double.parseDouble(document.getData().get("price").toString());
-                                }
-                                List<String> images= (List<String>) document.getData().get("images");
-                                String imageUrl=(images!=null && !images.isEmpty())?images.get(0):"https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/notfound.jpg?alt=media&token=40e61714-5a10-4352-918c-7e5e2643a1fe";
 
-                                Log.d("khanekhan", document.getId() + " => " + document.getData());
+                                Product product = document.toObject(Product.class);
                                 productResponseList.add(
                                         new ProductResponse(
-                                                name,
-                                                price,
-                                                imageUrl
+                                                product.getName(),
+                                                product.getPrice(),
+                                                product.getCategory(),
+                                                product.getDescription(),
+                                                product.getQuantity(),
+                                                product.getImages().get(0),
+                                                product.getProduct_id()
+
                                         )
                                 );
+
                             }
                             postProductsAdapter.notifyDataSetChanged();
                         }
                     });
         }
     }
+    private void deleteProducts(String productId){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference productRef = db.collection("products").document(productId);
+
+        productRef.update("status", "delete")
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(getContext(), "Xóa sản phẩm thành công", Toast.LENGTH_SHORT).show();
+
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Xóa sản phẩm thất bại", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
 }

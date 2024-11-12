@@ -1,13 +1,18 @@
 package com.example.agrimart.ui.MyProfile.MyStore;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,6 +20,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.District;
 import com.example.agrimart.data.model.Province;
@@ -30,11 +36,18 @@ public class EditProfileStoreActivity extends AppCompatActivity {
     private ActivityEditProfileStoreBinding binding;
 
     private Uri imageUri;
+    private Uri storeImageUri;
     private String selectedProvinceName="";
     private String provinceId;
     private String selectedDistrictName="";
     private String districtId;
     private String selectedWardName="";
+
+
+    private String storeName="";
+    private String phoneNumber="";
+    private String street="";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,26 +63,63 @@ public class EditProfileStoreActivity extends AppCompatActivity {
             return insets;
         });
         loadProvinces();
-        enableSpinner();
+        disableSpinner();
         viewModel.getProfileStore();
-//        loadProvinces();
-//        viewModel.province.observe(this,province -> {
-//            if(!province.isEmpty()){
-//                binding.spinnerCity.setSelection(findProvincePosition(viewModel.provinces.getValue().stream().map(province1 -> province1.getName()).collect(Collectors.toList()),province));
-//            }
-//        });
-//        viewModel.district.observe(this,district -> {
-//            if(!district.isEmpty()){
-//                binding.spinnerDistrict.setSelection(findDistrictPosition(viewModel.districts.getValue().stream().map(district1 -> district1.getName()).collect(Collectors.toList()),district));
-//            }
-//        });
-//        viewModel.ward.observe(this,ward -> {
-//            if(!ward.isEmpty()){
-//                binding.spinnerWard.setSelection(findWardPosition(viewModel.wards.getValue().stream().map(ward1 -> ward1.getName()).collect(Collectors.toList()),ward));
-//            }
-//        });
+        loadProvinces();
+        binding.btnEdit.setOnClickListener(v -> {
+            enableSpinner();
+        });
+        viewModel.nameStore.observe(this, nameStore -> {
+            binding.edtNameStore.setText(nameStore);
+        });
+        viewModel.phoneNumber.observe(this, phoneNumber -> {
+            binding.edtPhoneNumber.setText(phoneNumber);
+        });
+        viewModel.street.observe(this, street -> {
+            binding.edtStreet.setText(street);
+        });
+        viewModel.storeImage.observe(this, storeImage -> {
+            Glide.with(this).load(storeImage).into(binding.imgAvt);
+        });
+        ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                    // Callback is invoked after the user selects a media item or closes the
+                    // photo picker.
+                    if (uri != null) {
+                        Glide.with(this)
+                                .load(uri).
+                                into(binding.imgAvt);
+                        imageUri=uri;
+                        Log.d("PhotoPicker", "Selected URI: " + uri.toString());
+                    } else {
+                        Log.d("PhotoPicker", "No media selected");
+                    }
+                });
+        binding.floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pickMedia.launch(new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
+            }
+        });
+        binding.btnUpdate.setOnClickListener(v -> {
+            storeName=binding.edtNameStore.getText().toString();
+            phoneNumber=binding.edtPhoneNumber.getText().toString();
+            street=binding.edtStreet.getText().toString();
+            viewModel.updateProfile(storeName,phoneNumber,street,selectedProvinceName,selectedDistrictName,selectedWardName,imageUri);
+            Intent intent=new Intent(EditProfileStoreActivity.this, MyStoreActivity.class);
+            startActivity(intent);
+        });
+        binding.btnBack.setOnClickListener(v -> {
+            finish();
+        });
+    }
 
-
+    private void disableSpinner(){
+        binding.spinnerCity.setEnabled(false);
+        binding.spinnerDistrict.setEnabled(false);
+        binding.spinnerWard.setEnabled(false);
     }
 
     private void enableSpinner(){
@@ -88,6 +138,11 @@ public class EditProfileStoreActivity extends AppCompatActivity {
                 selectedProvinceName = provinces.get(position).getName();
                 loadDistrict(provinceId);
             });
+            String selectedProvince = viewModel.province.getValue();
+            if (selectedProvince != null) {
+                binding.spinnerCity.setSelection(findProvincePosition(provinceNames, selectedProvince));
+
+            }
         });
 
 
@@ -101,6 +156,10 @@ public class EditProfileStoreActivity extends AppCompatActivity {
                 selectedDistrictName=districts.get(position).getName();
                 loadWard(districtId);
             });
+            String selectedDistrict = viewModel.district.getValue();
+            if (selectedDistrict != null) {
+                binding.spinnerDistrict.setSelection(findDistrictPosition(districtNames, selectedDistrict));
+            }
         });
     }
 
@@ -109,7 +168,12 @@ public class EditProfileStoreActivity extends AppCompatActivity {
         viewModel.wards.observe(this, wards -> {
             List<String> wardNames=wards.stream().map(ward -> ward.getName()).collect(Collectors.toList());
             setupSpinner(binding.spinnerWard,wardNames,position -> selectedWardName=wards.get(position).getName());
+            String selectedWard = viewModel.ward.getValue();
+            if (selectedWard != null) {
+                binding.spinnerWard.setSelection(findWardPosition(wardNames, selectedWard));
+            }
         });
+
     }
 
     private void setupSpinner(Spinner spinner, List<String> names, EditProfileStoreActivity.OnItemSelectedListener onItemSelected) {
@@ -159,6 +223,13 @@ public class EditProfileStoreActivity extends AppCompatActivity {
             }
         }
         return 0;
+    }
+
+    private void updateProfile(){
+        storeName=binding.edtNameStore.getText().toString();
+        phoneNumber=binding.edtPhoneNumber.getText().toString();
+        street=binding.edtStreet.getText().toString();
+        viewModel.updateProfile(storeName,phoneNumber,street,selectedProvinceName,selectedDistrictName,selectedWardName,imageUri);
     }
 
 }

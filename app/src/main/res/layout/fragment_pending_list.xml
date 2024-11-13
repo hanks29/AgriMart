@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.PostProduct.YourProductListingsFragment">
+    tools:context=".ui.PostProduct.PendingListFragment">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/editPro"
@@ -27,8 +27,8 @@
         android:textColor="@color/background_green"
         android:backgroundTint="@color/com_facebook_blue"
         android:text="Delete"
-        android:layout_alignParentEnd="true"
         android:visibility="gone"
+        android:layout_alignParentEnd="true"
         app:icon="@drawable/delete"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -36,4 +36,5 @@
         android:layout_below="@id/editPro"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 </RelativeLayout>

@@ -13,6 +13,7 @@ public class Product implements Serializable {
     private double price;
     @PropertyName("status")
     private String active;
+    private String unit;
     @PropertyName("category_id")
     private String category;
     private String description;
@@ -231,5 +232,13 @@ public class Product implements Serializable {
 
     public void setSoldQuantity(int soldQuantity) {
         this.soldQuantity = soldQuantity;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

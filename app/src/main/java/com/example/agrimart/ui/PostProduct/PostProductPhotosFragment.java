@@ -173,8 +173,8 @@ public class PostProductPhotosFragment extends Fragment {
     void addEvents(View v) {
         button_post_product_continue.setOnClickListener(v1 -> {
             Fragment newFragment = new PostProductPriceFragment();
-            if (categoryAdapter.category == null) {
-                Toast.makeText(getContext(), "Vui long chon danh muc", Toast.LENGTH_SHORT).show();
+            if (categoryAdapter.category == null || binding.edtDes.getText().toString().isEmpty() || binding.edtName.getText().toString().isEmpty() || Objects.isNull(imageUris) || imageUris.isEmpty()) {
+                Toast.makeText(getContext(), "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
             }
 

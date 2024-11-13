@@ -18,6 +18,7 @@ public class ProductReviewViewModel extends ViewModel {
     public LiveData<String> quantity;
     public LiveData<String> description;
     public LiveData<String> nameStore;
+    public LiveData<String> name;
 
 
     public ProductReviewViewModel() {
@@ -35,6 +36,9 @@ public class ProductReviewViewModel extends ViewModel {
         );
         description = Transformations.map(products, product1 ->
                 product1 != null ? product.getDescription() : ""
+        );
+        name = Transformations.map(products, product1 ->
+                product1 != null ? product.getName() : ""
         );
     }
     public void setNameStore(String name_store) {

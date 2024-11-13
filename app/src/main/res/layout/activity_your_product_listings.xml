@@ -55,18 +55,6 @@
         android:paddingTop="16dp"
         android:paddingBottom="16dp">
 
-        <ImageView
-            android:id="@+id/notification_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginEnd="24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/searchViewPostList"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/bell" />
-
         <SearchView
             android:id="@+id/searchViewPostList"
             android:layout_width="wrap_content"

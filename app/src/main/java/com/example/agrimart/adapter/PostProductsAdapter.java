@@ -19,17 +19,26 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostProductsAdapter extends RecyclerView.Adapter<PostProductsAdapter.PostProductsViewHolder> {
 
     private final List<ProductResponse> postProductList;
 
+    public final List<ProductResponse> selectedProducts=new ArrayList<>();
     private OnItemClickListener onItemClickListener;
 
+    private boolean isSelecting = false;
     public PostProductsAdapter(List<ProductResponse> postProductList, OnItemClickListener onItemClickListener) {
         this.postProductList = postProductList;
         this.onItemClickListener = onItemClickListener;
+    }
+
+
+    public void setSelecting(boolean selecting) {
+        isSelecting = selecting;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -71,7 +80,26 @@ public class PostProductsAdapter extends RecyclerView.Adapter<PostProductsAdapte
                     }
                 });
 
+
+
                 return true;
+            }
+        });
+        if(isSelecting){
+            holder.binding.cbDelete.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.binding.cbDelete.setVisibility(View.GONE);
+        }
+
+        holder.binding.cbDelete.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                if (!selectedProducts.contains(postProduct)) {
+                    selectedProducts.add(postProduct);
+                }
+            }
+            else {
+                selectedProducts.remove(postProduct);
             }
         });
     }

@@ -2,6 +2,7 @@ package com.example.agrimart.ui.PostProduct;
 
 import android.os.Bundle;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,8 @@ import com.example.agrimart.R;
 
 public class YourProductListingsActivity extends AppCompatActivity {
 
+
+    Fragment productPostListFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +29,7 @@ public class YourProductListingsActivity extends AppCompatActivity {
         });
 
         if (savedInstanceState == null) {
-            Fragment productPostListFragment = new YourProductListingsFragment();
+            productPostListFragment = new YourProductListingsFragment();
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container_post_product, productPostListFragment);
             transaction.commit();
@@ -36,5 +39,9 @@ public class YourProductListingsActivity extends AppCompatActivity {
         btn_backPostList.setOnClickListener(v -> {
             finish();
         });
+
+
     }
+
+
 }

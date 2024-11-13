@@ -1,6 +1,7 @@
 package com.example.agrimart.ui.PostProduct;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -51,6 +52,7 @@ public class YourProductListingsFragment extends Fragment {
     private PostProductsAdapter postProductsAdapter;
     private List<ProductResponse> productResponseList;
 
+    private boolean isSelecting = false;
     private FragmentYourProductListingsBinding binding;
     public YourProductListingsFragment() {
         // Required empty public constructor
@@ -74,7 +76,7 @@ public class YourProductListingsFragment extends Fragment {
         }
     }
 
-    ;
+
 
     @Nullable
     @Override
@@ -101,9 +103,41 @@ public class YourProductListingsFragment extends Fragment {
         binding.recyclerView.setAdapter(postProductsAdapter);
         loadData();
 
+        binding.editPro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                postProductsAdapter.setSelecting(!isSelecting);
+
+                if(!isSelecting) {
+                    binding.editPro.setText("Hủy");
+                    binding.editDelete.setVisibility(View.VISIBLE);
+                }
+                else {
+                    binding.editPro.setText("Chỉnh sửa");
+                    binding.editDelete.setVisibility(View.GONE);
+                }
+                isSelecting=!isSelecting;
+            }
+        });
+
+        binding.editDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for(ProductResponse product:postProductsAdapter.selectedProducts){
+
+                    productResponseList.remove(product);
+                    deleteProducts(product.getProductId());
+                }
+                postProductsAdapter.selectedProducts.clear();
+                postProductsAdapter.setSelecting(false);
+                postProductsAdapter.notifyDataSetChanged();
+
+            }
+        });
 
 
     }
+
 
     private void loadData(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -155,6 +189,13 @@ public class YourProductListingsFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     Toast.makeText(getContext(), "Xóa sản phẩm thất bại", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+
+    public void performAction() {
+
+        postProductsAdapter.setSelecting(!isSelecting);
+        isSelecting = !isSelecting;
     }
 
 

@@ -3,24 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
+
     app:cardBackgroundColor="@android:color/white"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:padding="10dp">
 
-        <CheckBox
-            android:id="@+id/checkbox_select"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/checkbox"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_gravity="center"
-            android:layout_marginEnd="10dp" />
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/checkbox_empty"/>
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/img_product"
@@ -58,7 +58,13 @@
                     android:text="99.999 đ"
                     android:textColor="@color/red"
                     android:textSize="9pt" />
-
+                <TextView
+                    android:id="@+id/unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:text="/kg"
+                    android:textSize="9pt" />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

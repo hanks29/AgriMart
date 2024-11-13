@@ -52,48 +52,61 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
             app:cardBackgroundColor="@android:color/white">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_cart"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="10dp" />
+
+                 />
         </androidx.cardview.widget.CardView>
     </FrameLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/footer">
-        <TextView
-            android:id="@+id/tv_total_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tổng tiền: 0đ"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_margin="16dp"/>
-    </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
+        <ImageView
+            android:id="@+id/checkbox_all"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/checkbox_empty"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginStart="5dp"
+            android:layout_gravity="center"
+            android:text="Tất cả"
+            android:textSize="16sp"
+            />
+        <TextView
+            android:id="@+id/tv_total_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:text="Tổng tiền: 1,111,110đ"
+            android:textSize="18sp"
+            android:layout_weight="1"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btn_checkout"
-            android:layout_width="match_parent"
+            android:layout_width="150dp"
             android:layout_height="60dp"
-            android:layout_marginStart="48dp"
-            android:layout_marginEnd="48dp"
+
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="end"
+
             android:backgroundTint="@color/green"
-            app:cornerRadius="24dp"
-            android:text="Thanh toán"/>
-    </RelativeLayout>
+            android:text="Thanh toán" />
+    </LinearLayout>
 
 </RelativeLayout>

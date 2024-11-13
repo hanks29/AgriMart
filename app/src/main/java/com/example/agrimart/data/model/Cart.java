@@ -10,6 +10,7 @@ public class Cart {
     private String updatedAt;
     private String userId;
     private List<ProductCart> productCart;
+    private boolean checked;
 
     // Hàm thêm sản phẩm vào StoreCart
     public void addProduct(Product product) {
@@ -73,5 +74,13 @@ public class Cart {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 }

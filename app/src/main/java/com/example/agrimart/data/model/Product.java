@@ -11,12 +11,9 @@ public class Product implements Serializable {
     private String product_id;
     private String name;
     private double price;
-
     @PropertyName("status")
     private String active;
-
     private String unit;
-
     @PropertyName("category_id")
     private String category;
     private String description;
@@ -29,6 +26,7 @@ public class Product implements Serializable {
     private int width;
     private int soldQuantity;
     private String created_at;
+    private boolean checked;
 
 
     public Product() {
@@ -71,6 +69,14 @@ public class Product implements Serializable {
 
     public void setProduct_id(String product_id) {
         this.product_id = product_id;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 
 
@@ -118,8 +124,6 @@ public class Product implements Serializable {
         this.name = name;
         this.price = price;
     }
-
-
 
 
     public String getName() {

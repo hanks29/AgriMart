@@ -1,9 +1,11 @@
 package com.example.agrimart.ui.Cart;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -42,19 +44,44 @@ public class CartFragment extends Fragment {
 
 
 
-        // Lấy dữ liệu từ Firestore và cập nhật RecyclerView
         viewModel.getStoreCartsByUserId(new CartFragmentViewModel.OnDataFetchedListener() {
             @Override
             public void onDataFetched(List<Cart> storeCarts) {
                 // Cập nhật RecyclerView với danh sách StoreCart
                 storeCartAdapter = new StoreCartAdapter(storeCarts);
                 rvCarts.setAdapter(storeCartAdapter);
+
             }
 
             @Override
             public void onError(String errorMessage) {
                 // Xử lý lỗi nếu không lấy được dữ liệu
                 Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        ImageView checkboxAll = view.findViewById(R.id.checkbox_all);
+
+        checkboxAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkboxAll.getTag() == null || checkboxAll.getTag().equals("unchecked")) {
+                    checkboxAll.setImageResource(R.drawable.checkbox_checked);
+                    checkboxAll.setTag("checked");
+
+                    // Đánh dấu tất cả sản phẩm trong giỏ hàng
+                    if (storeCartAdapter != null) {
+                        storeCartAdapter.setCheckedAll(true); // Cập nhật trạng thái tất cả sản phẩm
+                    }
+                } else {
+                    checkboxAll.setImageResource(R.drawable.checkbox_empty);
+                    checkboxAll.setTag("unchecked");
+
+                    // Bỏ chọn tất cả sản phẩm trong giỏ hàng
+                    if (storeCartAdapter != null) {
+                        storeCartAdapter.setCheckedAll(false); // Bỏ chọn tất cả sản phẩm
+                    }
+                }
             }
         });
 

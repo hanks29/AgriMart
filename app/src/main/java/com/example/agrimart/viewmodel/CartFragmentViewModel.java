@@ -11,7 +11,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.WriteBatch;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CartFragmentViewModel extends ViewModel {
     private final FirebaseAuth auth;
@@ -37,9 +37,9 @@ public class CartFragmentViewModel extends ViewModel {
         userId = auth.getCurrentUser().getUid();
 
         firestore.collection("cart")
-                .whereEqualTo("userId", userId) // Tìm các StoreCart có userId trùng với tham số
-                .orderBy("updatedAt", Query.Direction.DESCENDING) // Sắp xếp theo updatedAt giảm dần
-                .get() // Lấy dữ liệu
+                .whereEqualTo("userId", userId)
+                .orderBy("updatedAt", Query.Direction.DESCENDING)
+                .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<Cart> storeCartList = new ArrayList<>();
@@ -47,9 +47,10 @@ public class CartFragmentViewModel extends ViewModel {
                             Cart storeCart = document.toObject(Cart.class);
                             if (storeCart != null) {
                                 storeCartList.add(storeCart);
+
                             }
                         }
-                        // Sau khi lấy danh sách StoreCart, tiếp tục truy vấn thông tin sản phẩm tương ứng
+
                         fetchProductDetailsAndStore(storeCartList, listener);
                     } else {
                         Log.e("CartFragmentViewModel", "Failed to fetch data:" + task.getException().getMessage());
@@ -58,16 +59,25 @@ public class CartFragmentViewModel extends ViewModel {
     }
 
 
-    // Hàm để lấy thông tin sản phẩm từ productId
-    private void fetchProductDetailsAndStore(List<Cart> storeCartList, final OnDataFetchedListener listener) {
-        List<Cart> updatedStoreCartList = new ArrayList<>();
-        int[] remainingRequests = {storeCartList.size()}; // Đếm số yêu cầu cần xử lý
 
-        for (Cart storeCart : storeCartList) {
-            List<Product> products = storeCart.getProducts(); // Lấy danh sách sản phẩm hiện có trong storeCart
-            int[] productRequests = {products.size()}; // Đếm yêu cầu lấy thông tin cho từng sản phẩm
+    // Hàm để lấy thông tin sản phẩm từ productId
+
+    private void fetchProductDetailsAndStore(List<Cart> storeCartList, final OnDataFetchedListener listener) {
+        // Khởi tạo danh sách với kích thước bằng storeCartList để đảm bảo thứ tự
+        List<Cart> updatedStoreCartList = new ArrayList<>(storeCartList.size());
+        for (int i = 0; i < storeCartList.size(); i++) {
+            updatedStoreCartList.add(i, null); // Đảm bảo mỗi vị trí trong danh sách là null trước khi cập nhật
+        }
+
+        AtomicInteger remainingRequests = new AtomicInteger(storeCartList.size());  // Đếm số lượng yêu cầu còn lại
+
+        for (int i = 0; i < storeCartList.size(); i++) {
+            Cart storeCart = storeCartList.get(i);
+            List<Product> products = storeCart.getProducts();
+            AtomicInteger productRequests = new AtomicInteger(products.size());  // Đếm số lượng yêu cầu cho từng sản phẩm
 
             for (Product product : products) {
+                int finalI = i;
                 firestore.collection("products")
                         .document(product.getProduct_id())
                         .get()
@@ -75,20 +85,18 @@ public class CartFragmentViewModel extends ViewModel {
                             if (productTask.isSuccessful()) {
                                 DocumentSnapshot productDoc = productTask.getResult();
                                 if (productDoc.exists()) {
-                                    // Cập nhật thông tin trực tiếp vào đối tượng Product hiện có
                                     product.setName(productDoc.getString("name"));
                                     product.setPrice(productDoc.getDouble("price"));
                                     product.setImages((List<String>) productDoc.get("images"));
+                                    product.setStoreId(productDoc.getString("storeId"));
                                 }
                             } else {
                                 listener.onError("Lấy thông tin sản phẩm thất bại: " + productTask.getException().getMessage());
                             }
 
-                            // Kiểm tra nếu tất cả sản phẩm đã được xử lý
-                            productRequests[0]--;
-                            if (productRequests[0] == 0) {
-                                // Khi tất cả sản phẩm đã được lấy, tiến hành lấy thông tin cửa hàng
-                                firestore.collection("users")  // Collection "users" chứa thông tin cửa hàng
+                            // Sau khi tất cả sản phẩm của giỏ hàng đã được cập nhật
+                            if (productRequests.decrementAndGet() == 0) {
+                                firestore.collection("users")
                                         .document(storeCart.getStoreId())
                                         .get()
                                         .addOnCompleteListener(userTask -> {
@@ -101,13 +109,12 @@ public class CartFragmentViewModel extends ViewModel {
                                                 listener.onError("Lấy thông tin cửa hàng thất bại: " + userTask.getException().getMessage());
                                             }
 
-                                            // Thêm storeCart đã cập nhật vào danh sách kết quả
-                                            updatedStoreCartList.add(storeCart);
+                                            // Đặt storeCart đã được cập nhật vào đúng vị trí
+                                            updatedStoreCartList.set(finalI, storeCart);
 
-                                            // Giảm đếm remainingRequests và kiểm tra nếu tất cả storeCart đã hoàn thành
-                                            remainingRequests[0]--;
-                                            if (remainingRequests[0] == 0) {
-                                                listener.onDataFetched(updatedStoreCartList);
+                                            // Sau khi tất cả các yêu cầu đã hoàn thành
+                                            if (remainingRequests.decrementAndGet() == 0) {
+                                                listener.onDataFetched(updatedStoreCartList); // Gọi listener khi tất cả dữ liệu đã được lấy về
                                             }
                                         });
                             }
@@ -117,11 +124,15 @@ public class CartFragmentViewModel extends ViewModel {
     }
 
 
-    public void updateProductQuantityInFirebase(String productId, int newQuantity) {
+
+
+
+    public void updateProductQuantityInFirebase(String productId, String storeId, int newQuantity) {
         userId = auth.getCurrentUser().getUid();
 
         firestore.collection("cart")
                 .whereEqualTo("userId", userId)
+                .whereEqualTo("storeId", storeId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
@@ -246,6 +257,103 @@ public class CartFragmentViewModel extends ViewModel {
                     }
                 });
     }
+
+    public void updateProductCheckedStatusInFirebase(String productId, String storeId, boolean isChecked) {
+        userId = auth.getCurrentUser().getUid();
+
+        // Tạo Map để lưu trạng thái vào Firestore
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("checked", isChecked);
+
+        // Truy vấn giỏ hàng theo userId và storeId
+        firestore.collection("cart")
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("storeId", storeId)
+                .get()  // Lấy tất cả các tài liệu phù hợp
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        // Nếu có tài liệu giỏ hàng phù hợp, tiến hành cập nhật
+                        DocumentSnapshot cartDoc = querySnapshot.getDocuments().get(0);
+                        // Lấy mảng sản phẩm trong giỏ hàng
+                        List<Map<String, Object>> products = (List<Map<String, Object>>) cartDoc.get("products");
+
+                        // Kiểm tra và cập nhật sản phẩm trong mảng
+                        for (Map<String, Object> product : products) {
+                            if (product.get("product_id").equals(productId)) {
+                                // Cập nhật trạng thái của sản phẩm trong mảng
+                                product.put("checked", isChecked);
+                                break; // Dừng lại sau khi cập nhật sản phẩm
+                            }
+                        }
+
+                        // Cập nhật lại toàn bộ mảng products
+                        Map<String, Object> updatedCart = new HashMap<>();
+                        updatedCart.put("products", products);
+
+                        // Cập nhật lại tài liệu giỏ hàng
+                        firestore.collection("cart")
+                                .document(cartDoc.getId())  // Lấy ID của tài liệu cart phù hợp
+                                .update(updatedCart)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("Cart", "Trạng thái checkbox đã được cập nhật");
+                                    // Làm mới dữ liệu UI sau khi cập nhật
+                                })
+                                .addOnFailureListener(e -> Log.e("Cart", "Lỗi khi cập nhật trạng thái checkbox", e));
+                    } else {
+                        // Không tìm thấy tài liệu giỏ hàng phù hợp
+                        Log.e("Cart", "Không tìm thấy giỏ hàng của người dùng với storeId " + storeId);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Cart", "Lỗi khi truy vấn Firestore", e));
+    }
+
+
+    public void updateStoreCheckedStatusInFirebase(String storeId, String userId, boolean isChecked) {
+        userId = auth.getCurrentUser().getUid();
+
+        // Tạo Map để lưu trạng thái vào Firestore
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("checked", isChecked);  // Thêm trường 'checked' vào tài liệu giỏ hàng
+
+        // Truy vấn giỏ hàng theo userId và storeId
+        firestore.collection("cart")
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("storeId", storeId)
+                .get()  // Lấy tất cả các tài liệu phù hợp
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        // Duyệt qua tất cả các tài liệu giỏ hàng
+                        for (DocumentSnapshot cartDoc : querySnapshot.getDocuments()) {
+                            // Lấy mảng sản phẩm trong giỏ hàng
+                            List<Map<String, Object>> products = (List<Map<String, Object>>) cartDoc.get("products");
+
+                            if (products != null) {
+                                // Cập nhật trạng thái checked cho tất cả sản phẩm trong giỏ hàng
+                                for (Map<String, Object> product : products) {
+                                    product.put("checked", isChecked);
+                                }
+
+                                // Cập nhật lại toàn bộ mảng products
+                                Map<String, Object> updatedCart = new HashMap<>();
+                                updatedCart.put("products", products);
+                                updatedCart.put("checked", isChecked);  // Thêm trường checked vào giỏ hàng
+
+                                // Cập nhật lại tài liệu giỏ hàng
+                                firestore.collection("cart")
+                                        .document(cartDoc.getId())  // Lấy ID của tài liệu cart phù hợp
+                                        .update(updatedCart)
+                                        .addOnSuccessListener(aVoid -> Log.d("Cart", "Trạng thái checkbox đã được cập nhật"))
+                                        .addOnFailureListener(e -> Log.e("Cart", "Lỗi khi cập nhật trạng thái checkbox", e));
+                            }
+                        }
+                    } else {
+                        // Không tìm thấy tài liệu giỏ hàng phù hợp
+                        Log.e("Cart", "Không tìm thấy giỏ hàng của người dùng với storeId " + storeId);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Cart", "Lỗi khi truy vấn Firestore", e));
+    }
+
 
 
     // Listener để callback khi lấy dữ liệu xong

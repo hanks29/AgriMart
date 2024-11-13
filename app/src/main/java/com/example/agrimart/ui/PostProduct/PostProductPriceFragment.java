@@ -108,6 +108,11 @@ public class PostProductPriceFragment extends Fragment {
         binding.btnPostPro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(binding.edtPrice.getText().toString().isEmpty() || binding.edtQuantity.getText().toString().isEmpty() || binding.edtUnit.getText().toString().isEmpty() || binding.edtStreet.getText().toString().isEmpty())
+                {
+                    Toast.makeText(requireContext(), "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 uploadImages();
             }
         });
@@ -204,15 +209,10 @@ public class PostProductPriceFragment extends Fragment {
                                 saveProduct(newProductRef);
                             }
                             else{
-                                if(binding.edtStreet.getText().toString().isEmpty()){
-                                    Toast.makeText(requireContext(), "Vui lòng nhập địa chỉ cửa hàng", Toast.LENGTH_SHORT).show();
-                                }
-                                else{
-                                    street=binding.edtStreet.getText().toString();
-                                    product.setUnit(binding.edtUnit.getText().toString());
-                                    product.setAddress(new AddressRequestProduct(selectedProvinceName, selectedDistrictName, selectedWardName, street));
-                                    saveProduct(newProductRef);
-                                }
+                                street=binding.edtStreet.getText().toString();
+                                product.setUnit(binding.edtUnit.getText().toString());
+                                product.setAddress(new AddressRequestProduct(selectedProvinceName, selectedDistrictName, selectedWardName, street));
+                                saveProduct(newProductRef);
                                 product.setAddress(new AddressRequestProduct(selectedProvinceName, selectedDistrictName, selectedWardName, street));
                             }
                         } else {

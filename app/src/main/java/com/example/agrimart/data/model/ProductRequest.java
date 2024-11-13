@@ -16,6 +16,7 @@ public class ProductRequest implements Serializable {
     @PropertyName("category_id")
     private String category;
 
+    private String unit;
     private String description;
 
     @PropertyName("images")
@@ -151,5 +152,13 @@ public class ProductRequest implements Serializable {
     @PropertyName("product_id")
     public void setProductId(String productId) {
         this.productId = productId;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

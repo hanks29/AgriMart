@@ -1,8 +1,12 @@
 package com.example.agrimart.ui.PostProduct;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -84,6 +88,42 @@ public class ProductPreviewActivity extends AppCompatActivity {
         binding.btnHome.setOnClickListener(view -> {
             Intent intent1 = new Intent(ProductPreviewActivity.this, MyStoreActivity.class);
             startActivity(intent1);
+        });
+
+        binding.editPro.setOnClickListener(view -> {
+            Dialog dialog = new Dialog(ProductPreviewActivity.this);
+            dialog.setContentView(R.layout.dialog_edit_product);
+            Button btnUpdate = dialog.findViewById(R.id.btnUpdate);
+            Button btnCancel = dialog.findViewById(R.id.btnCancel);
+            EditText edtName = dialog.findViewById(R.id.edtName);
+            EditText edtPrice = dialog.findViewById(R.id.edtPrice);
+            EditText edtDes = dialog.findViewById(R.id.edtDescription);
+            EditText edtQuantity = dialog.findViewById(R.id.edtQuantity);
+            dialog.show();
+            btnUpdate.setOnClickListener(view1 -> {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                if(edtName.getText().toString().equals("") || edtPrice.getText().toString().equals("") || edtDes.getText().toString().equals("") || edtQuantity.getText().toString().equals(""))
+                {
+                    Toast.makeText(ProductPreviewActivity.this, "Please fill all the information", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                db.collection("products").document(product.getProductId())
+                                .update("name", edtName.getText().toString(),
+                                        "price", Integer.parseInt(edtPrice.getText().toString()),
+                                        "quantity", Integer.parseInt(edtQuantity.getText().toString())+product.getQuantity(),
+                                        "description", product.getDescription())
+                                        .addOnSuccessListener(aVoid -> {
+                                            binding.tvStockQuantity.setText("Còn "+Integer.parseInt(edtQuantity.getText().toString())+product.getQuantity());
+                                            Toast.makeText(ProductPreviewActivity.this, "Update product successful", Toast.LENGTH_SHORT).show();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(ProductPreviewActivity.this, "Update product failed", Toast.LENGTH_SHORT).show();
+                                        });
+                dialog.dismiss();
+            });
+            btnCancel.setOnClickListener(view1 -> {
+                dialog.dismiss();
+            });
         });
     }
 }

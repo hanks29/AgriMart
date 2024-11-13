@@ -8,8 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,12 +20,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.AddressRequestProduct;
 import com.example.agrimart.data.model.PostProduct;
 import com.example.agrimart.data.model.ProductRequest;
 import com.example.agrimart.databinding.FragmentPostProductPriceBinding;
+import com.example.agrimart.ui.MyProfile.MyStore.EditProfileStoreActivity;
+import com.example.agrimart.ui.MyProfile.MyStore.RegisterSellerActivity;
+import com.example.agrimart.viewmodel.EditProfileStoreViewModel;
+import com.example.agrimart.viewmodel.RegisterSellerViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -42,6 +50,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PostProductPriceFragment extends Fragment {
 
@@ -54,6 +63,18 @@ public class PostProductPriceFragment extends Fragment {
     public PostProductPriceFragment() {
     }
     private FragmentPostProductPriceBinding binding;
+
+    private EditProfileStoreViewModel viewModel;
+
+    private String selectedProvinceName="";
+    private String provinceId;
+    private String selectedDistrictName="";
+    private String districtId;
+    private String selectedWardName="";
+
+    private String street="";
+
+    private boolean isEdit=false;
 
     public static PostProductPriceFragment newInstance(String param1, String param2) {
         PostProductPriceFragment fragment = new PostProductPriceFragment();
@@ -82,18 +103,22 @@ public class PostProductPriceFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post_product_price, container, false);
         binding = FragmentPostProductPriceBinding.bind(view);
-        AppCompatButton btnPostProduct = view.findViewById(R.id.btnPostPro);
-
-
-
-
-
+        viewModel=new ViewModelProvider(this).get(EditProfileStoreViewModel.class);
 
         binding.btnPostPro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 uploadImages();
             }
+        });
+        viewModel.getProfileStore();
+        disableSpinner();
+        loadProvinces();
+        viewModel.street.observe(requireActivity(), street -> {
+            binding.edtStreet.setText(street);
+        });
+        binding.btnEdit.setOnClickListener(v -> {
+            enableSpinner();
         });
         return binding.getRoot();
     }
@@ -138,6 +163,7 @@ public class PostProductPriceFragment extends Fragment {
         product.setQuantity(Integer.parseInt(binding.edtQuantity.getText().toString()));
         product.setStatus("pending");
 
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String currentDate = sdf.format(new Date());
         product.setCreatedAt(currentDate);
@@ -167,14 +193,27 @@ public class PostProductPriceFragment extends Fragment {
                             DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
                             Map<String, Object> storeAddress = (Map<String, Object>) document.get("store_address");
 
-                            if (storeAddress != null) {
+                            if (storeAddress != null && !isEdit) {
                                 String city = (String) storeAddress.get("city");
                                 String district = (String) storeAddress.get("district");
                                 String ward = (String) storeAddress.get("ward");
                                 String street = (String) storeAddress.get("street");
 
                                 product.setAddress(new AddressRequestProduct(city, district, ward, street));
+                                product.setUnit(binding.edtUnit.getText().toString());
                                 saveProduct(newProductRef);
+                            }
+                            else{
+                                if(binding.edtStreet.getText().toString().isEmpty()){
+                                    Toast.makeText(requireContext(), "Vui lòng nhập địa chỉ cửa hàng", Toast.LENGTH_SHORT).show();
+                                }
+                                else{
+                                    street=binding.edtStreet.getText().toString();
+                                    product.setUnit(binding.edtUnit.getText().toString());
+                                    product.setAddress(new AddressRequestProduct(selectedProvinceName, selectedDistrictName, selectedWardName, street));
+                                    saveProduct(newProductRef);
+                                }
+                                product.setAddress(new AddressRequestProduct(selectedProvinceName, selectedDistrictName, selectedWardName, street));
                             }
                         } else {
                             Log.d("Firestore", "Không tìm thấy tài liệu người dùng.");
@@ -201,5 +240,117 @@ public class PostProductPriceFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     Toast.makeText(requireContext(), "Tạo sản phẩm thất bại", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+
+    private void disableSpinner(){
+        binding.spinnerCity.setEnabled(false);
+        binding.spinnerDistrict.setEnabled(false);
+        binding.spinnerWard.setEnabled(false);
+    }
+
+    private void enableSpinner(){
+        binding.spinnerCity.setEnabled(true);
+        binding.spinnerDistrict.setEnabled(true);
+        binding.spinnerWard.setEnabled(true);
+    }
+
+    private void loadProvinces(){
+        viewModel.getProvinces();
+        viewModel.provinces.observe(requireActivity(), provinces -> {
+            List<String> provinceNames = provinces.stream().map(province -> province.getName()).collect(Collectors.toList());
+            setupSpinner(binding.spinnerCity, provinceNames, position -> {
+                provinceId=provinces.get(position).getIdProvince();
+                selectedProvinceName = provinces.get(position).getName();
+                loadDistrict(provinceId);
+            });
+            String selectedProvince = viewModel.province.getValue();
+            if (selectedProvince != null) {
+                binding.spinnerCity.setSelection(findProvincePosition(provinceNames, selectedProvince));
+
+            }
+        });
+
+
+    }
+    private void loadDistrict(String provinceId){
+        viewModel.getDistricts(provinceId);
+        viewModel.districts.observe(requireActivity(), districts -> {
+            List<String> districtNames=districts.stream().map(district -> district.getName()).collect(Collectors.toList());
+            setupSpinner(binding.spinnerDistrict,districtNames,position -> {
+                districtId=districts.get(position).getIdDistrict();
+                selectedDistrictName=districts.get(position).getName();
+                loadWard(districtId);
+            });
+            String selectedDistrict = viewModel.district.getValue();
+            if (selectedDistrict != null) {
+                binding.spinnerDistrict.setSelection(findDistrictPosition(districtNames, selectedDistrict));
+            }
+        });
+    }
+
+    private void loadWard(String districtId){
+        viewModel.getWard(districtId);
+        viewModel.wards.observe(requireActivity(), wards -> {
+            List<String> wardNames=wards.stream().map(ward -> ward.getName()).collect(Collectors.toList());
+            setupSpinner(binding.spinnerWard,wardNames,position -> selectedWardName=wards.get(position).getName());
+            String selectedWard = viewModel.ward.getValue();
+            if (selectedWard != null) {
+                binding.spinnerWard.setSelection(findWardPosition(wardNames, selectedWard));
+            }
+        });
+
+    }
+
+    private void setupSpinner(Spinner spinner, List<String> names, PostProductPriceFragment.OnItemSelectedListener2 onItemSelected) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, names);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                onItemSelected.onItemSelected(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // No action needed
+            }
+        });
+    }
+    private interface OnItemSelectedListener {
+        void onItemSelected(int position);
+    }
+
+    private int findProvincePosition(List<String> provinces, String provinceName) {
+        for (int i = 0; i < provinces.size(); i++) {
+            if (provinces.get(i).equals(provinceName)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    private int findDistrictPosition(List<String> districts, String districtName) {
+        for (int i = 0; i < districts.size(); i++) {
+            if (districts.get(i).equals(districtName)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    private int findWardPosition(List<String> wards, String wardName) {
+        for (int i = 0; i < wards.size(); i++) {
+            if (wards.get(i).equals(wardName)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+    private interface OnItemSelectedListener2 {
+        void onItemSelected(int position);
     }
 }

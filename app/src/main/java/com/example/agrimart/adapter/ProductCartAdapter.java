@@ -22,10 +22,15 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
 
     private List<Product> productList;
     CartFragmentViewModel viewModel;
+    private OnDecreaseButtonClickListener listener1;
 
     public ProductCartAdapter(List<Product> productList, CartFragmentViewModel viewModel) {
         this.productList = productList;
         this.viewModel = viewModel;
+    }
+
+    public void setOnDecreaseButtonClickListener(OnDecreaseButtonClickListener listener1) {
+        this.listener1 = listener1;
     }
 
     @NonNull
@@ -42,6 +47,7 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
         holder.tvProductName.setText(product.getName());
         holder.quantity.setText(String.valueOf(product.getQuantity()));
         holder.tvPrice.setText(String.format("%,.0f đ", product.getPrice()));
+        holder.unit.setText("/"+product.getUnit());
 
         Glide.with(holder.itemView.getContext())
                 .load(product.getImages().get(0))
@@ -64,6 +70,9 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
                 product.setQuantity(product.getQuantity() - 1);
                 holder.quantity.setText(String.valueOf(product.getQuantity()));
                 viewModel.updateProductQuantityInFirebase(product.getProduct_id(), product.getStoreId(), product.getQuantity());
+                if (listener1 != null) {
+                    listener1.onDecreaseButtonClicked(product);
+                }
             }
         });
 
@@ -72,6 +81,9 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
             product.setQuantity(product.getQuantity() + 1);
             holder.quantity.setText(String.valueOf(product.getQuantity()));
             viewModel.updateProductQuantityInFirebase(product.getProduct_id(), product.getStoreId(), product.getQuantity());
+            if (listener1 != null) {
+                listener1.onDecreaseButtonClicked(product);
+            }
         });
 
         // Xử lý khi bấm checkbox sản phẩm
@@ -84,16 +96,16 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
                 holder.checkbox_product.setImageResource(R.drawable.checkbox_checked);
                 holder.checkbox_product.setTag("checked");
                 viewModel.updateProductCheckedStatusInFirebase(product.getProduct_id(), product.getStoreId(), true);
+
             } else {
                 holder.checkbox_product.setImageResource(R.drawable.checkbox_empty);
                 holder.checkbox_product.setTag("unchecked");
                 viewModel.updateProductCheckedStatusInFirebase(product.getProduct_id(), product.getStoreId(), false);
             }
-
-
             if (listener != null) {
                 listener.onAllProductsChecked(areAllProductsChecked());
             }
+
         });
     }
 
@@ -105,17 +117,23 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
         }
         return true; // Nếu tất cả sản phẩm đều được chọn, trả về true
     }
-
+    public interface OnDecreaseButtonClickListener {
+        void onDecreaseButtonClicked(Product product);
+    }
 
     public interface OnAllProductsCheckedListener {
         void onAllProductsChecked(boolean allChecked);
     }
 
+
+
     private OnAllProductsCheckedListener listener;
+
 
     public void setOnAllProductsCheckedListener(OnAllProductsCheckedListener listener) {
         this.listener = listener;
     }
+
 
     @Override
     public int getItemCount() {
@@ -123,7 +141,7 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
     }
 
     static class ProductViewHolder extends RecyclerView.ViewHolder {
-        TextView tvProductName, tvPrice, quantity;
+        TextView tvProductName, tvPrice, quantity, unit;
         ShapeableImageView img_product;
         ImageView btn_decrease, btn_increase, checkbox_product;
 
@@ -136,6 +154,7 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
             btn_decrease = itemView.findViewById(R.id.btn_decrease);
             btn_increase = itemView.findViewById(R.id.btn_increase);
             checkbox_product = itemView.findViewById(R.id.checkbox);
+            unit = itemView.findViewById(R.id.unit);
         }
     }
 

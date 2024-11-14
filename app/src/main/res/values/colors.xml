@@ -15,4 +15,5 @@
     <color name="background_light_blur">#0D424242</color>
     <color name="background_light_blur_1">#0D424242</color>
     <color name="red">#FF0000</color>
+    <color name="orange">#F2EE9A00</color>
 </resources>

@@ -2,6 +2,7 @@ package com.example.agrimart.ui.ProductPage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -9,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -27,9 +27,11 @@ import com.example.agrimart.data.model.Store;
 import com.example.agrimart.ui.Store.StoreActivity;
 import com.example.agrimart.viewmodel.CartFragmentViewModel;
 import com.example.agrimart.viewmodel.ProductDetailViewModel;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProductDetailActivity extends AppCompatActivity {
     private static final String TAG = "ProductDetailActivity";
@@ -40,6 +42,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     private LinearLayout store;
     private ProductDetailViewModel viewModel;
     private Button add_cart;
+    private Product product;
+    private CartFragmentViewModel cartFragmentViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +72,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         btn_back.setOnClickListener(v -> finish());
 
         Intent intent = getIntent();
-        Product product = (Product) intent.getSerializableExtra("product");
+        product = (Product) intent.getSerializableExtra("product");
 
         if (product != null) {
             productName.setText(product.getName());
@@ -115,10 +119,55 @@ public class ProductDetailActivity extends AppCompatActivity {
             startActivity(storeIntent);
         });
 
-        CartFragmentViewModel cartFragmentViewModel = new CartFragmentViewModel();
-        add_cart.setOnClickListener(v -> {
-            assert product != null;
-            cartFragmentViewModel.addProductToCart(product.getStoreId(),product);
+        cartFragmentViewModel = new ViewModelProvider(this).get(CartFragmentViewModel.class);
+        add_cart.setOnClickListener(v -> showBottomSheetDialog());
+    }
+
+    private void showBottomSheetDialog() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_dialog, null);
+
+        Button continueShoppingButton = bottomSheetView.findViewById(R.id.continue_shopping);
+        ImageView img_product = bottomSheetView.findViewById(R.id.img_product);
+        TextView tvPrice = bottomSheetView.findViewById(R.id.tvPrice);
+        TextView quantity = bottomSheetView.findViewById(R.id.quantity);
+        ImageView btn_decrease = bottomSheetView.findViewById(R.id.btn_decrease);
+        TextView warehouse = bottomSheetView.findViewById(R.id.warehouse);
+        ImageView btn_increase = bottomSheetView.findViewById(R.id.btn_increase);
+
+        //img_product.setImageResource(Integer.parseInt(product.getImages().get(0)));
+        tvPrice.setText(productPrice.getText());
+        warehouse.setText("Kho: "+product.getQuantity());
+
+        // Thiết lập sự kiện cho nút "Thêm vào giỏ"
+        continueShoppingButton.setOnClickListener(v -> {
+            if (product != null) {
+                int q = Integer.parseInt((String) quantity.getText());
+                cartFragmentViewModel.addProductToCart(product.getStoreId(), product , q);
+            }
+            bottomSheetDialog.dismiss();
         });
+
+        AtomicInteger dem = new AtomicInteger(1);
+        quantity.setText(String.valueOf(dem.get()));
+
+        btn_decrease.setOnClickListener(v -> {
+            int currentQuantity = Integer.parseInt(quantity.getText().toString()); // Chuyển đổi chính xác
+            if (currentQuantity > 1) {
+                dem.getAndDecrement();
+                quantity.setText(String.valueOf(dem.get()));
+            }
+        });
+
+        btn_increase.setOnClickListener(v -> {
+            if (dem.get() < product.getQuantity()) {
+                dem.getAndIncrement();
+                quantity.setText(String.valueOf(dem.get()));
+            }
+        });
+
+
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.show();
     }
 }

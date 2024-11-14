@@ -16,40 +16,6 @@
         android:layout_height="match_parent"
         tools:context=".ui.PostProduct.ProductPreviewActivity">
 
-        <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="17dp"
-            android:layout_marginTop="32dp"
-            android:orientation="horizontal">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                app:cardCornerRadius="100dp">
-
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/baseline_person_24" />
-            </androidx.cardview.widget.CardView>
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textColor="@color/black"
-                android:layout_gravity="center"
-                android:layout_marginStart="12dp"
-                android:text="KaneStore" />
-
-
-        </LinearLayout>
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/editPro"
             android:layout_width="wrap_content"
@@ -58,9 +24,9 @@
             android:layout_marginEnd="24dp"
             android:layout_alignParentEnd="true"
             android:gravity="center"
-            android:layout_marginTop="32dp"
-            android:textColor="@color/background_green"
-            android:backgroundTint="@color/com_facebook_blue"
+            android:layout_marginTop="12dp"
+            android:textColor="@color/black"
+            android:backgroundTint="@color/account_my_project"
             android:text="Chỉnh sửa"
             app:icon="@drawable/edit"/>
 
@@ -68,9 +34,9 @@
             android:id="@+id/tvNameProduct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/linearLayout1"
             android:textSize="24sp"
             android:layout_marginTop="12dp"
+            android:textStyle="bold"
             android:layout_marginHorizontal="17dp"
             android:text="@{viewModel.name}" />
 

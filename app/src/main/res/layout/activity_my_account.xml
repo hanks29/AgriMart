@@ -12,37 +12,20 @@
         android:orientation="vertical"
         tools:ignore="MissingConstraints">
 
-        <LinearLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/header_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:background="@color/white"
-            android:orientation="horizontal">
+            app:title="Tài khoản &amp; Bảo mật"
+            app:titleTextColor="@color/black"
+            app:titleTextAppearance="@style/TextAppearance.AppCompat.Large"
+            app:navigationIcon="@drawable/chevron_left" />
 
-            <ImageButton
-                android:id="@+id/btn_back"
-                android:layout_width="30dp"
-                android:layout_height="35dp"
-                android:src="@drawable/ic_left"
-                android:scaleType="fitCenter"
-                android:layout_marginStart="5dp"
-                android:layout_gravity="center_vertical"
-                android:background="@color/white" />
-
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:gravity="start"
-                android:layout_marginStart="15dp"
-                android:text="Tài khoản &amp; Bảo mật"
-                android:textColor="@color/black"
-                android:textSize="11pt" />
-        </LinearLayout>
         <View
             android:layout_width="match_parent"
             android:layout_height="5dp"

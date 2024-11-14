@@ -7,7 +7,7 @@ import android.widget.Toast;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.agrimart.data.ApiClient;
+import com.example.agrimart.data.API.ApiClient;
 import com.example.agrimart.data.interface1.ApiService;
 import com.example.agrimart.data.model.Commune;
 import com.example.agrimart.data.model.District;

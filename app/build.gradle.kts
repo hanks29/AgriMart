@@ -37,6 +37,7 @@ android {
     buildFeatures{
         viewBinding=true;
         dataBinding=true;
+        buildConfig = true
     }
 }
 dependencies {
@@ -65,6 +66,12 @@ dependencies {
     implementation("com.google.firebase:firebase-inappmessaging-display:21.0.1")
     implementation("androidx.navigation:navigation-fragment:2.8.3")
     implementation("androidx.navigation:navigation-ui:2.8.3")
+    //ZaloPay
+    implementation(fileTree(mapOf(
+        "dir" to "D:\\Data\\Android\\DoAn\\ZaloPay",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to listOf("")
+    )))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
@@ -78,4 +85,6 @@ dependencies {
     implementation ("com.facebook.android:facebook-login:latest.release")
     implementation("androidx.browser:browser:1.8.0")
 
+    implementation("com.squareup.okhttp3:okhttp:3.14.1")
+    implementation(files("libs/merchant-1.0.25.aar"))
 }

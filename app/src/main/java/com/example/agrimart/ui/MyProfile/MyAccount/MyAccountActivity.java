@@ -22,6 +22,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -48,7 +49,7 @@ import java.util.Calendar;
 public class MyAccountActivity extends AppCompatActivity {
 
     TextView user_name_text, my_phone_number_text, email_text, user_sex_text, user_date_birth_text;
-    ImageButton btn_back;
+    //ImageButton btn_back;
     ImageView user_image;
     FrameLayout btn_account_img;
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -57,6 +58,7 @@ public class MyAccountActivity extends AppCompatActivity {
     private static final int EDIT_USER_REQUEST_CODE = 1;
     private static final int EDIT_NUMBER_PHONE_REQUEST_CODE = 10;
     private MyAccountViewModel viewModel;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +87,8 @@ public class MyAccountActivity extends AppCompatActivity {
         email_text = findViewById(R.id.email_text);
         user_date_birth_text = findViewById(R.id.user_date_birth_text);
         user_sex_text = findViewById(R.id.user_sex_text);
-        btn_back = findViewById(R.id.btn_back);
+        //btn_back = findViewById(R.id.btn_back);
+        toolbar = findViewById(R.id.header_toolbar);
         user_image = findViewById(R.id.user_image);
         btn_account_img = findViewById(R.id.fl_my_account_img);
         myUserSex = findViewById(R.id.my_user_sex);
@@ -122,7 +125,8 @@ public class MyAccountActivity extends AppCompatActivity {
     }
 
     void addEvent() {
-        btn_back.setOnClickListener(v -> back());
+        //btn_back.setOnClickListener(v -> back());
+        toolbar.setNavigationOnClickListener(v -> back());
         btn_account_img.setOnClickListener(v -> openImageChooser()); // cập nhật ảnh user
         myUserSex.setOnClickListener(v -> openGenderOptions()); // cập nhật giới tính
         myUserDateBirth.setOnClickListener(v -> openDatePicker());

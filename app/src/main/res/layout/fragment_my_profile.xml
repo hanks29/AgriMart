@@ -208,8 +208,6 @@
 
             </LinearLayout>
 
-
-            <!-- My Store Section -->
             <LinearLayout
                 android:id="@+id/my_store"
                 android:layout_width="match_parent"
@@ -223,7 +221,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/store" />
+                    android:src="@drawable/my_store" />
 
                 <TextView
                     android:id="@+id/my_store_text"
@@ -232,8 +230,8 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:text="Cửa hàng của tôi"
-                    android:textColor="@color/green"
-                    android:textSize="8pt" />
+                    android:textSize="8pt"
+                    android:textColor="@color/black" />
 
                 <ImageView
                     android:id="@+id/my_store_next"

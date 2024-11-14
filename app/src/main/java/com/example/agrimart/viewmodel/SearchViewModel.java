@@ -7,11 +7,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.agrimart.data.model.Product;
-import com.example.agrimart.data.model.Store;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +33,7 @@ public class SearchViewModel extends ViewModel {
                         List<Product> remainingList = new ArrayList<>();
 
                         for (Product product : products) {
-                            if (product.getName() != null) {
+                            if (product.getName() != null && "available".equals(product.getActive())) {
                                 String productName = product.getName().toLowerCase();
                                 String lowerCaseQuery = query.toLowerCase();
                                 if (productName.startsWith(lowerCaseQuery)) {
@@ -62,8 +59,14 @@ public class SearchViewModel extends ViewModel {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<Product> products = task.getResult().toObjects(Product.class);
-                        originalProductList = new ArrayList<>(products);
-                        filteredProducts.setValue(products);
+                        List<Product> availableProducts = new ArrayList<>();
+                        for (Product product : products) {
+                            if ("available".equals(product.getActive())) {
+                                availableProducts.add(product);
+                            }
+                        }
+                        originalProductList = new ArrayList<>(availableProducts);
+                        filteredProducts.setValue(availableProducts);
                     } else {
                         filteredProducts.setValue(new ArrayList<>());
                     }
@@ -83,8 +86,14 @@ public class SearchViewModel extends ViewModel {
                                 .addOnCompleteListener(productTask -> {
                                     if (productTask.isSuccessful()) {
                                         List<Product> products = productTask.getResult().toObjects(Product.class);
-                                        originalProductList = new ArrayList<>(products);
-                                        filteredProducts.setValue(products);
+                                        List<Product> availableProducts = new ArrayList<>();
+                                        for (Product product : products) {
+                                            if ("available".equals(product.getActive())) {
+                                                availableProducts.add(product);
+                                            }
+                                        }
+                                        originalProductList = new ArrayList<>(availableProducts);
+                                        filteredProducts.setValue(availableProducts);
                                     } else {
                                         filteredProducts.setValue(new ArrayList<>());
                                     }

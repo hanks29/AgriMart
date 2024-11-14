@@ -40,7 +40,10 @@
     <string name="t_n_s_n_ph_m">Tên sản phẩm</string>
     <string name="c_i_t_n_n_i_l_n_t_t_c_s_gi_p_ch_r_t_nhi_u_y">Cái tên nói lên tất cả sẽ giúp ích rất nhiều đấy</string>
     <string name="m_t_s_n_ph_m">Mô tả sản phẩm</string>
-    <string name="m_t_o_n_v_n_m_t_y_s_gi_p_s_n_ph_m_c_a_b_n_b_n_d_h_n">Một đoạn văn mô tả đầy đủ sẽ giúp sản phẩm của bạn bán dễ hơn</string>
+    <string name="m_t_o_n_v_n_m_t_y_s_gi_p_s_n_ph_m_c_a_b_n_b_n_d_h_n">Một đoạn văn mô tả đầy đủ sẽ giúp sản phẩm của bạn bán dễ hơn
+    -Sản phẩm: Tên, số lượng, xuất xứ
+    -Hạn sử dụng, cách bảo quản
+    -Giá bán/đơn vị</string>
     <string name="ph_n_lo_i_s_n_ph_m">Phân loại sản phẩm</string>
     <string name="rau_c">Rau củ</string>
     <string name="tr_i_c_y">Trái cây</string>

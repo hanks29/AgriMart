@@ -1,5 +1,6 @@
 package com.example.agrimart.ui.Homepage;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -86,6 +88,7 @@ public class HomeFragment extends Fragment {
     }
 
 
+    @SuppressLint("NewApi")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
@@ -113,15 +116,14 @@ public class HomeFragment extends Fragment {
                     // Thay đổi mục đã chọn trong BottomNavigationView
                     BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavigation);
                     if (bottomNavigationView != null) {
-                        bottomNavigationView.setSelectedItemId(R.id.category); // Chọn mục category
+                        bottomNavigationView.setSelectedItemId(R.id.category);
                     }
 
                     loadFragment(newFragment);
                 });
 
                 binding.rvCategories.setAdapter(categoryAdapter);
-                binding.rvCategories.setLayoutManager(new GridLayoutManager(getContext(), 4));
-                Log.d(TAG, "Categories loaded: " + categories.size());
+                binding.rvCategories.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
             }
         });
 

@@ -67,30 +67,6 @@ public class ProductPreviewActivity extends AppCompatActivity {
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if(user!=null) {
-                db.collection("users")
-                        .whereEqualTo("email", user.getEmail())
-                        .get()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                if (task.getResult().size() > 0) {
-                                    Log.d("KHANHHI", "onCreate: " + task.getResult().getDocuments().get(0).getString("store_name"));
-                                    String image=task.getResult().getDocuments().get(0).getString("store_avatar");
-                                    if(!Objects.isNull(image) && !image.equals(""))
-                                    {
-                                        Glide.with(this).load(image).into(binding.imageView4);
-                                    }
-                                }
-                                else {
-                                    Log.d("KHANHHI", "onCreate: khong co du lieu");
-                                }
-                            }
-                        });
-            }
-
-
         }
         binding.btnHome.setOnClickListener(view -> {
             Intent intent1 = new Intent(ProductPreviewActivity.this, MyStoreActivity.class);

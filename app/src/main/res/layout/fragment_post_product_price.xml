@@ -221,8 +221,9 @@
                 android:id="@+id/btnEdit"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/background_light_blur"
-                android:textColor="@color/green"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:backgroundTint="@color/account_my_project"
                 android:textAllCaps="false"
                 android:text="Edit" />
         </LinearLayout>

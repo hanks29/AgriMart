@@ -53,23 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
-        android:paddingBottom="16dp">
-
-        <SearchView
-            android:id="@+id/searchViewPostList"
-            android:layout_width="wrap_content"
-            android:layout_height="54dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/search_layout"
-            android:queryHint="@string/search"
-            android:searchIcon="@drawable/search"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/notification_icon"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:paddingBottom="16dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -108,26 +92,13 @@
             android:textColor="@color/black"
             android:textSize="7pt" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_Nhap"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="12dp"
-            android:layout_weight="1"
-            android:background="@drawable/rounded_edittext"
-            android:text="Nháp"
-            android:textAllCaps="false"
-            android:textColor="@color/black"
-            android:textSize="7pt" />
     </LinearLayout>
 
     <FrameLayout
         android:id="@+id/fragment_container_post_product"
         android:layout_below="@+id/btn_postProductList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="10dp"/>
 
 </RelativeLayout>

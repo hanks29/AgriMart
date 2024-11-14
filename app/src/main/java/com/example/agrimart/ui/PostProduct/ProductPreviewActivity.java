@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -17,16 +18,21 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.agrimart.R;
+import com.example.agrimart.data.model.Category;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.ProductRequest;
 import com.example.agrimart.data.model.ProductResponse;
 import com.example.agrimart.databinding.ActivityProductPreviewBinding;
 import com.example.agrimart.ui.MyProfile.MyStore.MyStoreActivity;
 import com.example.agrimart.viewmodel.ProductReviewViewModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.List;
 import java.util.Objects;
 
 public class ProductPreviewActivity extends AppCompatActivity {
@@ -56,7 +62,8 @@ public class ProductPreviewActivity extends AppCompatActivity {
                 product = new ProductResponse();
             }
             viewModel.setProduct(product);
-            viewModel.setCategory(product.getCategory());
+            getCategoryFromFirebase(product.getCategory());
+//            viewModel.setCategory(product.getCategory());
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -125,5 +132,24 @@ public class ProductPreviewActivity extends AppCompatActivity {
                 dialog.dismiss();
             });
         });
+    }
+
+    private void getCategoryFromFirebase(String categoryId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("categories")
+                .whereEqualTo("id", categoryId)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<Category> categories = task.getResult().toObjects(Category.class);
+                            Log.d("KHANHHI", "onComplete: "+categories.get(0).getName());
+                            viewModel.setCategory(categories.get(0).getName());
+                            binding.tvCategory.setText(categories.get(0).getName());
+
+                        }
+                    }
+                });
     }
 }

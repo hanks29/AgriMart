@@ -12,7 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
-local.properties
 
 com/example/agrimart/data/API/ConfigGHN.java
 com/example/agrimart/data/API/Config_VNPAY.java

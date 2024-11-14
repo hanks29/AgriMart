@@ -63,11 +63,11 @@
         </androidx.cardview.widget.CardView>
     </FrameLayout>
 
-
     <LinearLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/rounded_cart"
         android:layout_alignParentBottom="true">
         <ImageView
             android:id="@+id/checkbox_all"
@@ -92,7 +92,7 @@
             android:layout_gravity="center"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
-            android:text="Tổng tiền: 1,111,110đ"
+            android:text="Tổng tiền:"
             android:textSize="18sp"
             android:layout_weight="1"
             android:textStyle="bold" />
@@ -101,10 +101,8 @@
             android:id="@+id/btn_checkout"
             android:layout_width="150dp"
             android:layout_height="60dp"
-
             android:layout_marginEnd="10dp"
             android:layout_gravity="end"
-
             android:backgroundTint="@color/green"
             android:text="Thanh toán" />
     </LinearLayout>

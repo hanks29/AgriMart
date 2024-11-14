@@ -11,6 +11,7 @@ public class Cart {
     private String userId;
     private List<ProductCart> productCart;
     private boolean checked;
+    private double totalPrice;
 
     // Hàm thêm sản phẩm vào StoreCart
     public void addProduct(Product product) {
@@ -82,5 +83,19 @@ public class Cart {
 
     public void setChecked(boolean checked) {
         this.checked = checked;
+    }
+
+    public double getTotalPrice() {
+        double total = 0;
+        for (Product product : products) {
+            if (product.isChecked()) {  // Kiểm tra nếu sản phẩm đã được chọn
+                total += product.getPrice() * product.getQuantity();  // Cộng tổng tiền của sản phẩm
+            }
+        }
+        return total;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

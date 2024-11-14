@@ -113,6 +113,17 @@ public class PostProductPriceFragment extends Fragment {
                     Toast.makeText(requireContext(), "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if(Integer.parseInt(binding.edtQuantity.getText().toString())<=10000000 && Integer.parseInt(binding.edtPrice.getText().toString())>0)
+                {
+                    Toast.makeText(requireContext(), "Giá tiền phải nhỏ hơn hoặc bằng 10 triêu và lớn hơn 0.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(Integer.parseInt(binding.edtQuantity.getText().toString())>0 && Integer.parseInt(binding.edtQuantity.getText().toString())<=1000000)
+                {
+                    Toast.makeText(requireContext(), "Số lượng phải lớn hơn 0 và bé hơn 1 triệu.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 uploadImages();
             }
         });

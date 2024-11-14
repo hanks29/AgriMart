@@ -1,7 +1,13 @@
 package com.example.agrimart.data.model;
 
-public class Category {
+import com.google.firebase.firestore.PropertyName;
+
+import java.io.Serializable;
+
+public class Category implements Serializable {
     private String img;
+
+    @PropertyName("name")
     private String name;
     private String id;
 
@@ -22,10 +28,12 @@ public class Category {
         this.img = img;
     }
 
+    @PropertyName("name")
     public String getName() {
         return name;
     }
 
+    @PropertyName("name")
     public void setName(String name) {
         this.name = name;
     }

@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+com/example/agrimart/data/model/Config.java

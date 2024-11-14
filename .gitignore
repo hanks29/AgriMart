@@ -15,5 +15,4 @@
 local.properties
 
 com/example/agrimart/data/API/ConfigGHN.java
-
-google-services.json
+com/example/agrimart/data/API/Config_VNPAY.java

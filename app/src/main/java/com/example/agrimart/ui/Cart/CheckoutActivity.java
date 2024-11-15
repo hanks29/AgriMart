@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.CheckoutAdapter;
-import com.example.agrimart.data.model.Address;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;
 import com.example.agrimart.ui.Payment.VNPaymentActivity;
@@ -123,20 +122,20 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void placeOrder() {
-        List<Address> addresses = new ArrayList<>();
+        String address = tvAddress.getText().toString();
 
         if (radVNPay.isChecked()) {
             radCOD.setChecked(false);
-            int amount = Integer.parseInt(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
+            int price = Integer.parseInt(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
             String orderInfo = "Thanh toán đơn hàng " + orderId;
             List<String> productIds = selectedProducts.stream()
                     .map(Product::getProduct_id)
                     .collect(Collectors.toList());
             Intent intent = new Intent(CheckoutActivity.this, VNPaymentActivity.class);
-            intent.putExtra("price", amount);
+            intent.putExtra("price", price);
             intent.putExtra("orderInfo", orderInfo);
             intent.putStringArrayListExtra("productIds", new ArrayList<>(productIds));
-            intent.putParcelableArrayListExtra("addresses", new ArrayList<Address>(addresses));
+            intent.putExtra("address", address);
             startActivity(intent);
         } else if (radCOD.isChecked()) {
             radVNPay.setChecked(false);
@@ -153,8 +152,7 @@ public class CheckoutActivity extends AppCompatActivity {
                         List<String> productIds = selectedProducts.stream()
                                 .map(Product::getProduct_id)
                                 .collect(Collectors.toList());
-
-                        checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, addresses, new CheckoutViewModel.OrderCallback() {
+                        checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, new CheckoutViewModel.OrderCallback() {
                             @Override
                             public void onSuccess(String orderId) {
                                 checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {
@@ -162,6 +160,7 @@ public class CheckoutActivity extends AppCompatActivity {
                                     public void onSuccess(String orderId) {
                                         Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
                                         intent.putExtra("orderId", orderId);
+                                        checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
                                         startActivity(intent);
                                     }
 

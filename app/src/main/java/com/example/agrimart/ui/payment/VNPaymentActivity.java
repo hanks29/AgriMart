@@ -34,6 +34,11 @@ public class VNPaymentActivity extends AppCompatActivity {
         int price = getIntent().getIntExtra("price", 0);
         String orderInfo = getIntent().getStringExtra("orderInfo");
 
+        String address = getIntent().getStringExtra("address");
+
+        Address addr = new Address();
+        addr.setStreet(address);
+
         webView = findViewById(R.id.webView);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -48,9 +53,12 @@ public class VNPaymentActivity extends AppCompatActivity {
                 if (url.contains(Config_VNPAY.VNP_RETURN_URL)) {
                     if (url.contains("vnp_ResponseCode=00")) {
                         Toast.makeText(VNPaymentActivity.this, "Thanh toán thành công", Toast.LENGTH_SHORT).show();
-                        List<Address> addresses = new ArrayList<>();
+
                         List<String> productIds = getIntent().getStringArrayListExtra("productIds");
-                        checkoutViewModel.placeOrder(price, "3-5 ngày", 0, "VNPay", "Giao hàng nhanh", productIds, addresses, new CheckoutViewModel.OrderCallback() {
+                        List<Address> addresses = new ArrayList<>();
+                        addresses.add(addr);
+
+                        checkoutViewModel.placeOrder(price, "3-5 ngày", 0, "VNPay", "Giao hàng nhanh", productIds, address, new CheckoutViewModel.OrderCallback() {
                             @Override
                             public void onSuccess(String orderId) {
                                 Intent intent = new Intent(VNPaymentActivity.this, PlaceOrderActivity.class);

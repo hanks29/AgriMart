@@ -131,14 +131,13 @@ public class ProductDetailActivity extends AppCompatActivity {
         add_cart.setOnClickListener(v -> showBottomSheetDialog(false));
 
         buy_now.setOnClickListener(v -> showBottomSheetDialog(true));
-        add_cart.setOnClickListener(v -> showBottomSheetDialog(false));
 
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Create Intent to open MainActivity
                 Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
-                intent.putExtra("selected_item_id", R.id.cart);  // Pass the selected item ID
+                intent.putExtra("selected_item_id", R.id.cart);
                 startActivity(intent);
             }
         });

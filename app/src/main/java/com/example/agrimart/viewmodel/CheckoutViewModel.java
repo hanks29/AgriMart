@@ -101,7 +101,7 @@ public class CheckoutViewModel extends ViewModel {
         });
     }
 
-    public void placeOrder(double totalPrice, String expectedDeliveryTime, double shippingFee, String paymentMethod, String shippingName, List<String> productIds, List<Address> addresses, OrderCallback callback) {
+    public void placeOrder(double totalPrice, String expectedDeliveryTime, double shippingFee, String paymentMethod, String shippingName, List<String> productIds, String address, OrderCallback callback) {
         String userId = auth.getCurrentUser().getUid();
         String orderId = generateOrderId();
         Date createdAt = new Date();
@@ -117,24 +117,25 @@ public class CheckoutViewModel extends ViewModel {
         order.put("shipping_name", shippingName);
         order.put("created_at", createdAt);
         order.put("product_id", productIds);
-        order.put("addresses", addresses.stream().map(this::convertAddressToMap).collect(Collectors.toList()));
+        order.put("address", address);
 
         db.collection("orders").document(orderId).set(order)
-                .addOnSuccessListener(aVoid -> {
-                    updateProductQuantities(productIds, callback, orderId);
-                })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e);
-                });
+                .addOnSuccessListener(aVoid -> callback.onSuccess(orderId))
+                .addOnFailureListener(callback::onFailure);
     }
 
     private Map<String, Object> convertAddressToMap(Address address) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("street", address.getStreet());
-        map.put("commune", address.getCommune());
-        map.put("district", address.getDistrict());
-        map.put("province", address.getProvince());
-        return map;
+        Map<String, Object> addressMap = new HashMap<>();
+        addressMap.put("isDefault", address.isDefault());
+        addressMap.put("province", address.getProvince());
+        addressMap.put("district", address.getDistrict());
+        addressMap.put("commune", address.getCommune());
+        addressMap.put("detailedAddressID", address.getDetailedAddressID());
+        addressMap.put("name", address.getName());
+        addressMap.put("phone", address.getPhone());
+        addressMap.put("street", address.getStreet());
+        addressMap.put("AddressId", address.getAddressId());
+        return addressMap;
     }
 
     private void updateProductQuantities(List<String> productIds, OrderCallback callback, String orderId) {

@@ -150,4 +150,5 @@
     <string name="goi_y">Gợi ý cho bạn</string>
     <string name="no_reslut">Không tìm thấy sản phẩm với từ khoá đã nhập</string>
     <string name="tim_kiem">Tìm kiếm sản phẩm</string>
+    <string name="store_name">Tên cửa hàng</string>
 </resources>

@@ -7,33 +7,15 @@
     android:id="@+id/main1"
     android:background="@color/white">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/header"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_alignParentTop="true"
-        android:background="@color/green">
-
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="5dp"
-            android:src="@drawable/chevron_left" />
-
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Thanh toán"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"/>
-    </RelativeLayout>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/green"
+        app:title="Thanh toán"
+        app:titleTextColor="@color/black"
+        app:titleTextAppearance="@style/TextAppearance.AppCompat.Large"
+        app:navigationIcon="@drawable/ic_arrow_left" />
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -68,7 +50,7 @@
                 android:background="@android:color/background_light">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="384dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
@@ -76,81 +58,78 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/user"
+                            android:layout_marginEnd="8dp"
                             android:contentDescription="User Icon"
-                            android:layout_marginEnd="8dp" />
+                            android:src="@drawable/user" />
 
                         <TextView
-                            android:id="@+id/tvUserName"
+                            android:id="@+id/tvUserName1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Tên người dùng"
                             android:textColor="@color/black"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/btnEditUserInfo"
+                            android:id="@+id/tvChangeAddress"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:text="Thay đổi"
-                            android:textColor="@color/green"/>
+                            android:textColor="@color/green" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
                         android:gravity="center_vertical"
-                        android:layout_marginTop="10dp">
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/telephone"
+                            android:layout_marginEnd="8dp"
                             android:contentDescription="Phone Icon"
-                            android:layout_marginEnd="8dp" />
+                            android:src="@drawable/telephone" />
 
                         <TextView
-                            android:id="@+id/tvPhoneNumber"
+                            android:id="@+id/tvPhoneNumber1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Số điện thoại"
                             android:textColor="@color/black"
-                            android:textSize="16sp"/>
+                            android:textSize="16sp" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
                         android:gravity="center_vertical"
-                        android:layout_marginTop="10dp">
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/location"
+                            android:layout_marginEnd="8dp"
                             android:contentDescription="Address Icon"
-                            android:layout_marginEnd="8dp" />
+                            android:src="@drawable/location" />
 
                         <TextView
-                            android:id="@+id/tvAddress"
+                            android:id="@+id/tvAddress1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Địa chỉ"
                             android:textColor="@color/black"
-                            android:textSize="16sp"/>
+                            android:textSize="16sp" />
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -199,7 +178,15 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ghn"
+                    android:contentDescription="Shipping Icon" />
 
                 <TextView
                     android:id="@+id/tvShippingMethod"
@@ -222,25 +209,84 @@
                 android:textStyle="bold" />
 
             <RadioGroup
-                android:id="@+id/radioGroupPayment"
+                android:id="@+id/radGroupPayment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
+                android:orientation="vertical">
 
-                <RadioButton
-                    android:id="@+id/radioCOD"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Thanh toán khi nhận hàng"
-                    android:textSize="16sp"
-                    android:checked="true"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <RadioButton
-                    android:id="@+id/radioPayPal"
-                    android:layout_width="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:id="@+id/codIcon"
+                            android:layout_width="40dp"
+                            android:layout_height="32dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/cod_icon"/>
+
+                        <TextView
+                            android:id="@+id/codText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/codIcon"
+                            android:layout_centerVertical="true"
+                            android:text="Thanh toán khi nhận hàng"
+                            android:textSize="16sp"
+                            android:textColor="@color/black" />
+                    </RelativeLayout>
+
+                    <RadioButton
+                        android:id="@+id/radCOD"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Cổng thanh toán VNPay"
-                    android:textSize="16sp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:id="@+id/vnpayIcon"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/vnpay_icon"/>
+
+                        <TextView
+                            android:id="@+id/vnpayText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/vnpayIcon"
+                            android:layout_centerVertical="true"
+                            android:text="Cổng thanh toán VNPAY"
+                            android:textSize="16sp"
+                            android:textColor="@color/black" />
+                    </RelativeLayout>
+
+                    <RadioButton
+                        android:id="@+id/radVNPay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
             </RadioGroup>
 
             <TextView
@@ -250,7 +296,7 @@
                 android:layout_marginTop="16dp"
                 android:text="Chi tiết thanh toán"
                 android:textColor="@color/black"
-                android:textSize="18sp"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -350,7 +396,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvTotalAmount"
+            android:id="@+id/tvTotalPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvTotalLabel"

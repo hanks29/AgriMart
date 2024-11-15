@@ -194,11 +194,6 @@ public class MyAccountActivity extends AppCompatActivity {
         builder.show();
     }
 
-
-
-
-
-
     private void openGenderOptions() {
         // Tạo một TextView cho tiêu đề và tùy chỉnh nó
         TextView title = new TextView(this);

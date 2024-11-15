@@ -1,9 +1,12 @@
 package com.example.agrimart.data.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cart {
+public class Cart implements Parcelable {
     private List<Product> products;
     private String storeId;
     private String store_name;
@@ -13,6 +16,40 @@ public class Cart {
     private boolean checked;
     private double totalPrice;
 
+    public Cart() {
+        // Constructor mặc định
+    }
+
+    // Constructor từ Parcel
+    protected Cart(Parcel in) {
+        storeId = in.readString();
+        store_name = in.readString();
+        updatedAt = in.readString();
+        userId = in.readString();
+        checked = in.readByte() != 0;
+        totalPrice = in.readDouble();
+
+        // Đọc danh sách products từ Parcel
+        products = new ArrayList<>();
+        in.readList(products, Product.class.getClassLoader());
+
+        // Đọc danh sách productCart từ Parcel
+        productCart = new ArrayList<>();
+        in.readList(productCart, ProductCart.class.getClassLoader());
+    }
+
+    public static final Creator<Cart> CREATOR = new Creator<Cart>() {
+        @Override
+        public Cart createFromParcel(Parcel in) {
+            return new Cart(in);
+        }
+
+        @Override
+        public Cart[] newArray(int size) {
+            return new Cart[size];
+        }
+    };
+
     // Hàm thêm sản phẩm vào StoreCart
     public void addProduct(Product product) {
         if (products == null) {
@@ -21,16 +58,12 @@ public class Cart {
         products.add(product);
     }
 
-
-
-    public void setProduct(List<Product> product) {
-
-        this.products = product;
+    public void setProduct(List<Product> products) {
+        this.products = products;
     }
 
     public List<Product> getProducts() {
-        if (products == null)
-        {
+        if (products == null) {
             products = new ArrayList<>();
         }
         return products;
@@ -43,7 +76,6 @@ public class Cart {
     public void setStoreId(String storeId) {
         this.storeId = storeId;
     }
-
 
     public String getUserId() {
         return userId;
@@ -88,8 +120,8 @@ public class Cart {
     public double getTotalPrice() {
         double total = 0;
         for (Product product : products) {
-            if (product.isChecked()) {  // Kiểm tra nếu sản phẩm đã được chọn
-                total += product.getPrice() * product.getQuantity();  // Cộng tổng tiền của sản phẩm
+            if (product.isChecked()) {
+                total += product.getPrice() * product.getQuantity();
             }
         }
         return total;
@@ -97,5 +129,26 @@ public class Cart {
 
     public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(storeId);
+        dest.writeString(store_name);
+        dest.writeString(updatedAt);
+        dest.writeString(userId);
+        dest.writeByte((byte) (checked ? 1 : 0));
+        dest.writeDouble(totalPrice);
+
+        // Ghi danh sách products vào Parcel
+        dest.writeList(products);
+
+        // Ghi danh sách productCart vào Parcel
+        dest.writeList(productCart);
     }
 }

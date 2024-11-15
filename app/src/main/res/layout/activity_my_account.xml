@@ -17,14 +17,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
             app:title="Tài khoản &amp; Bảo mật"
             app:titleTextColor="@color/black"
             app:titleTextAppearance="@style/TextAppearance.AppCompat.Large"
-            app:navigationIcon="@drawable/chevron_left" />
+            app:navigationIcon="@drawable/ic_arrow_left" />
 
         <View
             android:layout_width="match_parent"

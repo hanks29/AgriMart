@@ -4,6 +4,7 @@ import com.google.firebase.firestore.PropertyName;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class User implements Serializable {
     @SerializedName("userId")
@@ -27,7 +28,7 @@ public class User implements Serializable {
 
     @PropertyName("addresses")
     @SerializedName("addresses")
-    private Address address;
+    private List<Address> addresses;
 
     @PropertyName("store_phone_number")
     @SerializedName("store_phone_number")
@@ -67,14 +68,14 @@ public class User implements Serializable {
 
     }
 
-    public User(String userId, String role, String fullName, String email, String phoneNumber, String password, Address address, String storeName, Address storeAddress, String storeImage, double storeRating, PaymentAccount paymentAccount, Date createdAt, Date updatedAt) {
+    public User(String userId, String role, String fullName, String email, String phoneNumber, String password, List<Address> addresses, String storeName, Address storeAddress, String storeImage, double storeRating, PaymentAccount paymentAccount, Date createdAt, Date updatedAt) {
         this.userId = userId;
         this.role = role;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
-        this.address = address;
+        this.addresses = addresses;
         this.storeName = storeName;
         this.storeAddress = storeAddress;
         this.storeImage = storeImage;
@@ -83,6 +84,8 @@ public class User implements Serializable {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    // Getters and setters...
 
     public String getUserId() {
         return userId;
@@ -141,13 +144,13 @@ public class User implements Serializable {
     }
 
     @PropertyName("addresses")
-    public Address getAddress() {
-        return address;
+    public List<Address> getAddresses() {
+        return addresses;
     }
 
     @PropertyName("addresses")
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
     }
 
     @PropertyName("store_name")
@@ -244,16 +247,6 @@ public class User implements Serializable {
         this.phoneNumberStore = phoneNumberStore;
     }
 
-    //    public static class Address {
-//        @SerializedName("street")
-//        private String street;
-//        @SerializedName("district")
-//        private String district;
-//        @SerializedName("city")
-//        private String city;
-//
-//        // Constructors, getters, and setters...
-//    }
     public static class Address implements Serializable {
         @SerializedName("street")
         private String street;

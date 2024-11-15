@@ -2,6 +2,7 @@ package com.example.agrimart.ui.Explore;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +55,7 @@ public class CategoryFragment extends Fragment {
         productAdapter = new ProductAdapter(prod, product -> {
             // Xử lý khi người dùng nhấp vào sản phẩm
             Intent intent = new Intent(getContext(), ProductDetailActivity.class);
-            intent.putExtra("product", product);
+            intent.putExtra("product", (Parcelable) product);
             intent.putExtra("storeId", product.getStoreId());
             startActivity(intent);
         });

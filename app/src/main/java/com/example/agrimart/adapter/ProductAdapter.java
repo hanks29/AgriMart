@@ -15,23 +15,18 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
-    public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
     private List<Product> products;
-    private OnItemClickListener listener;
+    private final OnItemClickListener listener;
 
     public ProductAdapter(List<Product> products, OnItemClickListener listener) {
         this.products = products;
         this.listener = listener;
     }
 
-    public void setProducts(List<Product> products) {
-        this.products = products;
-        notifyDataSetChanged();
-    }
-
     public void updateProducts(List<Product> newProducts) {
-         this.products = newProducts;
-         notifyDataSetChanged();
+        this.products = newProducts;
+        notifyDataSetChanged();
     }
 
     public interface OnItemClickListener {
@@ -68,21 +63,23 @@ import java.util.Locale;
         public void bindData(Product product) {
             if (product != null) {
                 binding.tvName.setText(product.getName() != null ? product.getName() : "N/A");
+
+                // Format price in Vietnamese currency
                 Double price = product.getPrice();
                 NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
                 binding.tvPrice.setText(price != null ? format.format(price) : "0 VNĐ");
 
+                // Load product image
                 if (product.getImages() != null && !product.getImages().isEmpty()) {
                     Glide.with(binding.getRoot().getContext())
                             .load(product.getImages().get(0))
                             .into(binding.imgPro);
                 } else {
-                    binding.imgPro.setImageResource(R.drawable.apple);
+                    binding.imgPro.setImageResource(R.drawable.apple); // Placeholder image
                 }
 
                 binding.executePendingBindings();
             }
         }
     }
-
 }

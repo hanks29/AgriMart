@@ -26,6 +26,7 @@ public class CartFragmentViewModel extends ViewModel {
     private final FirebaseAuth auth;
     private final FirebaseFirestore firestore;
     private String userId;
+    private List<Cart> storeCartList = new ArrayList<>();
 
     // Constructor
     public CartFragmentViewModel() {
@@ -478,6 +479,4 @@ public class CartFragmentViewModel extends ViewModel {
 
         void onError(String errorMessage);
     }
-
-
 }

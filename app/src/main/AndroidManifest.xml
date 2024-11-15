@@ -27,8 +27,12 @@
         android:theme="@style/Theme.AgriMart"
         tools:ignore="ExtraText"
         tools:targetApi="31">
-        <activity android:name=".ui.payment.VNPaymentActivity"
-            android:exported="false"/>
+        <activity
+            android:name=".ui.Cart.PlaceOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.Payment.VNPaymentActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.MyProfile.MyStore.EditProfileStoreActivity"
             android:exported="false" />

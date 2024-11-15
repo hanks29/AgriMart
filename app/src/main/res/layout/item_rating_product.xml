@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Hàng đầu tiên: Ảnh và Tên -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Ảnh -->
+        <ImageView
+            android:id="@+id/userImage"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user" />
+
+        <!-- Tên -->
+        <TextView
+            android:id="@+id/itemName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="User"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <!-- Hàng thứ hai: Rating và Ngày/Tháng/Năm -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <!-- Rating -->
+        <per.wsj.library.AndRatingBar
+            android:id="@+id/itemRatingBar"
+            android:layout_width="90dp"
+            android:layout_height="18dp"
+            app:starColor="#FFD700"
+            app:bgColor="#C0C0C0"
+            app:starSpacing="4dp"
+            android:rating="4.0"
+            android:isIndicator="true"
+            android:layout_marginEnd="8dp" />
+
+
+        <!-- Ngày/Tháng/Năm -->
+        <TextView
+            android:id="@+id/itemDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="01/01/2024"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray" />
+    </LinearLayout>
+
+    <!-- Hàng thứ ba: Nội dung đánh giá -->
+    <TextView
+        android:id="@+id/itemReview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Đây là một sản phẩm tuyệt vời!"
+        android:textSize="14sp"
+        android:textColor="@android:color/black" />
+
+</LinearLayout>

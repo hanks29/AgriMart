@@ -1,5 +1,6 @@
 package com.example.agrimart.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,27 +12,36 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Address;
-
 import java.util.List;
+
 
 public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressViewHolder> {
 
-    // Interface for address click listener
-    public interface OnAddressClickListener {
-        void onAddressClick(int position); // Thêm position
-    }
-
     private List<Address> addressList;
-    private float density;
-    private OnAddressClickListener listener; // Listener instance
+    private final float density;
+    private final OnAddressClickListener listener;
 
     public AddressAdapter(Context context, List<Address> addressList, OnAddressClickListener listener) {
-        // Sort address list to bring isDefault = true to the top
         this.addressList = addressList;
         this.density = context.getResources().getDisplayMetrics().density;
-        this.listener = listener; // Initialize listener
+        this.listener = listener;
     }
 
+    public List<Address> getAddressList() {
+        return addressList;
+    }
+
+    // Cập nhật danh sách địa chỉ và thông báo cho RecyclerView
+    @SuppressLint("NotifyDataSetChanged")
+    public void updateAddresses(List<Address> addresses) {
+        this.addressList = addresses;
+        notifyDataSetChanged();
+    }
+
+    // Interface for address click listener
+    public interface OnAddressClickListener {
+        void onAddressClick(Address address);
+    }
 
     @NonNull
     @Override
@@ -41,34 +51,32 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
         return new AddressViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull AddressViewHolder holder, int position) {
         Address address = addressList.get(position);
+
         holder.tvNameAddress.setText(address.getName());
         holder.tvPhoneAddress.setText(address.getPhone());
         holder.tvStreetAddress.setText(address.getStreet());
-        holder.tvAddress.setText(address.getDetailedAddress());
+        holder.tvAddress.setText(address.getCommune() + ", " + address.getDistrict() + ", " + address.getProvince());
 
-        // Show or hide default address indicator
         holder.tvDefaultAddress.setVisibility(address.isDefault() ? View.VISIBLE : View.GONE);
 
-        // Set click listener for each address item
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onAddressClick(position); // Truyền address và position
+                listener.onAddressClick(address);
             }
         });
 
-        // Adjust margin for divider
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.divider.getLayoutParams();
         if (position == addressList.size() - 1) {
-            params.setMargins(0, (int) (20 * density), 0, 0); // No margin for last item
+            params.setMargins(0, (int) (20 * density), 0, 0);
         } else {
-            params.setMargins((int) (20 * density), (int) (20 * density), 0, 0); // Margin for other items
+            params.setMargins((int) (20 * density), (int) (20 * density), 0, 0);
         }
         holder.divider.setLayoutParams(params);
     }
-
 
     @Override
     public int getItemCount() {

@@ -62,6 +62,11 @@ public class MainActivity extends AppCompatActivity {
             loadFragment(new HomeFragment());
             bottomNavigationView.setSelectedItemId(R.id.home);
         }
+
+        int selectedItemId = getIntent().getIntExtra("selected_item_id", R.id.home);
+        if (selectedItemId != R.id.home) {
+            bottomNavigationView.setSelectedItemId(selectedItemId);
+        }
     }
 
     @Override

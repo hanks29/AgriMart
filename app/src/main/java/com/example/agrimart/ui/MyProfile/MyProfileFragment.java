@@ -150,25 +150,28 @@ public class MyProfileFragment extends Fragment {
                             // Cập nhật TextViews
                             userNameTextView.setText(name);
 
-                            if (urlImage != null && !urlImage.isEmpty()) {
-                                Glide.with(this)
-                                        .load(urlImage)
-                                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh khi tải lên
-                                        .placeholder(R.drawable.user_img) // ảnh mặc định khi đang tải
-                                        .error(R.drawable.user_img) // ảnh mặc định nếu URL không tồn tại hoặc tải ảnh lỗi
-                                        .into(user_image);
-                            } else {
-                                // Hiển thị ảnh mặc định nếu URL rỗng
-                                Glide.with(this)
-                                        .load(R.drawable.user_img)
-                                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh mặc định
-                                        .into(user_image);
+                            // Kiểm tra Fragment có được gắn vào không trước khi tải ảnh
+                            if (isAdded()) {
+                                if (urlImage != null && !urlImage.isEmpty()) {
+                                    Glide.with(this)
+                                            .load(urlImage)
+                                            .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh khi tải lên
+                                            .placeholder(R.drawable.user_img) // ảnh mặc định khi đang tải
+                                            .error(R.drawable.user_img) // ảnh mặc định nếu URL không tồn tại hoặc tải ảnh lỗi
+                                            .into(user_image);
+                                } else {
+                                    // Hiển thị ảnh mặc định nếu URL rỗng
+                                    Glide.with(this)
+                                            .load(R.drawable.user_img)
+                                            .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh mặc định
+                                            .into(user_image);
+                                }
                             }
-
                         }
                     }
                 });
     }
+
 
     private void navigateToPurchasedOrders() {
         Intent intent = new Intent(requireContext(), PurchasedOrdersActivity.class);

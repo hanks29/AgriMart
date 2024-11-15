@@ -5,8 +5,9 @@ import com.google.gson.annotations.SerializedName;
 public class Address {
     @SerializedName("default")
     private boolean isDefault;
-    @SerializedName("detailedAddress")
-    private String detailedAddress;
+    private String province;
+    private String district;
+    private String commune;
     @SerializedName("detailedAddressID")
     private String detailedAddressID;
     @SerializedName("name")
@@ -30,14 +31,16 @@ public class Address {
 
     }
     // Constructor
-    public Address(String AddressId,String name, String phone, String street, String detailedAddress,String detailedAddressID, boolean isDefault) {
+    public Address(String AddressId,String name, String phone, String street,String commune, String district, String province, String detailedAddressID, boolean isDefault) {
         this.name = name;
         this.phone = phone;
         this.street = street;
-        this.detailedAddress = detailedAddress;
         this.detailedAddressID = detailedAddressID;
         this.isDefault = isDefault;
         this.AddressId = AddressId;
+        this.commune = commune;
+        this.district = district;
+        this.province = province;
     }
 
     // Getters and Setters
@@ -65,13 +68,6 @@ public class Address {
         this.street = street;
     }
 
-    public String getDetailedAddress() {
-        return detailedAddress;
-    }
-
-    public void setDetailedAddress(String detailedAddress) {
-        this.detailedAddress = detailedAddress;
-    }
 
     public String getDetailedAddressID() {
         return detailedAddressID;
@@ -87,5 +83,29 @@ public class Address {
 
     public void setDefault(boolean aDefault) {
         isDefault = aDefault;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getCommune() {
+        return commune;
+    }
+
+    public void setCommune(String commune) {
+        this.commune = commune;
     }
 }

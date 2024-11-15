@@ -12,11 +12,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.agrimart.R;
 import com.example.agrimart.data.API.Config_VNPAY;
+import com.example.agrimart.data.model.Address;
 import com.example.agrimart.ui.Cart.PlaceOrderActivity;
 import com.example.agrimart.ui.MainActivity;
 import com.example.agrimart.utils.VnpayUtils;
 import com.example.agrimart.viewmodel.CheckoutViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VNPaymentActivity extends AppCompatActivity {
@@ -46,8 +48,9 @@ public class VNPaymentActivity extends AppCompatActivity {
                 if (url.contains(Config_VNPAY.VNP_RETURN_URL)) {
                     if (url.contains("vnp_ResponseCode=00")) {
                         Toast.makeText(VNPaymentActivity.this, "Thanh toán thành công", Toast.LENGTH_SHORT).show();
+                        List<Address> addresses = new ArrayList<>();
                         List<String> productIds = getIntent().getStringArrayListExtra("productIds");
-                        checkoutViewModel.placeOrder(price, "3-5 ngày", 0, "VNPay", "Giao hàng nhanh", productIds, new CheckoutViewModel.OrderCallback() {
+                        checkoutViewModel.placeOrder(price, "3-5 ngày", 0, "VNPay", "Giao hàng nhanh", productIds, addresses, new CheckoutViewModel.OrderCallback() {
                             @Override
                             public void onSuccess(String orderId) {
                                 Intent intent = new Intent(VNPaymentActivity.this, PlaceOrderActivity.class);

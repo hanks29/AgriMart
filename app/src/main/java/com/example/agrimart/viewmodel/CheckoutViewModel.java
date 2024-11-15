@@ -101,7 +101,7 @@ public class CheckoutViewModel extends ViewModel {
         });
     }
 
-    public void placeOrder(double totalPrice, String expectedDeliveryTime, double shippingFee, String paymentMethod, String shippingName, List<String> productIds, OrderCallback callback) {
+    public void placeOrder(double totalPrice, String expectedDeliveryTime, double shippingFee, String paymentMethod, String shippingName, List<String> productIds, List<Address> addresses, OrderCallback callback) {
         String userId = auth.getCurrentUser().getUid();
         String orderId = generateOrderId();
         Date createdAt = new Date();
@@ -117,14 +117,40 @@ public class CheckoutViewModel extends ViewModel {
         order.put("shipping_name", shippingName);
         order.put("created_at", createdAt);
         order.put("product_id", productIds);
+        order.put("addresses", addresses.stream().map(this::convertAddressToMap).collect(Collectors.toList()));
 
         db.collection("orders").document(orderId).set(order)
                 .addOnSuccessListener(aVoid -> {
-                    removeOrderedProductsFromCart(userId, callback, orderId);
+                    updateProductQuantities(productIds, callback, orderId);
                 })
                 .addOnFailureListener(e -> {
                     callback.onFailure(e);
                 });
+    }
+
+    private Map<String, Object> convertAddressToMap(Address address) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("street", address.getStreet());
+        map.put("commune", address.getCommune());
+        map.put("district", address.getDistrict());
+        map.put("province", address.getProvince());
+        return map;
+    }
+
+    private void updateProductQuantities(List<String> productIds, OrderCallback callback, String orderId) {
+        for (String productId : productIds) {
+            db.collection("products").document(productId).get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    long quantity = documentSnapshot.getLong("quantity");
+                    db.collection("products").document(productId).update("quantity", quantity - 1)
+                            .addOnSuccessListener(aVoid -> {
+                                Log.d(TAG, "Product quantity updated.");
+                                callback.onSuccess(orderId);
+                            })
+                            .addOnFailureListener(e -> Log.e(TAG, "Error updating product quantity", e));
+                }
+            }).addOnFailureListener(e -> Log.e(TAG, "Error getting product", e));
+        }
     }
 
     public void getOrderDetail(String orderId, OrderDetailCallback callback) {

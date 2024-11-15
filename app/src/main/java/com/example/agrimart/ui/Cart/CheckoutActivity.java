@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.CheckoutAdapter;
+import com.example.agrimart.data.model.Address;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;
 import com.example.agrimart.ui.Payment.VNPaymentActivity;
@@ -118,13 +119,12 @@ public class CheckoutActivity extends AppCompatActivity {
 
         paymentMethodGroup.clearCheck();
 
-
-
         btnPlaceOrder.setOnClickListener(v -> { placeOrder();});
     }
 
-
     private void placeOrder() {
+        List<Address> addresses = new ArrayList<>();
+
         if (radVNPay.isChecked()) {
             radCOD.setChecked(false);
             int amount = Integer.parseInt(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
@@ -136,6 +136,7 @@ public class CheckoutActivity extends AppCompatActivity {
             intent.putExtra("price", amount);
             intent.putExtra("orderInfo", orderInfo);
             intent.putStringArrayListExtra("productIds", new ArrayList<>(productIds));
+            intent.putParcelableArrayListExtra("addresses", new ArrayList<Address>(addresses));
             startActivity(intent);
         } else if (radCOD.isChecked()) {
             radVNPay.setChecked(false);
@@ -153,7 +154,7 @@ public class CheckoutActivity extends AppCompatActivity {
                                 .map(Product::getProduct_id)
                                 .collect(Collectors.toList());
 
-                        checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, new CheckoutViewModel.OrderCallback() {
+                        checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, addresses, new CheckoutViewModel.OrderCallback() {
                             @Override
                             public void onSuccess(String orderId) {
                                 checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {

@@ -17,6 +17,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -150,7 +151,7 @@ public class HomeFragment extends Fragment {
         productAdapter= new ProductAdapter(products, product -> {
             try {
                 Intent intent = new Intent(getContext(), ProductDetailActivity.class);
-                intent.putExtra("product", product);
+                intent.putExtra("product", (Parcelable) product);
                 intent.putExtra("storeId", product.getStoreId());
                 startActivity(intent);
             } catch (Exception e) {

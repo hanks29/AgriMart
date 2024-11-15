@@ -131,6 +131,7 @@ public class SignInActivity extends AppCompatActivity {
             String password = edtPassword.getText().toString().trim();
             if (!email.isEmpty() && !password.isEmpty()) {
                 signInViewModel.signInWithEmail(email, password, () -> checkEmailVerification(true));
+                Toast.makeText(SignInActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(SignInActivity.this, "Email hoặc mật khẩu không hợp lệ", Toast.LENGTH_SHORT).show();
             }

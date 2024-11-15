@@ -45,7 +45,7 @@ public class MyAddressActivity extends AppCompatActivity {
         id_add_address = findViewById(R.id.id_add_address);
         id_add_address.setOnClickListener(v -> startNewAddressActivity());
 
-        btn_back.setOnClickListener(v -> onBackPressed());
+        btn_back.setOnClickListener(v -> finish());
     }
 
     private void setupRecyclerView() {

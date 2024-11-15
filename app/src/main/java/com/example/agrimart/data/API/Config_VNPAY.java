@@ -6,5 +6,5 @@ public class Config_VNPAY {
     public static final String VNP_COMMAND = "pay";
     public static final String VNP_TMNCODE = "06EGNZ93";
     public static final String VNP_HASH_SECRET = "CNUOQJRB30SG8MIJZBJW87HPIP036OAT";
-    public static final String VNP_RETURN_URL = "http://localhost:8080/vnpay_return";
+    public static final String VNP_RETURN_URL = "http://localhost:51943/vnpay_return";
 }

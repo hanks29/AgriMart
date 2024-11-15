@@ -197,4 +197,8 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
         return true;
     }
 
+    public List<Cart> getStoreCartList() {
+        return storeCartList;
+    }
+
 }

@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -69,7 +70,7 @@ public class StoreActivity extends AppCompatActivity {
         productList = new ArrayList<>();
         productAdapter = new ProductAdapter(productList, product -> {
             Intent intent = new Intent(StoreActivity.this, ProductDetailActivity.class);
-            intent.putExtra("product", product);
+            intent.putExtra("product", (Parcelable) product);
             startActivity(intent);
         });
 

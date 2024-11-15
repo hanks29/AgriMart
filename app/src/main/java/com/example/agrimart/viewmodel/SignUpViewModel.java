@@ -1,11 +1,14 @@
 package com.example.agrimart.viewmodel;
 
 import android.app.Application;
+import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+
+import com.example.agrimart.ui.Account.VerifyActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
@@ -44,7 +47,10 @@ public class SignUpViewModel extends AndroidViewModel {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
                             sendEmailVerification(user);
-                            saveUserToFirestore(user, fullName);
+                            Intent intent = new Intent(getApplication(), VerifyActivity.class);
+                            intent.putExtra("fullname", fullName);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            getApplication().startActivity(intent);
                         }
                         signUpSuccess.setValue(true);
                     } else {
@@ -56,7 +62,6 @@ public class SignUpViewModel extends AndroidViewModel {
                     }
                 });
     }
-
     public void sendEmailVerification(FirebaseUser user) {
         user.sendEmailVerification()
                 .addOnCompleteListener(task -> {

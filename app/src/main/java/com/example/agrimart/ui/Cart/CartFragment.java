@@ -1,10 +1,12 @@
 package com.example.agrimart.ui.Cart;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,8 +21,10 @@ import androidx.core.content.ContextCompat;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.StoreCartAdapter;
 import com.example.agrimart.data.model.Cart;
+import com.example.agrimart.data.model.Product;
 import com.example.agrimart.viewmodel.CartFragmentViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CartFragment extends Fragment {
@@ -30,6 +34,7 @@ public class CartFragment extends Fragment {
     private TextView tv_total_price;
     private ImageButton btn_delete;
     ImageView checkboxAll;
+    private Button btnCheckout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,12 +51,11 @@ public class CartFragment extends Fragment {
         rvCarts.setLayoutManager(new LinearLayoutManager(requireActivity()));
         tv_total_price = view.findViewById(R.id.tv_total_price);
         btn_delete = view.findViewById(R.id.btn_delete);
-
+        btnCheckout = view.findViewById(R.id.btn_checkout);
 
         // Khởi tạo ViewModel
         viewModel = new CartFragmentViewModel();
         checkboxAll = view.findViewById(R.id.checkbox_all);
-
 
         viewModel.getStoreCartsByUserId(new CartFragmentViewModel.OnDataFetchedListener() {
             @Override
@@ -61,18 +65,17 @@ public class CartFragment extends Fragment {
                 storeCartAdapter.setOnTotalPriceChangedListener(totalPrice -> onTotalPriceChanged(totalPrice));
                 rvCarts.setAdapter(storeCartAdapter);
                 storeCartAdapter.setOnCheckAllListener(check -> {
-                    if(check)
-                    {
+                    if (check) {
                         checkboxAll.setImageResource(R.drawable.checkbox_checked);
                         checkboxAll.setTag("checked");
-                    }
-                    else {
+                    } else {
                         checkboxAll.setImageResource(R.drawable.checkbox_empty);
                         checkboxAll.setTag("unchecked");
                     }
                 });
 
                 storeCartAdapter.notifyTotalPriceChanged();
+                //updateCheckoutButtonState();
             }
 
             @Override
@@ -81,8 +84,6 @@ public class CartFragment extends Fragment {
                 Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
-
-
 
         checkboxAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +94,7 @@ public class CartFragment extends Fragment {
 
                     // Đánh dấu tất cả sản phẩm trong giỏ hàng
                     if (storeCartAdapter != null) {
-                        storeCartAdapter.setCheckedAll(true); // Cập nhật trạng thái tất cả sản phẩm
+                        storeCartAdapter.setCheckedAll(true); // Cập nhật trạng thái tất cả s��n phẩm
                     }
                 } else {
                     checkboxAll.setImageResource(R.drawable.checkbox_empty);
@@ -112,6 +113,7 @@ public class CartFragment extends Fragment {
             showDeleteDialog();
         });
 
+        btnCheckout.setOnClickListener(v -> onCheckoutButtonClicked());
 
         return view;
     }
@@ -133,7 +135,7 @@ public class CartFragment extends Fragment {
                                 rvCarts.setAdapter(storeCartAdapter);
 
                                 // Hiển thị thông báo cho người dùng
-                                Toast.makeText(getContext(), "Giỏ hàng đã được xóa", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Sản phẩm đã được xóa", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -151,12 +153,58 @@ public class CartFragment extends Fragment {
         dialogFragment.show(getChildFragmentManager(), "ConfirmDeleteDialog");
     }
 
-
-
-
-
     public void onTotalPriceChanged(double totalPrice) {
         // Update the total price TextView with the new total
         tv_total_price.setText(String.format("Tổng tiền: %,.0f đ", totalPrice));
+    }
+
+    private void updateCheckoutButtonState() {
+        if (storeCartAdapter != null) {
+            boolean isAnyCartChecked = false;
+            for (Cart cart : storeCartAdapter.getStoreCartList()) {
+                if (cart.isChecked()) {
+                    isAnyCartChecked = true;
+                    break;
+                }
+            }
+            btnCheckout.setEnabled(isAnyCartChecked);
+        }
+    }
+
+    private void onCheckoutButtonClicked() {
+        List<Product> selectedProducts = new ArrayList<>();
+        List<String> productIds = new ArrayList<>();
+        String storeName = "";
+        boolean isSameStore = true;
+
+        if (storeCartAdapter != null) {
+            for (Cart cart : storeCartAdapter.getStoreCartList()) {
+                for (Product product : cart.getProducts()) {
+                    if (product.isChecked()) {
+                        if (storeName.isEmpty()) {
+                            storeName = cart.getStore_name();
+                        } else if (!storeName.equals(cart.getStore_name())) {
+                            isSameStore = false;
+                            break;
+                        }
+                        selectedProducts.add(product);
+                        productIds.add(product.getProduct_id());
+                    }
+                }
+                if (!isSameStore) {
+                    break;
+                }
+            }
+        }
+
+        if (!selectedProducts.isEmpty() && isSameStore) {
+            Intent intent = new Intent(getActivity(), CheckoutActivity.class);
+            intent.putParcelableArrayListExtra("selectedProducts", new ArrayList<>(selectedProducts));
+            intent.putStringArrayListExtra("productIds", new ArrayList<>(productIds));
+            intent.putExtra("storeName", storeName);
+            startActivity(intent);
+        } else if (!isSameStore) {
+            Toast.makeText(getContext(), "Chỉ có thể thanh toán sản phẩm của cùng một cửa hàng", Toast.LENGTH_SHORT).show();
+        }
     }
 }

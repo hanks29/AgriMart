@@ -86,7 +86,7 @@ public class EditNumberPhoneActivity extends AppCompatActivity {
     }
 
     void addEvent() {
-        btn_back.setOnClickListener(v -> onBackPressed());
+        btn_back.setOnClickListener(v -> finish());
         btnUpdate.setOnClickListener(v -> {
             String phone = numberPhone.getText().toString().trim();
             viewModel.saveNumberPhoneToFirestore(phone,

@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -26,21 +28,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.agrimart.R;
 import com.example.agrimart.ui.Account.SignInActivity;
-
 import com.example.agrimart.ui.MyProfile.MyAccount.MyAccountActivity;
 import com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;
 import com.example.agrimart.ui.MyProfile.MyStore.MyStoreActivity;
 import com.example.agrimart.ui.MyProfile.MyStore.RegisterSellerActivity;
 import com.example.agrimart.ui.MyProfile.PurchasedOrders.PurchasedOrdersActivity;
-import android.content.Context;
-import android.widget.Toast;
-
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 
 public class MyProfileFragment extends Fragment {
 
@@ -51,6 +47,7 @@ public class MyProfileFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseFirestore firestore;
     private static final int MY_ACCOUNT_REQUEST_CODE = 2;
+    private String userRole;
 
     public MyProfileFragment() {
         // Required empty public constructor
@@ -62,6 +59,8 @@ public class MyProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
         auth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        userRole = sharedPreferences.getString("user_role", "buyer");
         addControl(view);
         addEvents();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -94,7 +93,7 @@ public class MyProfileFragment extends Fragment {
         my_address = view.findViewById(R.id.my_address);
         setting = view.findViewById(R.id.setting);
         logout = view.findViewById(R.id.logout);
-        userNameTextView = view.findViewById(R.id.user_name); // Ensure this ID matches the layout
+        userNameTextView = view.findViewById(R.id.user_name);
         purchase_order = (LinearLayout)view.findViewById(R.id.purchase_order);
         confirm = (LinearLayout)view.findViewById(R.id.waiting_confirm);
         goods = (LinearLayout)view.findViewById(R.id.waiting_goods);
@@ -167,11 +166,18 @@ public class MyProfileFragment extends Fragment {
                                             .into(user_image);
                                 }
                             }
+
+                            // Cập nhật TextView my_store_text dựa trên userRole
+                            TextView myStoreTextView = getView().findViewById(R.id.my_store_text);
+                            if ("seller".equals(userRole)) {
+                                myStoreTextView.setText("Cửa hàng của tôi");
+                            } else {
+                                myStoreTextView.setText("Bắt đầu bán");
+                            }
                         }
                     }
                 });
     }
-
 
     private void navigateToPurchasedOrders() {
         Intent intent = new Intent(requireContext(), PurchasedOrdersActivity.class);
@@ -254,6 +260,4 @@ public class MyProfileFragment extends Fragment {
         dialog.setCancelable(true);
         dialog.show();
     }
-
-
 }

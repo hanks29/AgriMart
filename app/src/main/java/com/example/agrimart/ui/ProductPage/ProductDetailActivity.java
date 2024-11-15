@@ -2,7 +2,6 @@ package com.example.agrimart.ui.ProductPage;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -26,6 +25,7 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.Store;
+import com.example.agrimart.ui.Cart.CheckoutActivity;
 import com.example.agrimart.ui.MainActivity;
 import com.example.agrimart.ui.Store.StoreActivity;
 import com.example.agrimart.viewmodel.CartFragmentViewModel;
@@ -44,7 +44,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private boolean isExpanded = false;
     private LinearLayout store;
     private ProductDetailViewModel viewModel;
-    private Button add_cart;
+    private Button add_cart, buy_now;
     private Product product;
     private CartFragmentViewModel cartFragmentViewModel;
     LinearLayout reviewsLayout;
@@ -72,6 +72,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         storeAddress = findViewById(R.id.address);
         storeAvatar = findViewById(R.id.store_img);
         add_cart = findViewById(R.id.add_cart);
+        buy_now = findViewById(R.id.buy_now);
         btnCart = findViewById(R.id.btn_cart);
         reviewsLayout = findViewById(R.id.reviews);
 
@@ -127,7 +128,10 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
 
         cartFragmentViewModel = new ViewModelProvider(this).get(CartFragmentViewModel.class);
-        add_cart.setOnClickListener(v -> showBottomSheetDialog());
+        add_cart.setOnClickListener(v -> showBottomSheetDialog(false));
+
+        buy_now.setOnClickListener(v -> showBottomSheetDialog(true));
+        add_cart.setOnClickListener(v -> showBottomSheetDialog(false));
 
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,7 +150,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 .commit();
     }
 
-    private void showBottomSheetDialog() {
+    private void showBottomSheetDialog(boolean isBuyNow) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_dialog, null);
 
@@ -165,7 +169,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         tvPrice.setText(productPrice.getText());
-        warehouse.setText("Kho: "+product.getQuantity());
+        warehouse.setText("Kho: " + product.getQuantity());
 
         // Thiết lập sự kiện cho nút "Thêm vào giỏ"
         continueShoppingButton.setOnClickListener(v -> {
@@ -181,7 +185,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         quantity.setText(String.valueOf(dem.get()));
 
         btn_decrease.setOnClickListener(v -> {
-            int currentQuantity = Integer.parseInt(quantity.getText().toString()); // Chuyển đổi chính xác
+            int currentQuantity = Integer.parseInt(quantity.getText().toString());
             if (currentQuantity > 1) {
                 dem.getAndDecrement();
                 quantity.setText(String.valueOf(dem.get()));
@@ -195,6 +199,23 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
+        continueShoppingButton.setOnClickListener(v -> {
+            if (product != null) {
+                int q = Integer.parseInt(quantity.getText().toString());
+                if (isBuyNow) {
+                    Intent checkoutIntent = new Intent(ProductDetailActivity.this, CheckoutActivity.class);
+                    ArrayList<Product> selectedProducts = new ArrayList<>();
+                    product.setQuantity(q);
+                    selectedProducts.add(product);
+                    checkoutIntent.putParcelableArrayListExtra("selectedProducts", selectedProducts);
+                    checkoutIntent.putExtra("storeName", storeName.getText().toString());
+                    startActivity(checkoutIntent);
+                } else {
+                    cartFragmentViewModel.addProductToCart(product.getStoreId(), product, q);
+                }
+            }
+            bottomSheetDialog.dismiss();
+        });
 
         bottomSheetDialog.setContentView(bottomSheetView);
         bottomSheetDialog.show();

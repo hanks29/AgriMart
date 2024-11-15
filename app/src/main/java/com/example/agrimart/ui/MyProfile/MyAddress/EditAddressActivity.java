@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -20,7 +19,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Address;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -40,6 +38,7 @@ public class EditAddressActivity extends AppCompatActivity {
     private TextView edtTinh;
     ImageButton btnBack;
 
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +56,6 @@ public class EditAddressActivity extends AppCompatActivity {
         // Khởi tạo Firestore và FirebaseAuth
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
-
         addControl();
 
         // Nhận AddressId từ Intent
@@ -66,12 +64,13 @@ public class EditAddressActivity extends AppCompatActivity {
 
         // Tải thông tin địa chỉ
         loadAddressDetails();
+
+
         addEvent();
 
     }
 
-    void addControl()
-    {
+    void addControl() {
         // Khởi tạo các EditText và Switch
         edtHoTen = findViewById(R.id.edtHoTen);
         edtSDT = findViewById(R.id.edtSDT);
@@ -84,8 +83,7 @@ public class EditAddressActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btn_back);
     }
 
-    void addEvent()
-    {
+    void addEvent() {
         save_address.setOnClickListener(v -> saveAddress());
 
         delete_address.setOnClickListener(v -> deleteAddress());
@@ -135,7 +133,7 @@ public class EditAddressActivity extends AppCompatActivity {
                                 edtHoTen.setText((String) address.get("name"));
                                 edtSDT.setText((String) address.get("phone"));
                                 edtTenDuong.setText((String) address.get("street"));
-                                edtTinh.setText((String) address.get("detailedAddress"));
+                                edtTinh.setText((String) address.get("province"));
                                 detailedAddressID = (String) address.get("detailedAddressID");
 
                                 Boolean isDefault = (Boolean) address.get("default");
@@ -154,7 +152,7 @@ public class EditAddressActivity extends AppCompatActivity {
     private void saveAddress() {
         String name = edtHoTen.getText().toString();
         String phone = edtSDT.getText().toString();
-        String street =  edtTenDuong.getText().toString();
+        String street = edtTenDuong.getText().toString();
         String detailedAddress = edtTinh.getText().toString();
         boolean isDefault = switchDefault.isChecked();
 

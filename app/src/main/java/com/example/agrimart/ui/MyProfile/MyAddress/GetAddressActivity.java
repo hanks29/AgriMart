@@ -80,10 +80,15 @@ public class GetAddressActivity extends AppCompatActivity {
     private void setEventListeners() {
         btnBack.setOnClickListener(v -> onBackPressed());
         txtChon.setOnClickListener(v -> {
-            String address = selectedProvinceName + ", " + selectedDistrictName + ", " + selectedCommuneName;
+            String province = selectedProvinceName;
+            String district = selectedDistrictName;
+            String commune = selectedCommuneName;
+
             String id = selectedProvinceId + "," + selectedDistrictId + "," + selectedCommuneId;
             Intent intent = new Intent();
-            intent.putExtra("address", address);
+            intent.putExtra("commune", commune);
+            intent.putExtra("district", district);
+            intent.putExtra("province", province);
             intent.putExtra("detailedAddressID", id);
             setResult(RESULT_OK, intent);
             finish();

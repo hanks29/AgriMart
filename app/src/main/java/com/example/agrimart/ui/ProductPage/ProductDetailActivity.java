@@ -2,12 +2,14 @@ package com.example.agrimart.ui.ProductPage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +26,7 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.Store;
+import com.example.agrimart.ui.MainActivity;
 import com.example.agrimart.ui.Store.StoreActivity;
 import com.example.agrimart.viewmodel.CartFragmentViewModel;
 import com.example.agrimart.viewmodel.ProductDetailViewModel;
@@ -35,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProductDetailActivity extends AppCompatActivity {
     private static final String TAG = "ProductDetailActivity";
-    private ImageButton btn_back, btnExpand;
+    private ImageButton btn_back, btnExpand, btnCart;
     private TextView description, productName, productPrice, storeName, storeAddress, storePhoneNumber;
     private ImageView storeAvatar;
     private boolean isExpanded = false;
@@ -44,6 +47,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private Button add_cart;
     private Product product;
     private CartFragmentViewModel cartFragmentViewModel;
+    LinearLayout reviewsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         storeAddress = findViewById(R.id.address);
         storeAvatar = findViewById(R.id.store_img);
         add_cart = findViewById(R.id.add_cart);
+        btnCart = findViewById(R.id.btn_cart);
+        reviewsLayout = findViewById(R.id.reviews);
+
 
         btn_back.setOnClickListener(v -> finish());
 
@@ -121,6 +128,22 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         cartFragmentViewModel = new ViewModelProvider(this).get(CartFragmentViewModel.class);
         add_cart.setOnClickListener(v -> showBottomSheetDialog());
+
+        btnCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create Intent to open MainActivity
+                Intent intent = new Intent(ProductDetailActivity.this, MainActivity.class);
+                intent.putExtra("selected_item_id", R.id.cart);  // Pass the selected item ID
+                startActivity(intent);
+            }
+        });
+
+
+        ProductRatingFragment productRatingFragment = new ProductRatingFragment(product.getProduct_id());
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.reviews, productRatingFragment)
+                .commit();
     }
 
     private void showBottomSheetDialog() {
@@ -135,7 +158,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         TextView warehouse = bottomSheetView.findViewById(R.id.warehouse);
         ImageView btn_increase = bottomSheetView.findViewById(R.id.btn_increase);
 
-        //img_product.setImageResource(Integer.parseInt(product.getImages().get(0)));
+        if (product.getImages() != null && !product.getImages().isEmpty()) {
+            Glide.with(this)
+                    .load(product.getImages().get(0)) // lấy URL đầu tiên từ danh sách ảnh
+                    .into(img_product);
+        }
+
         tvPrice.setText(productPrice.getText());
         warehouse.setText("Kho: "+product.getQuantity());
 
@@ -144,6 +172,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             if (product != null) {
                 int q = Integer.parseInt((String) quantity.getText());
                 cartFragmentViewModel.addProductToCart(product.getStoreId(), product , q);
+                Toast.makeText(this, "Đã thêm sản phẩm vào giỏ hàng", Toast.LENGTH_SHORT).show();
             }
             bottomSheetDialog.dismiss();
         });

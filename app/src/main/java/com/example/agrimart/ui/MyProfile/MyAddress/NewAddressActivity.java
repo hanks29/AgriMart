@@ -1,5 +1,6 @@
 package com.example.agrimart.ui.MyProfile.MyAddress;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import java.util.UUID;
@@ -21,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Address;
+import com.example.agrimart.ui.MyProfile.MyAddress.GetAddressActivity;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FieldValue;
@@ -41,6 +43,9 @@ public class NewAddressActivity extends AppCompatActivity {
     private LinearLayout address;
     private ImageButton btn_back;
     private String detailedAddressID = "";
+    private String province;
+    private String district;
+    private String commune;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +74,7 @@ public class NewAddressActivity extends AppCompatActivity {
         edtSDT = findViewById(R.id.edtSDT);
         edtTinh = findViewById(R.id.edtTinh);
         edtTenDuong = findViewById(R.id.edtTenDuong);
-        btnComplete = findViewById(R.id.textView4);
+        btnComplete = findViewById(R.id.complete);
         switch1 = findViewById(R.id.switch1);
         address = findViewById(R.id.id_address);
         btn_back = findViewById(R.id.btn_back);
@@ -93,6 +98,7 @@ public class NewAddressActivity extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_CODE_NEW_ADDRESS);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -100,10 +106,12 @@ public class NewAddressActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_NEW_ADDRESS && resultCode == RESULT_OK) {
             if (data != null) {
                 // Nhận chuỗi từ Intent
-                String addressString = data.getStringExtra("address");
+                province = data.getStringExtra("province");
+                district = data.getStringExtra("district");
+                commune = data.getStringExtra("commune");
                 detailedAddressID = data.getStringExtra("detailedAddressID");
                 // Xử lý chuỗi nhận được ở đây (ví dụ: hiển thị trong một TextView hoặc sử dụng nó theo cách khác)
-                edtTinh.setText(addressString);
+                edtTinh.setText(commune +", "+ district +", "+ province);
             }
         }
     }
@@ -114,6 +122,8 @@ public class NewAddressActivity extends AppCompatActivity {
         String phone = edtSDT.getText().toString().trim();
         String street = edtTenDuong.getText().toString().trim();
         String city = edtTinh.getText().toString().trim();
+
+
 
         String AddressId = generateUniqueAddressId();
 
@@ -138,7 +148,7 @@ public class NewAddressActivity extends AppCompatActivity {
                             boolean isDefault = isFirstAddress || switch1.isChecked();
 
                             // Tạo một đối tượng địa chỉ mới
-                            Address newAddress = new Address(AddressId, name, phone, street, city,detailedAddressID, isDefault);
+                            Address newAddress = new Address(AddressId, name, phone, street, commune,district,province,detailedAddressID, isDefault);
 
                             if (isDefault) {
                                 updateAddressesToNotDefault(newAddress);
@@ -147,7 +157,7 @@ public class NewAddressActivity extends AppCompatActivity {
                             }
                         } else {
                             // Nếu không có địa chỉ nào, đặt địa chỉ mới là mặc định
-                            Address newAddress = new Address(AddressId, name, phone, street, city,detailedAddressID, true);
+                            Address newAddress = new Address(AddressId, name, phone, street, commune,district,province,detailedAddressID, true);
                             addAddress(newAddress);
                         }
                     } else {
@@ -172,7 +182,9 @@ public class NewAddressActivity extends AppCompatActivity {
                                 address.setAddressId((String) addressMap.get("AddressId"));
                                 address.setStreet((String) addressMap.get("street"));
                                 address.setPhone((String) addressMap.get("phone"));
-                                address.setDetailedAddress((String) addressMap.get("detailedAddress"));
+                                address.setCommune((String) addressMap.get("commune"));
+                                address.setDistrict((String) addressMap.get("district"));
+                                address.setProvince((String) addressMap.get("province"));
                                 address.setDetailedAddressID((String) addressMap.get("detailedAddressID"));
                                 address.setName((String) addressMap.get("name"));
                                 address.setDefault(false);

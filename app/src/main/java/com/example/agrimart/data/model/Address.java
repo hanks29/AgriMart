@@ -1,8 +1,13 @@
 package com.example.agrimart.data.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
-public class Address {
+public class Address implements Parcelable {
     @SerializedName("default")
     private boolean isDefault;
     private String province;
@@ -16,6 +21,30 @@ public class Address {
     private String phone;
     @SerializedName("street")
     private String street;
+
+    protected Address(Parcel in) {
+        isDefault = in.readByte() != 0;
+        province = in.readString();
+        district = in.readString();
+        commune = in.readString();
+        detailedAddressID = in.readString();
+        name = in.readString();
+        phone = in.readString();
+        street = in.readString();
+        AddressId = in.readString();
+    }
+
+    public static final Creator<Address> CREATOR = new Creator<Address>() {
+        @Override
+        public Address createFromParcel(Parcel in) {
+            return new Address(in);
+        }
+
+        @Override
+        public Address[] newArray(int size) {
+            return new Address[size];
+        }
+    };
 
     public String getAddressId() {
         return this.AddressId;
@@ -107,5 +136,23 @@ public class Address {
 
     public void setCommune(String commune) {
         this.commune = commune;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeByte((byte) (isDefault ? 1 : 0));
+        dest.writeString(province);
+        dest.writeString(district);
+        dest.writeString(commune);
+        dest.writeString(detailedAddressID);
+        dest.writeString(name);
+        dest.writeString(phone);
+        dest.writeString(street);
+        dest.writeString(AddressId);
     }
 }

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Rating;
 import com.example.agrimart.viewmodel.ProductRatingFragmentViewModel;
@@ -51,13 +52,17 @@ public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingView
 
         productRatingFragmentViewModel.getUserImageLiveData().observeForever(userImage -> {
             if (userImage != null && !userImage.isEmpty()) {
-                // Use Glide to load the image into the ImageView
                 Glide.with(holder.itemView.getContext())
                         .load(userImage)
-                        .into(holder.userImage);  // Pass the ImageView, not the userImage URL
+                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh khi tải lên
+                        .placeholder(R.drawable.user_img) // ảnh mặc định khi đang tải
+                        .error(R.drawable.user_img) // ảnh mặc định nếu URL không tồn tại hoặc tải ảnh lỗi
+                        .into(holder.userImage);
             } else {
-                // Set a default error image if the user image is null or empty
-                holder.userImage.setImageResource(R.drawable.error_image);
+                Glide.with(holder.itemView.getContext())
+                        .load(R.drawable.error_image)
+                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh mặc định
+                        .into(holder.userImage);
             }
         });
 

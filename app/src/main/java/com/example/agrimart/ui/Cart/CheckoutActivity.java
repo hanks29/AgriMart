@@ -101,7 +101,14 @@ public class CheckoutActivity extends AppCompatActivity {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkoutViewModel.createOrder(tvAddress.getText().toString());
+                checkoutViewModel.createOrder(tvAddress.getText().toString(),tvPhoneNumber.getText().toString(),tvUserName.getText().toString(),selectedProducts.get(0).getStoreId(),1,tvTotalPrice.getText().toString());
+                checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
+                    tvTotalShippingPrice.setText(shippingFee+" đ");
+
+                    int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
+                    int totalPrice=price+Integer.parseInt(String.valueOf(shippingFee));
+                    tvTotalPrice.setText(totalPrice+" đ");
+                });
             }
         });
         tvChangeAddress.setOnClickListener(v -> {

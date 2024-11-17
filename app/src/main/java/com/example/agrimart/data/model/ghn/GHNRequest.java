@@ -2,9 +2,10 @@ package com.example.agrimart.data.model.ghn;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class GHNRequest {
+public class GHNRequest implements Serializable {
     @SerializedName("to_name")
     private String toName;
 

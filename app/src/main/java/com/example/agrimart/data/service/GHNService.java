@@ -7,10 +7,15 @@ import androidx.annotation.NonNull;
 import com.example.agrimart.data.API.ApiGHN;
 import com.example.agrimart.data.API.ConfigGHN;
 import com.example.agrimart.data.interface1.GhnApiService;
+import com.example.agrimart.data.model.ghn.GHNRequest;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import java.util.Objects;
 
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -18,9 +23,11 @@ public class GHNService {
     private final GhnApiService ghnApiService;
     private final String token;
 
+    private final String shopId;
     public GHNService() {
         this.ghnApiService = ApiGHN.getClient().create(GhnApiService.class);
         this.token= ConfigGHN.TOKEN_SHOP_GHN;
+        shopId=ConfigGHN.SHOP_ID;
     }
 
     public void getProvinceId(String provinceName, Callback<Integer> callback) {
@@ -123,6 +130,28 @@ public class GHNService {
         }
         return "";
     }
+
+    public void createShippingOrder(GHNRequest requestBody, Callback<JsonNode> callback) {
+        Gson gson = new Gson();
+        String json = gson.toJson(requestBody);
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), json);
+        ghnApiService.createShippingOrder(token, shopId, "application/json", body).enqueue(new retrofit2.Callback<JsonNode>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonNode> call, @NonNull Response<JsonNode> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onResponse(response.body());
+                } else {
+                    callback.onFailure(new Exception("Failed to create shipping order"+ response.code()+response.message()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonNode> call, @NonNull Throwable t) {
+                callback.onFailure(new Exception("API call failed"+t.getMessage()));
+            }
+        });
+    }
+
 
 
     public interface Callback<T> {

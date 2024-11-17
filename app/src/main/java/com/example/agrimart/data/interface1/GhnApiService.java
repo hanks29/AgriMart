@@ -3,6 +3,7 @@ package com.example.agrimart.data.interface1;
 import com.example.agrimart.data.model.ghn.GHNRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -27,7 +28,7 @@ public interface GhnApiService {
             @Header("token") String token,
             @Header("ShopId") String shopId,
             @Header("Content-Type") String contentType,
-            @Body GHNRequest requestBody
+            @Body RequestBody requestBody
     );
 
 }

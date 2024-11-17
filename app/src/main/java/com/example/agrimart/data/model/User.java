@@ -11,8 +11,11 @@ public class User implements Serializable {
     private String userId;
     @SerializedName("role")
     private String role;
+
+    @PropertyName("fullName")
     @SerializedName("fullName")
     private String fullName;
+
     @SerializedName("email")
     private String email;
     @SerializedName("sex")
@@ -111,10 +114,12 @@ public class User implements Serializable {
         this.role = role;
     }
 
+    @PropertyName("fullName")
     public String getFullName() {
         return fullName;
     }
 
+    @PropertyName("fullName")
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
@@ -248,12 +253,19 @@ public class User implements Serializable {
     }
 
     public static class Address implements Serializable {
+        @PropertyName("street")
         @SerializedName("street")
         private String street;
+
+        @PropertyName("district")
         @SerializedName("district")
         private String district;
+
+        @PropertyName("ward")
         @SerializedName("ward")
         private String ward;
+
+        @PropertyName("city")
         @SerializedName("city")
         private String city;
 
@@ -276,26 +288,32 @@ public class User implements Serializable {
             this.street = street;
         }
 
+        @PropertyName("district")
         public String getDistrict() {
             return district;
         }
 
+        @PropertyName("district")
         public void setDistrict(String district) {
             this.district = district;
         }
 
+        @PropertyName("city")
         public String getCity() {
             return city;
         }
 
+        @PropertyName("city")
         public void setCity(String city) {
             this.city = city;
         }
 
+        @PropertyName("ward")
         public String getWard() {
             return ward;
         }
 
+        @PropertyName("ward")
         public void setWard(String ward) {
             this.ward = ward;
         }

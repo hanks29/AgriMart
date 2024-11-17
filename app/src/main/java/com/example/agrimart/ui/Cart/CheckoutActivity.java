@@ -108,6 +108,11 @@ public class CheckoutActivity extends AppCompatActivity {
                     int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
                     int totalPrice=price+Integer.parseInt(String.valueOf(shippingFee));
                     tvTotalPrice.setText(totalPrice+" đ");
+                    checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
+                        checkoutViewModel.orderCode.observe(CheckoutActivity.this, orderCode -> {
+                            checkoutViewModel.updateStatusOrder("0889d08260464d0597fbf7e38357f5b8",shippingFee,orderCode);
+                        });
+                    });
                 });
             }
         });

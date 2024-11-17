@@ -1,10 +1,9 @@
 package com.example.agrimart.data.interface1;
 
-import com.example.agrimart.data.model.ghn.GHNRequest;
+import com.example.agrimart.data.model.OrderCancel;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -30,5 +29,23 @@ public interface GhnApiService {
             @Header("Content-Type") String contentType,
             @Body RequestBody requestBody
     );
+
+    @POST("v2/switch-status/cancel")
+    Call<JsonNode> cancelShippingOrder(
+            @Header("token") String token,
+            @Header("ShopId") String shopId,
+            @Body OrderCancel requestBody
+    );
+
+    @POST("v2/a5/gen-token")
+    Call<JsonNode> generateToken(
+            @Header("token") String token,
+            @Header("ShopId") String shopId,
+            @Body OrderCancel requestBody
+    );
+
+
+
+
 
 }

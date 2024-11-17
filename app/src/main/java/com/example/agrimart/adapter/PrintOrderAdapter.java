@@ -1,8 +1,12 @@
 package com.example.agrimart.adapter;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -12,69 +16,58 @@ import com.bumptech.glide.Glide;
 import com.example.agrimart.data.model.Order;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.service.GHNService;
+import com.example.agrimart.databinding.ItemPrintOrderBinding;
 import com.example.agrimart.databinding.ItemStatusOrderBinding;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
-public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder> {
-
+public class PrintOrderAdapter extends RecyclerView.Adapter<PrintOrderAdapter.MyViewHolder>{
     private List<Order> orderList;
 
-    public OrderAdapter(List<Order> orderList) {
+    public PrintOrderAdapter(List<Order> orderList) {
         this.orderList = orderList;
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemStatusOrderBinding binding = ItemStatusOrderBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+    public PrintOrderAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ItemPrintOrderBinding binding = ItemPrintOrderBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new MyViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.bindData(orderList.get(position));
-        holder.binding.btnOK.setOnClickListener(new View.OnClickListener() {
+        holder.binding.btnPrint.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("orders").document(orderList.get(holder.getAdapterPosition()).getOrderId())
-                        .update("status", "Approved")
-                        .addOnSuccessListener(aVoid -> {
-                            orderList.remove(holder.getAdapterPosition());
-                            notifyDataSetChanged();
-                            Toast.makeText(holder.binding.getRoot().getContext(), "Đã xác nhận đơn hàng", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(holder.binding.getRoot().getContext(), "Xác nhận đơn hàng thất bại", Toast.LENGTH_SHORT).show();
-                        });
-            }
-        });
-        holder.binding.btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                GHNService ghnService = new GHNService();
-                ghnService.cancelShippingOrder(orderList.get(holder.getAdapterPosition()).getOrderCode(), new GHNService.Callback<JsonNode>() {
+            public void onClick(View v) {
+                GHNService ghnService=new GHNService();
+                ghnService.printOrderGHN(orderList.get(holder.getAdapterPosition()).getOrderCode(), new GHNService.Callback<JsonNode>() {
                     @Override
                     public void onResponse(JsonNode result) {
+                        String token=result.path("data").path("token").asText();
+
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
                         db.collection("orders").document(orderList.get(holder.getAdapterPosition()).getOrderId())
-                                .update("status", "Đã hủy")
+                                .update("status", "PendingPickup")
                                 .addOnSuccessListener(aVoid -> {
-                                    orderList.remove(holder.getAdapterPosition());
-                                    notifyDataSetChanged();
-                                    Toast.makeText(holder.binding.getRoot().getContext(), "Đã hủy đơn hàng", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(holder.binding.getRoot().getContext(), "Vui lòng đóng gói, dán nhãn và chờ shipper đến nhận hàng.", Toast.LENGTH_SHORT).show();
                                 })
                                 .addOnFailureListener(e -> {
-                                    Toast.makeText(holder.binding.getRoot().getContext(), "Hủy đơn hàng thất bại", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(holder.binding.getRoot().getContext(), "Xin hãy thử lại", Toast.LENGTH_SHORT).show();
                                 });
+                        String url="https://online-gateway.ghn.vn/a5/public-api/printA5?token="+token;
+                        Log.d("PrintOrderAdapter111", "Generated URL: " + url);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        holder.binding.getRoot().getContext().startActivity(intent);
                     }
 
                     @Override
                     public void onFailure(Exception e) {
-                        Toast.makeText(holder.binding.getRoot().getContext(), "Hủy đơn hàng thất bại", Toast.LENGTH_SHORT).show();
+                        Log.d("PrintOrderAdapter111", "Generated URL: " + e.getMessage());
+
                     }
                 });
             }
@@ -90,9 +83,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
 
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        ItemStatusOrderBinding binding;
+        ItemPrintOrderBinding binding;
 
-        public MyViewHolder(@NonNull ItemStatusOrderBinding binding) {
+        public MyViewHolder(@NonNull ItemPrintOrderBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }

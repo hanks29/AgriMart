@@ -3,12 +3,21 @@ package com.example.agrimart.ui.MyProfile.state_order.fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.agrimart.R;
+import com.example.agrimart.adapter.PrintOrderAdapter;
+import com.example.agrimart.data.model.Order;
+import com.example.agrimart.databinding.FragmentAwaitingPickupBinding;
+import com.example.agrimart.viewmodel.PendingConfirmOrderViewHolder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +30,11 @@ public class AwaitingPickupFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private FragmentAwaitingPickupBinding binding;
+    private PendingConfirmOrderViewHolder viewHolder;
+
+    private List<Order> orderList;
+    private PrintOrderAdapter adapter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -61,6 +75,20 @@ public class AwaitingPickupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_awaiting_pickup, container, false);
+        binding = FragmentAwaitingPickupBinding.inflate(inflater, container, false);
+        viewHolder = new ViewModelProvider(this).get(PendingConfirmOrderViewHolder.class);
+        viewHolder.getOrderWithStatusApproved();
+
+        orderList = new ArrayList<>();
+        adapter = new PrintOrderAdapter(orderList);
+        binding.rvOrder.setAdapter(adapter);
+        binding.rvOrder.setLayoutManager(new LinearLayoutManager(getContext()));
+        viewHolder.orderListApproved.observe(getViewLifecycleOwner(), orders -> {
+            orderList.clear();
+            orderList.addAll(orders);
+            adapter.notifyDataSetChanged();
+        });
+
+        return binding.getRoot();
     }
 }

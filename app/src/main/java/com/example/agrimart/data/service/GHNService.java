@@ -7,15 +7,15 @@ import androidx.annotation.NonNull;
 import com.example.agrimart.data.API.ApiGHN;
 import com.example.agrimart.data.API.ConfigGHN;
 import com.example.agrimart.data.interface1.GhnApiService;
+import com.example.agrimart.data.model.OrderCancel;
 import com.example.agrimart.data.model.ghn.GHNRequest;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
+import java.util.List;
 import java.util.Objects;
 
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -142,6 +142,49 @@ public class GHNService {
                     callback.onResponse(response.body());
                 } else {
                     callback.onFailure(new Exception("Failed to create shipping order"+ response.code()+response.message()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonNode> call, @NonNull Throwable t) {
+                callback.onFailure(new Exception("API call failed"+t.getMessage()));
+            }
+        });
+    }
+
+    public void cancelShippingOrder(String orderCode, Callback<JsonNode> callback) {
+
+        List<String> order_codes = List.of(orderCode);
+        OrderCancel orderCancel = new OrderCancel(order_codes);
+
+        ghnApiService.cancelShippingOrder(token, shopId, orderCancel).enqueue(new retrofit2.Callback<JsonNode>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonNode> call, @NonNull Response<JsonNode> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onResponse(response.body());
+                } else {
+                    callback.onFailure(new Exception("Failed to cancel shipping order"+ response.code()+response.message()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonNode> call, @NonNull Throwable t) {
+                callback.onFailure(new Exception("API call failed"+t.getMessage()));
+            }
+        });
+    }
+
+    public void printOrderGHN(String orderCode, Callback<JsonNode> callback) {
+
+        List<String> orderCodeList = List.of(orderCode);
+        OrderCancel requestBody = new OrderCancel(orderCodeList);
+        ghnApiService.generateToken(token, shopId, requestBody).enqueue(new retrofit2.Callback<JsonNode>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonNode> call, @NonNull Response<JsonNode> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onResponse(response.body());
+                } else {
+                    callback.onFailure(new Exception("Failed to print order"+ response.code()+response.message()));
                 }
             }
 

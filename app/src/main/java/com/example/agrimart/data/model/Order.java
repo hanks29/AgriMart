@@ -22,6 +22,9 @@ public class Order implements Serializable {
     @PropertyName("userId")
     private String userId;
 
+    @PropertyName("order_code")
+    private String orderCode;
+
     public Order() {
     }
 
@@ -80,5 +83,15 @@ public class Order implements Serializable {
     @PropertyName("userId")
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    @PropertyName("order_code")
+    public String getOrderCode() {
+        return orderCode;
+    }
+
+    @PropertyName("order_code")
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 }

@@ -36,6 +36,7 @@ public class CheckoutViewModel extends ViewModel {
     private FirebaseAuth auth;
     private GHNService ghnService;
     public MutableLiveData<Integer> shippingFee = new MutableLiveData<>();
+    public MutableLiveData<String> orderCode = new MutableLiveData<>();
 
     public CheckoutViewModel() {
         db = FirebaseFirestore.getInstance();
@@ -282,14 +283,13 @@ public class CheckoutViewModel extends ViewModel {
                                                 item.setQuantity(1);
                                                 item.setName("Product Name");
                                                 request.setItems(List.of(item));
-                                                Gson gson = new Gson();
-                                                String json = gson.toJson(request);
-                                                Log.d("ADDRESS_USER", "Order created: " + json);
                                                 ghnService.createShippingOrder(request, new GHNService.Callback<JsonNode>() {
                                                     @Override
                                                     public void onResponse(JsonNode result) {
                                                         Integer fee = extractFee(result);
                                                         shippingFee.setValue(fee);
+                                                        String orderCodes = extractOrderCode(result);
+                                                        orderCode.setValue(orderCodes);
                                                         Log.d("ADDRESS_USER", "Order created: " + fee.toString());
                                                     }
 
@@ -333,6 +333,28 @@ public class CheckoutViewModel extends ViewModel {
         }catch (Exception e){
             throw new RuntimeException("Error while extracting fee");
         }
+    }
+
+    private String extractOrderCode(JsonNode responseBody) {
+        try {
+            return responseBody.path("data").path("order_code").asText();
+        }catch (Exception e){
+            throw new RuntimeException("Error while extracting order code");
+        }
+    }
+
+    public void updateStatusOrder(String orderId,int fee,String orderCode){
+        db.collection("orders").document(orderId)
+                .update(
+                        "shipping_fee", fee,
+                        "order_code", orderCode
+                )
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("ADDRESS_USER", "Order updated: ");
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("ADDRESS_USER", "Order updated: ");
+                });
     }
 
 

@@ -3,12 +3,21 @@ package com.example.agrimart.ui.MyProfile.state_order.fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.agrimart.R;
+import com.example.agrimart.adapter.OrderAdapter;
+import com.example.agrimart.data.model.Order;
+import com.example.agrimart.databinding.FragmentPendingConfirmationBinding;
+import com.example.agrimart.viewmodel.PendingConfirmOrderViewHolder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,6 +35,11 @@ public class PendingConfirmationFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private PendingConfirmOrderViewHolder viewHolder;
+    private FragmentPendingConfirmationBinding binding;
+
+    private List<Order> orderList;
+    private OrderAdapter adapter;
     public PendingConfirmationFragment() {
         // Required empty public constructor
     }
@@ -61,6 +75,23 @@ public class PendingConfirmationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_pending_confirmation, container, false);
+
+        viewHolder = new ViewModelProvider(this).get(PendingConfirmOrderViewHolder.class);
+        binding = FragmentPendingConfirmationBinding.inflate(inflater, container, false);
+
+        orderList = new ArrayList<>();
+        viewHolder.getOrderListFromFirebase();
+        adapter=new OrderAdapter(orderList);
+        binding.rvOrder.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.rvOrder.setAdapter(adapter);
+
+        viewHolder.orderList.observe(getViewLifecycleOwner(), orders -> {
+            if (orders != null) {
+                orderList.clear();
+                orderList.addAll(orders);
+                adapter.notifyDataSetChanged();
+            }
+        });
+        return binding.getRoot();
     }
 }

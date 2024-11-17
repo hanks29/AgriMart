@@ -1,0 +1,16 @@
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>*.iml\r\n.gradle\r\n/local.properties\r\n/.idea/caches\r\n/.idea/libraries\r\n/.idea/modules.xml\r\n/.idea/workspace.xml\r\n/.idea/navEditor.xml\r\n/.idea/assetWizardSettings.xml\r\n.DS_Store\r\n/build\r\n/captures\r\n.externalNativeBuild\r\n.cxx\r\nlocal.properties\r\n\r\ncom/example/agrimart/data/model/Config.java\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+--- a/.gitignore	(revision 68e846c1ee7a1de0e6adc292d87ee2daecc73a83)
++++ b/.gitignore	(date 1731550797417)
+@@ -14,4 +14,4 @@
+ .cxx
+ local.properties
+ 
+-com/example/agrimart/data/model/Config.java
++com/example/agrimart/data/model/ConfigGHN.java

@@ -89,5 +89,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:3.14.1")
     implementation(files("libs/merchant-1.0.25.aar"))
 
+    implementation ("com.squareup.retrofit2:converter-jackson:2.10.0")
     implementation ("com.fasterxml.jackson.core:jackson-databind:2.17.2")
 }

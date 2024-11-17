@@ -1,7 +1,5 @@
 package com.example.agrimart.ui.PostProduct;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,22 +7,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.agrimart.R;
 import com.example.agrimart.adapter.PostProductsAdapter;
-import com.example.agrimart.data.model.PostProduct;
 import com.example.agrimart.data.model.Product;
-import com.example.agrimart.data.model.ProductRequest;
 import com.example.agrimart.data.model.ProductResponse;
-import com.example.agrimart.databinding.ActivityYourProductListingsBinding;
 import com.example.agrimart.databinding.FragmentYourProductListingsBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;

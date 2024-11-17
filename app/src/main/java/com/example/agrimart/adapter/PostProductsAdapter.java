@@ -59,6 +59,7 @@ public class PostProductsAdapter extends RecyclerView.Adapter<PostProductsAdapte
 
                 Dialog dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.dialog_product);
+                dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 dialog.show();
                 Button btnDelete = dialog.findViewById(R.id.btn_delete);
                 Button btnClose = dialog.findViewById(R.id.btnCancel);

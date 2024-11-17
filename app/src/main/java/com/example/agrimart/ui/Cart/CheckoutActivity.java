@@ -2,9 +2,11 @@ package com.example.agrimart.ui.Cart;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -47,6 +49,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private Button btnCheckout, btnPlaceOrder;
     private RadioGroup paymentMethodGroup;
     private RadioButton radVNPay, radCOD;
+    private LinearLayout linearLayout;
     private CheckoutViewModel checkoutViewModel;
     private String orderId;
 
@@ -93,7 +96,21 @@ public class CheckoutActivity extends AppCompatActivity {
         radVNPay = findViewById(R.id.radVNPay);
         radCOD = findViewById(R.id.radCOD);
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
+        linearLayout = findViewById(R.id.lnGHN);
 
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkoutViewModel.createOrder(tvAddress.getText().toString(),tvPhoneNumber.getText().toString(),tvUserName.getText().toString(),selectedProducts.get(0).getStoreId(),1,tvTotalPrice.getText().toString());
+                checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
+                    tvTotalShippingPrice.setText(shippingFee+" đ");
+
+                    int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
+                    int totalPrice=price+Integer.parseInt(String.valueOf(shippingFee));
+                    tvTotalPrice.setText(totalPrice+" đ");
+                });
+            }
+        });
         tvChangeAddress.setOnClickListener(v -> {
             Intent intent = new Intent(CheckoutActivity.this, MyAddressActivity.class);
             startActivity(intent);

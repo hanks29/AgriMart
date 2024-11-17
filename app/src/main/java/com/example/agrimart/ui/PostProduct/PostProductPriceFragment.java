@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,6 +107,30 @@ public class PostProductPriceFragment extends Fragment {
         binding = FragmentPostProductPriceBinding.bind(view);
         viewModel=new ViewModelProvider(this).get(EditProfileStoreViewModel.class);
 
+        binding.edtPrice.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
+                    int value=Integer.parseInt(charSequence.toString());
+                    if (value > 1000000) {
+                        binding.edtPrice.setText("1000000");
+                        binding.edtPrice.setSelection(binding.edtPrice.getText().length()); // Đưa con trỏ về cuối
+                    }
+                }catch (Exception e){
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         binding.btnPostPro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,7 +139,7 @@ public class PostProductPriceFragment extends Fragment {
                     Toast.makeText(requireContext(), "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(Integer.parseInt(binding.edtQuantity.getText().toString())<=10000000 && Integer.parseInt(binding.edtPrice.getText().toString())>0)
+                if(Integer.parseInt(binding.edtPrice.getText().toString())<=10000000 && Integer.parseInt(binding.edtPrice.getText().toString())>0)
                 {
                     Toast.makeText(requireContext(), "Giá tiền phải nhỏ hơn hoặc bằng 10 triêu và lớn hơn 0.", Toast.LENGTH_SHORT).show();
                     return;

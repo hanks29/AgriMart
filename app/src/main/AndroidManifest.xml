@@ -38,6 +38,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.PostProduct.ProductPreviewActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
             android:name=".ui.MyProfile.MyAddress.GetAddressActivity"

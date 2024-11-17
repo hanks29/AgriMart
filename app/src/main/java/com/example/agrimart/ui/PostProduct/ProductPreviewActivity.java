@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -76,6 +77,7 @@ public class ProductPreviewActivity extends AppCompatActivity {
         binding.editPro.setOnClickListener(view -> {
             Dialog dialog = new Dialog(ProductPreviewActivity.this);
             dialog.setContentView(R.layout.dialog_edit_product);
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             Button btnUpdate = dialog.findViewById(R.id.btnUpdate);
             Button btnCancel = dialog.findViewById(R.id.btnCancel);
             EditText edtName = dialog.findViewById(R.id.edtName);

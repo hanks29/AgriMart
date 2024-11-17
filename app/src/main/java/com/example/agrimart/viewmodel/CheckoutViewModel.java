@@ -4,8 +4,11 @@ import android.util.Log;
 import android.widget.TextView;
 
 import androidx.lifecycle.ViewModel;
+
+import com.example.agrimart.data.API.ApiGHN;
 import com.example.agrimart.data.model.Address;
 import com.example.agrimart.data.model.Cart;
+import com.example.agrimart.data.service.GHNService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,6 +26,8 @@ public class CheckoutViewModel extends ViewModel {
     private static final String TAG = "CheckoutViewModel";
     private FirebaseFirestore db;
     private FirebaseAuth auth;
+    private GHNService ghnService;
+
 
     public CheckoutViewModel() {
         db = FirebaseFirestore.getInstance();
@@ -31,6 +36,7 @@ public class CheckoutViewModel extends ViewModel {
                 .setPersistenceEnabled(true)
                 .build();
         db.setFirestoreSettings(settings);
+        ghnService = new GHNService();
     }
 
     public void loadUserData(TextView tvUserName, TextView tvPhoneNumber, TextView tvAddress) {
@@ -217,5 +223,46 @@ public class CheckoutViewModel extends ViewModel {
 
     public interface UserDataCallback {
         void onResult(boolean isAvailable);
+    }
+
+    public void createOrder(String address){
+        String[] addressUser=address.split(",");
+        String province = addressUser[3].trim();
+        String district = addressUser[2].trim();
+        String ward = addressUser[1].trim();
+        String street = addressUser[0].trim();
+
+        ghnService.getProvinceId(province, new GHNService.Callback<Integer>() {
+            @Override
+            public void onResponse(Integer result) {
+                ghnService.getDistrictId(district, result, new GHNService.Callback<Integer>() {
+                    @Override
+                    public void onResponse(Integer result) {
+                        ghnService.getWardCode(ward, result, new GHNService.Callback<String>() {
+                            @Override
+                            public void onResponse(String result) {
+                                Log.d("ADDRESS_USER", "Ward code: " + result);
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Log.d("ADDRESS_USER", "Ward code: " + e.getMessage());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.d("ADDRESS_USER", "District code: " + e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.d("ADDRESS_USER", "Province code: " + e.getMessage());
+            }
+        });
+
     }
 }

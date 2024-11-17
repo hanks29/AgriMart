@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="0dp"
@@ -211,7 +211,6 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Input field with character limit -->
         <EditText
             android:id="@+id/edtName"
             android:layout_width="match_parent"
@@ -341,5 +340,5 @@
             android:textSize="10pt" />
 
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.agrimart.ui.Cart;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,15 +27,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.CheckoutAdapter;
 import com.example.agrimart.data.model.Product;
+import com.example.agrimart.data.model.User;
 import com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;
 import com.example.agrimart.ui.Payment.VNPaymentActivity;
 import com.example.agrimart.viewmodel.CheckoutViewModel;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import android.app.AlertDialog;
@@ -110,7 +117,7 @@ public class CheckoutActivity extends AppCompatActivity {
                     int totalPrice=price+Integer.parseInt(String.valueOf(shippingFee));
                     tvTotalPrice.setText(totalPrice+" đ");
                     checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
-                        checkoutViewModel.updateStatusOrder("0889d08260464d0597fbf7e38357f5b8",shippingFee);
+                        checkoutViewModel.updateStatusOrder(orderId,shippingFee);
                     });
                 });
                 Log.d("REQUEST_BODY", "onClick: ");
@@ -141,6 +148,7 @@ public class CheckoutActivity extends AppCompatActivity {
         paymentMethodGroup.clearCheck();
 
         btnPlaceOrder.setOnClickListener(v -> { placeOrder();});
+        createOrderWithGHN();
     }
 
     private void placeOrder() {
@@ -153,6 +161,10 @@ public class CheckoutActivity extends AppCompatActivity {
             List<String> productIds = selectedProducts.stream()
                     .map(Product::getProduct_id)
                     .collect(Collectors.toList());
+            checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
+                int fee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll("[^0-9]", ""));
+                checkoutViewModel.updateStatusOrder(orderId,fee);
+            });
             Intent intent = new Intent(CheckoutActivity.this, VNPaymentActivity.class);
             intent.putExtra("price", price);
             intent.putExtra("orderInfo", orderInfo);
@@ -183,6 +195,10 @@ public class CheckoutActivity extends AppCompatActivity {
                                         Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
                                         intent.putExtra("orderId", orderId);
                                         checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
+                                        checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
+                                            int fee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll("[^0-9]", ""));
+                                            checkoutViewModel.updateStatusOrder(orderId,fee);
+                                        });
                                         startActivity(intent);
                                     }
 
@@ -257,5 +273,43 @@ public class CheckoutActivity extends AppCompatActivity {
                 showNoAddressDialog();
             }
         });
+    }
+
+    private void createOrderWithGHN(){
+        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db=FirebaseFirestore.getInstance();
+        db.collection("users").document(user.getUid())
+                        .get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                        List<Map<String,Object>> addresses=(List<Map<String, Object>>) documentSnapshot.get("addresses");
+
+                                        if (addresses != null && !addresses.isEmpty()) {
+
+                                            Map<String, Object> address = addresses.get(0);
+
+                                            String province = (String) address.get("province");
+                                            String district = (String) address.get("district");
+                                            String commune = (String) address.get("commune");
+                                            String street = (String) address.get("street");
+
+                                            String address5 = street + ", " + commune + ", " + district + ", " + province;
+                                            checkoutViewModel.createOrder(address5,selectedProducts.get(0).getStoreId());
+                                            checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
+                                                tvTotalShippingPrice.setText(shippingFee+" đ");
+
+                                                int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
+                                                int totalPrice=price+Integer.parseInt(String.valueOf(shippingFee));
+                                                tvTotalPrice.setText(totalPrice+" đ");
+
+                                            });
+                                        }
+                                    }
+                                });
+
+
+
     }
 }

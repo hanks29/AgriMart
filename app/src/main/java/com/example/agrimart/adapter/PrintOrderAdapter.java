@@ -49,16 +49,7 @@ public class PrintOrderAdapter extends RecyclerView.Adapter<PrintOrderAdapter.My
                     public void onResponse(JsonNode result) {
                         String token=result.path("data").path("token").asText();
 
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("orders").document(orderList.get(holder.getAdapterPosition()).getOrderId())
-                                .update("status", "PendingPickup")
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(holder.binding.getRoot().getContext(), "Vui lòng đóng gói, dán nhãn và chờ shipper đến nhận hàng.", Toast.LENGTH_SHORT).show();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(holder.binding.getRoot().getContext(), "Xin hãy thử lại", Toast.LENGTH_SHORT).show();
-                                });
-                        String url="https://online-gateway.ghn.vn/a5/public-api/printA5?token="+token;
+                        String url="https://dev-online-gateway.ghn.vn/a5/public-api/printA5?token="+token;
                         Log.d("PrintOrderAdapter111", "Generated URL: " + url);
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                         holder.binding.getRoot().getContext().startActivity(intent);
@@ -70,6 +61,22 @@ public class PrintOrderAdapter extends RecyclerView.Adapter<PrintOrderAdapter.My
 
                     }
                 });
+            }
+        });
+        holder.binding.btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("orders").document(orderList.get(holder.getAdapterPosition()).getOrderId())
+                        .update("status", "delivering")
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(holder.binding.getRoot().getContext(), "Cập nhật trạng thái thành công.", Toast.LENGTH_SHORT).show();
+                            orderList.remove(holder.getAdapterPosition());
+                            notifyDataSetChanged();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(holder.binding.getRoot().getContext(), "Xin hãy thử lại", Toast.LENGTH_SHORT).show();
+                        });
             }
         });
 

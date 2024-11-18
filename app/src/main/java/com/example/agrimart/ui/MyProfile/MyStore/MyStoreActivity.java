@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +23,7 @@ import com.example.agrimart.ui.Store.StoreActivity;
 public class MyStoreActivity extends AppCompatActivity {
 
     CardView postProduct, orderManagement,myProduct,profileSetting;
-
+    ImageButton back;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +51,7 @@ public class MyStoreActivity extends AppCompatActivity {
         orderManagement = findViewById(R.id.orderManagement);
         myProduct = findViewById(R.id.productsManagement);
         profileSetting=findViewById(R.id.profileSetting);
+        back=findViewById(R.id.btnBack);
     }
 
     private void addEvent() {
@@ -71,6 +73,9 @@ public class MyStoreActivity extends AppCompatActivity {
         profileSetting.setOnClickListener(v -> {
             Intent intent = new Intent(MyStoreActivity.this, EditProfileStoreActivity.class);
             startActivity(intent);
+        });
+        back.setOnClickListener(v -> {
+            finish();
         });
     }
 

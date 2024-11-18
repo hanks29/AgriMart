@@ -2,6 +2,7 @@ package com.example.agrimart.ui.Cart;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -101,7 +102,7 @@ public class CheckoutActivity extends AppCompatActivity {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkoutViewModel.createOrder(tvAddress.getText().toString(),tvPhoneNumber.getText().toString(),tvUserName.getText().toString(),selectedProducts.get(0).getStoreId(),1,tvTotalPrice.getText().toString());
+                checkoutViewModel.createOrder(tvAddress.getText().toString(),selectedProducts.get(0).getStoreId());
                 checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
                     tvTotalShippingPrice.setText(shippingFee+" đ");
 
@@ -109,11 +110,10 @@ public class CheckoutActivity extends AppCompatActivity {
                     int totalPrice=price+Integer.parseInt(String.valueOf(shippingFee));
                     tvTotalPrice.setText(totalPrice+" đ");
                     checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
-                        checkoutViewModel.orderCode.observe(CheckoutActivity.this, orderCode -> {
-                            checkoutViewModel.updateStatusOrder("0889d08260464d0597fbf7e38357f5b8",shippingFee,orderCode);
-                        });
+                        checkoutViewModel.updateStatusOrder("0889d08260464d0597fbf7e38357f5b8",shippingFee);
                     });
                 });
+                Log.d("REQUEST_BODY", "onClick: ");
             }
         });
         tvChangeAddress.setOnClickListener(v -> {

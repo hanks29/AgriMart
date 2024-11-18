@@ -10,11 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.agrimart.R;
 import com.example.agrimart.adapter.OrderAdapter;
 import com.example.agrimart.data.model.Order;
 import com.example.agrimart.databinding.FragmentPendingConfirmationBinding;
-import com.example.agrimart.viewmodel.PendingConfirmOrderViewHolder;
+import com.example.agrimart.viewmodel.PendingConfirmOrderViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public class PendingConfirmationFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private PendingConfirmOrderViewHolder viewHolder;
+    private PendingConfirmOrderViewModel viewHolder;
     private FragmentPendingConfirmationBinding binding;
 
     private List<Order> orderList;
@@ -76,7 +75,7 @@ public class PendingConfirmationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        viewHolder = new ViewModelProvider(this).get(PendingConfirmOrderViewHolder.class);
+        viewHolder = new ViewModelProvider(this).get(PendingConfirmOrderViewModel.class);
         binding = FragmentPendingConfirmationBinding.inflate(inflater, container, false);
 
         orderList = new ArrayList<>();

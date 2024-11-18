@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.List;
 
-public class OrderCancel implements Serializable {
+public class OrderGHN implements Serializable {
     @JsonProperty("order_codes")
     private List<String> orderCodes;
 
-    public OrderCancel() {
+    public OrderGHN() {
     }
-    public OrderCancel(List<String> orderCodes) {
+    public OrderGHN(List<String> orderCodes) {
         this.orderCodes = orderCodes;
     }
 

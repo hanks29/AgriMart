@@ -22,8 +22,16 @@ public class Order implements Serializable {
     @PropertyName("userId")
     private String userId;
 
+    @PropertyName("sellerId")
+    private String sellerId;
+
     @PropertyName("order_code")
     private String orderCode;
+
+    @PropertyName("address")
+    private String address;
+
+    private String statusDelivery;
 
     public Order() {
     }
@@ -93,5 +101,33 @@ public class Order implements Serializable {
     @PropertyName("order_code")
     public void setOrderCode(String orderCode) {
         this.orderCode = orderCode;
+    }
+
+    public String getStatusDelivery() {
+        return statusDelivery;
+    }
+
+    public void setStatusDelivery(String statusDelivery) {
+        this.statusDelivery = statusDelivery;
+    }
+
+    @PropertyName("address")
+    public String getAddress() {
+        return address;
+    }
+
+    @PropertyName("address")
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    @PropertyName("sellerId")
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    @PropertyName("sellerId")
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.agrimart.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -12,15 +14,19 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
-public class PendingConfirmOrderViewHolder extends ViewModel{
+public class PendingConfirmOrderViewModel extends ViewModel{
     public MutableLiveData<List<Order>> orderList ;
     public MutableLiveData<List<Order>> orderListApproved ;
+    public MutableLiveData<List<Order>> orderListPicked ;
+    public MutableLiveData<List<Order>> orderListDelivered ;
     private FirebaseFirestore db ;
 
-    public PendingConfirmOrderViewHolder() {
+    public PendingConfirmOrderViewModel() {
         this.orderList = new MutableLiveData<>();
         this.db = FirebaseFirestore.getInstance();
         this.orderListApproved = new MutableLiveData<>();
+        this.orderListPicked = new MutableLiveData<>();
+        this.orderListDelivered = new MutableLiveData<>();
     }
 
     public void getOrderListFromFirebase() {
@@ -55,6 +61,42 @@ public class PendingConfirmOrderViewHolder extends ViewModel{
                 })
                 .addOnFailureListener(e -> {
                     orderListApproved.setValue(null);
+                });
+    }
+
+    public void getOrderWithStatusDelivering(){
+        db.collection("orders")
+                .whereEqualTo("status", "delivering")
+                .whereEqualTo("sellerId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<Order> orders = queryDocumentSnapshots.toObjects(Order.class);
+                        orderListPicked.setValue(orders);
+                        Log.d("PrintOrderAdapter111", "onSuccess: "+orders.size());
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    orderListPicked.setValue(null);
+                });
+    }
+
+    public void getDeliveredOrders(){
+        db.collection("orders")
+                .whereEqualTo("status", "delivered")
+                .whereEqualTo("sellerId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<Order> orders = queryDocumentSnapshots.toObjects(Order.class);
+                        orderListDelivered.setValue(orders);
+                        Log.d("PrintOrderAdapter111", "onSuccess: "+orders.size());
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    orderListDelivered.setValue(null);
                 });
     }
 }

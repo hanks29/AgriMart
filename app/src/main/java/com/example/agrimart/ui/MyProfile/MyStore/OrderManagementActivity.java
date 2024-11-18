@@ -11,6 +11,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.StateOrderAdapter;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -26,6 +27,10 @@ public class OrderManagementActivity extends AppCompatActivity {
             return insets;
         });
         TabLayout tabLayout=findViewById(R.id.tabLayout);
+        MaterialToolbar toolbar=findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+        });
         ViewPager2 viewPager2=findViewById(R.id.vpStateOrder);
         StateOrderAdapter stateOrderAdapter = new StateOrderAdapter(this);
         viewPager2.setAdapter(stateOrderAdapter);

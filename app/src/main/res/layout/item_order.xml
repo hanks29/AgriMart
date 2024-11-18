@@ -40,35 +40,24 @@
         android:textSize="14sp"
         android:text="  291.000 đ" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/textView18"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tvPrice"
+        android:layout_toStartOf="@id/tvStatus"
         android:layout_marginTop="24dp"
-        android:layout_toEndOf="@id/imgPro"
-        android:layout_marginStart="8dp"
-        android:orientation="horizontal">
+        android:text="Trạng thái vận chuyển " />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnPrint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/white"
-            android:textAllCaps="false"
-            android:textSize="18sp"
-            android:background="@color/green"
-            android:text="In hóa đơn" />
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnOK"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/white"
-            android:textAllCaps="false"
-            android:textSize="18sp"
-            android:background="@color/green"
-            android:text="Shipper đã lấy hàng" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:layout_marginTop="24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/tvPrice"
+        android:textColor="@color/black"
+        android:text="ready_to_pick1" />
 
 </RelativeLayout>

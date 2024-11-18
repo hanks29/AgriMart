@@ -269,6 +269,9 @@ public class User implements Serializable {
         @SerializedName("city")
         private String city;
 
+        @PropertyName("phone")
+        private String phone;
+
         public Address() {
         }
 
@@ -316,6 +319,16 @@ public class User implements Serializable {
         @PropertyName("ward")
         public void setWard(String ward) {
             this.ward = ward;
+        }
+
+        @PropertyName("phone")
+        public String getPhone() {
+            return phone;
+        }
+
+        @PropertyName("phone")
+        public void setPhone(String phone) {
+            this.phone = phone;
         }
     }
 

@@ -1,6 +1,6 @@
 package com.example.agrimart.data.interface1;
 
-import com.example.agrimart.data.model.OrderCancel;
+import com.example.agrimart.data.model.OrderGHN;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import okhttp3.RequestBody;
@@ -22,6 +22,14 @@ public interface GhnApiService {
     @GET("master-data/ward")
     Call<JsonNode> getWards(@Header("token") String token, @Query("district_id") int districtId);
 
+    @POST("v2/shipping-order/fee")
+    Call<JsonNode> getFeeOrder(
+            @Header("token") String token,
+            @Header("ShopId") String shopId,
+            @Header("Content-Type") String contentType,
+            @Body RequestBody requestBody
+    );
+
     @POST("v2/shipping-order/create")
     Call<JsonNode> createShippingOrder(
             @Header("token") String token,
@@ -34,16 +42,22 @@ public interface GhnApiService {
     Call<JsonNode> cancelShippingOrder(
             @Header("token") String token,
             @Header("ShopId") String shopId,
-            @Body OrderCancel requestBody
+            @Body OrderGHN requestBody
     );
 
     @POST("v2/a5/gen-token")
     Call<JsonNode> generateToken(
             @Header("token") String token,
             @Header("ShopId") String shopId,
-            @Body OrderCancel requestBody
+            @Body OrderGHN requestBody
     );
 
+    @POST("v2/shipping-order/detail")
+    Call<JsonNode> getOrderDetail(
+            @Header("token") String token,
+            @Header("ShopId") String shopId,
+            @Body RequestBody requestBody
+    );
 
 
 

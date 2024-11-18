@@ -10,11 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.agrimart.R;
 import com.example.agrimart.adapter.PrintOrderAdapter;
 import com.example.agrimart.data.model.Order;
 import com.example.agrimart.databinding.FragmentAwaitingPickupBinding;
-import com.example.agrimart.viewmodel.PendingConfirmOrderViewHolder;
+import com.example.agrimart.viewmodel.PendingConfirmOrderViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,7 @@ public class AwaitingPickupFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private FragmentAwaitingPickupBinding binding;
-    private PendingConfirmOrderViewHolder viewHolder;
+    private PendingConfirmOrderViewModel viewHolder;
 
     private List<Order> orderList;
     private PrintOrderAdapter adapter;
@@ -76,13 +75,14 @@ public class AwaitingPickupFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentAwaitingPickupBinding.inflate(inflater, container, false);
-        viewHolder = new ViewModelProvider(this).get(PendingConfirmOrderViewHolder.class);
+        viewHolder = new ViewModelProvider(this).get(PendingConfirmOrderViewModel.class);
         viewHolder.getOrderWithStatusApproved();
 
         orderList = new ArrayList<>();
         adapter = new PrintOrderAdapter(orderList);
         binding.rvOrder.setAdapter(adapter);
         binding.rvOrder.setLayoutManager(new LinearLayoutManager(getContext()));
+
         viewHolder.orderListApproved.observe(getViewLifecycleOwner(), orders -> {
             orderList.clear();
             orderList.addAll(orders);

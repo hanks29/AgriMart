@@ -7,7 +7,9 @@ import androidx.annotation.NonNull;
 import com.example.agrimart.data.API.ApiGHN;
 import com.example.agrimart.data.API.ConfigGHN;
 import com.example.agrimart.data.interface1.GhnApiService;
-import com.example.agrimart.data.model.OrderCancel;
+import com.example.agrimart.data.model.GHNRequestFee;
+import com.example.agrimart.data.model.OrderCodeRequest;
+import com.example.agrimart.data.model.OrderGHN;
 import com.example.agrimart.data.model.ghn.GHNRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
@@ -17,6 +19,7 @@ import java.util.Objects;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class GHNService {
@@ -131,9 +134,32 @@ public class GHNService {
         return "";
     }
 
+    public void getFeeOrder(GHNRequestFee requestBody, Callback<JsonNode> callback) {
+        Gson gson = new Gson();
+        String json = gson.toJson(requestBody);
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), json);
+        Log.d("REQUEST_BODY", json);
+        ghnApiService.getFeeOrder(token, shopId, "application/json", body).enqueue(new retrofit2.Callback<JsonNode>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonNode> call, @NonNull Response<JsonNode> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onResponse(response.body());
+                } else {
+                    callback.onFailure(new Exception("Failed to create shipping order"+ response.code()+response.message()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonNode> call, @NonNull Throwable t) {
+                callback.onFailure(new Exception("API call failed"+t.getMessage()));
+            }
+        });
+    }
+
     public void createShippingOrder(GHNRequest requestBody, Callback<JsonNode> callback) {
         Gson gson = new Gson();
         String json = gson.toJson(requestBody);
+        Log.d("REQUEST_BODY", json);
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), json);
         ghnApiService.createShippingOrder(token, shopId, "application/json", body).enqueue(new retrofit2.Callback<JsonNode>() {
             @Override
@@ -152,12 +178,14 @@ public class GHNService {
         });
     }
 
+
+
     public void cancelShippingOrder(String orderCode, Callback<JsonNode> callback) {
 
         List<String> order_codes = List.of(orderCode);
-        OrderCancel orderCancel = new OrderCancel(order_codes);
+        OrderGHN orderGHN = new OrderGHN(order_codes);
 
-        ghnApiService.cancelShippingOrder(token, shopId, orderCancel).enqueue(new retrofit2.Callback<JsonNode>() {
+        ghnApiService.cancelShippingOrder(token, shopId, orderGHN).enqueue(new retrofit2.Callback<JsonNode>() {
             @Override
             public void onResponse(@NonNull Call<JsonNode> call, @NonNull Response<JsonNode> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -177,7 +205,7 @@ public class GHNService {
     public void printOrderGHN(String orderCode, Callback<JsonNode> callback) {
 
         List<String> orderCodeList = List.of(orderCode);
-        OrderCancel requestBody = new OrderCancel(orderCodeList);
+        OrderGHN requestBody = new OrderGHN(orderCodeList);
         ghnApiService.generateToken(token, shopId, requestBody).enqueue(new retrofit2.Callback<JsonNode>() {
             @Override
             public void onResponse(@NonNull Call<JsonNode> call, @NonNull Response<JsonNode> response) {
@@ -185,6 +213,35 @@ public class GHNService {
                     callback.onResponse(response.body());
                 } else {
                     callback.onFailure(new Exception("Failed to print order"+ response.code()+response.message()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonNode> call, @NonNull Throwable t) {
+                callback.onFailure(new Exception("API call failed"+t.getMessage()));
+            }
+        });
+    }
+
+
+
+
+    public void getOrderDetail(String orderCode, Callback<JsonNode> callback) {
+        Gson gson = new Gson();
+
+        OrderCodeRequest order_code = new OrderCodeRequest(orderCode);
+
+        String json = gson.toJson(order_code);
+        Log.d("ORDER_CODE", json);
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), json);
+
+        ghnApiService.getOrderDetail(token, shopId, body).enqueue(new retrofit2.Callback<JsonNode>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonNode> call, @NonNull Response<JsonNode> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onResponse(response.body());
+                } else {
+                    callback.onFailure(new Exception("Failed to get order detail"+ response.code()+response.message()));
                 }
             }
 

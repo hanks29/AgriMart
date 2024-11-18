@@ -6,21 +6,17 @@ import android.widget.TextView;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.agrimart.data.API.ApiGHN;
 import com.example.agrimart.data.model.Address;
-import com.example.agrimart.data.model.Cart;
+import com.example.agrimart.data.model.GHNRequestFee;
 import com.example.agrimart.data.model.User;
-import com.example.agrimart.data.model.ghn.GHNRequest;
 import com.example.agrimart.data.model.ghn.Item;
 import com.example.agrimart.data.service.GHNService;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -234,7 +230,7 @@ public class CheckoutViewModel extends ViewModel {
         void onResult(boolean isAvailable);
     }
 
-    public void createOrder(String address,String phone,String username,String storeId,int paymentType,String totalPrice){
+    public void createOrder(String address, String storeId){
         String[] addressUser=address.split(",");
         String province = addressUser[3].trim();
         String district = addressUser[2].trim();
@@ -256,80 +252,95 @@ public class CheckoutViewModel extends ViewModel {
                                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                             @Override
                                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                User user = documentSnapshot.toObject(User.class);
-                                                GHNRequest request = new GHNRequest();
-                                                request.setFromName(user.getFullName());
-                                                request.setFromPhone(user.getPhoneNumber());
-                                                request.setFromAddress(user.getStoreAddress().getStreet());
-                                                request.setFromWardName(user.getStoreAddress().getWard());
-                                                request.setFromDistrictName(user.getStoreAddress().getDistrict());
-                                                request.setFromProvinceName(user.getStoreAddress().getCity());
-                                                request.setToName(username);
-                                                request.setToPhone(phone);
-                                                request.setToAddress(street);
-                                                request.setToWardCode(result);
-                                                request.setToDistrictId(districtId);
-                                                request.setServiceTypeId(2);
-                                                request.setWeight(1000);
-                                                request.setLength(10);
-                                                request.setWidth(10);
-                                                request.setHeight(10);
-                                                request.setPaymentTypeId(paymentType);
-                                                request.setRequiredNote("KHONGCHOXEMHANG");
-                                                int price=Integer.parseInt(totalPrice.replaceAll("[^0-9]", ""));
-                                                request.setCodAmount(price);
-                                                Item item = new Item();
-                                                item.setWeight(1000);
-                                                item.setQuantity(1);
-                                                item.setName("Product Name");
-                                                request.setItems(List.of(item));
-                                                ghnService.createShippingOrder(request, new GHNService.Callback<JsonNode>() {
+                                                User shop = documentSnapshot.toObject(User.class);
+                                                ghnService.getProvinceId(shop.getStoreAddress().getCity(), new GHNService.Callback<Integer>() {
                                                     @Override
-                                                    public void onResponse(JsonNode result) {
-                                                        Integer fee = extractFee(result);
-                                                        shippingFee.setValue(fee);
-                                                        String orderCodes = extractOrderCode(result);
-                                                        orderCode.setValue(orderCodes);
-                                                        Log.d("ADDRESS_USER", "Order created: " + fee.toString());
+                                                    public void onResponse(Integer pro) {
+                                                        ghnService.getDistrictId(shop.getStoreAddress().getDistrict(), pro, new GHNService.Callback<Integer>() {
+                                                            @Override
+                                                            public void onResponse(Integer dis) {
+                                                                ghnService.getWardCode(shop.getStoreAddress().getWard(), dis, new GHNService.Callback<String>() {
+                                                                    @Override
+                                                                    public void onResponse(String wa) {
+                                                                        GHNRequestFee ghnRequestFee = new GHNRequestFee();
+                                                                        ghnRequestFee.setServiceTypeId(2);
+                                                                        ghnRequestFee.setFromWardCode(wa);
+                                                                        ghnRequestFee.setFromDistrictId(dis);
+                                                                        ghnRequestFee.setToWardCode(result);
+                                                                        ghnRequestFee.setToDistrictId(districtId);
+                                                                        ghnRequestFee.setWeight(1000);
+                                                                        List<Item> items = new ArrayList<>();
+                                                                        items.add(new Item("Khanh", 1, 100));
+                                                                        ghnRequestFee.setItems(items);
+                                                                        ghnService.getFeeOrder(ghnRequestFee, new GHNService.Callback<JsonNode>() {
+                                                                            @Override
+                                                                            public void onResponse(JsonNode rl) {
+                                                                                int fee= extractFee(rl);
+                                                                                shippingFee.setValue(fee);
+                                                                            }
+
+                                                                            @Override
+                                                                            public void onFailure(Exception e) {
+                                                                                Log.d("REQUEST_BODY", e.getMessage());
+                                                                            }
+                                                                        });
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onFailure(Exception e) {
+                                                                        Log.d("REQUEST_BODY","shop"+ e.getMessage()+shop.getAddresses().get(0).getWard());
+                                                                    }
+                                                                });
+                                                            }
+
+                                                            @Override
+                                                            public void onFailure(Exception e) {
+                                                                Log.d("REQUEST_BODY", e.getMessage());
+                                                            }
+                                                        });
                                                     }
 
                                                     @Override
                                                     public void onFailure(Exception e) {
-                                                        Log.d("ADDRESS_USER", "Order created: " + e.getMessage());
+                                                        Log.d("REQUEST_BODY", e.getMessage());
                                                     }
                                                 });
+
                                             }
                                         })
                                         .addOnFailureListener(e -> {
-                                            Log.d("ADDRESS_USER", "Order created: " + e.getMessage());
+                                            Log.d("REQUEST_BODY", "Shop: " + e.getMessage());
                                         });
 
                             }
 
                             @Override
                             public void onFailure(Exception e) {
-                                Log.d("ADDRESS_USER", "Ward code: " + e.getMessage());
+                                Log.d("REQUEST_BODY", "Ward code: " + e.getMessage());
                             }
+
                         });
                     }
 
                     @Override
                     public void onFailure(Exception e) {
-                        Log.d("ADDRESS_USER", "District code: " + e.getMessage());
+                        Log.d("REQUEST_BODY", "District code: " + e.getMessage());
                     }
                 });
             }
 
             @Override
             public void onFailure(Exception e) {
-                Log.d("ADDRESS_USER", "Province code: " + e.getMessage());
+                Log.d("REQUEST_BODY", "Province code: " + e.getMessage());
             }
         });
 
     }
+
+
     private Integer extractFee(JsonNode responseBody) {
         try {
-            return responseBody.path("data").path("total_fee").asInt();
+            return responseBody.path("data").path("total").asInt();
         }catch (Exception e){
             throw new RuntimeException("Error while extracting fee");
         }
@@ -343,17 +354,14 @@ public class CheckoutViewModel extends ViewModel {
         }
     }
 
-    public void updateStatusOrder(String orderId,int fee,String orderCode){
+    public void updateStatusOrder(String orderId,int fee){
         db.collection("orders").document(orderId)
-                .update(
-                        "shipping_fee", fee,
-                        "order_code", orderCode
-                )
+                .update("shipping_fee", fee)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("ADDRESS_USER", "Order updated: ");
+                    Log.d("REQUEST_BODY", "Order updated: ");
                 })
                 .addOnFailureListener(e -> {
-                    Log.d("ADDRESS_USER", "Order updated: ");
+                    Log.d("REQUEST_BODY", "Order updated: ");
                 });
     }
 

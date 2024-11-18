@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Đây là một sản phẩm tuyệt vời!"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textColor="@android:color/black" />
 
 </LinearLayout>

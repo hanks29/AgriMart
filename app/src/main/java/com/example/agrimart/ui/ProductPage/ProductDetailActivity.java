@@ -153,7 +153,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_dialog, null);
 
-        Button continueShoppingButton = bottomSheetView.findViewById(R.id.continue_shopping);
+        Button addToCart = bottomSheetView.findViewById(R.id.continue_shopping);
         ImageView img_product = bottomSheetView.findViewById(R.id.img_product);
         TextView tvPrice = bottomSheetView.findViewById(R.id.tvPrice);
         TextView quantity = bottomSheetView.findViewById(R.id.quantity);
@@ -169,16 +169,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         tvPrice.setText(productPrice.getText());
         warehouse.setText("Kho: " + product.getQuantity());
-
         // Thiết lập sự kiện cho nút "Thêm vào giỏ"
-        continueShoppingButton.setOnClickListener(v -> {
-            if (product != null) {
-                int q = Integer.parseInt((String) quantity.getText());
-                cartFragmentViewModel.addProductToCart(product.getStoreId(), product , q);
-                Toast.makeText(this, "Đã thêm sản phẩm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-            }
-            bottomSheetDialog.dismiss();
-        });
 
         AtomicInteger dem = new AtomicInteger(1);
         quantity.setText(String.valueOf(dem.get()));
@@ -198,7 +189,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
-        continueShoppingButton.setOnClickListener(v -> {
+         addToCart.setOnClickListener(v -> {
             if (product != null) {
                 int q = Integer.parseInt(quantity.getText().toString());
                 if (isBuyNow) {
@@ -211,6 +202,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     startActivity(checkoutIntent);
                 } else {
                     cartFragmentViewModel.addProductToCart(product.getStoreId(), product, q);
+                    Toast.makeText(this, "Đã thêm sản phẩm vào giỏ hàng", Toast.LENGTH_SHORT).show();
                 }
             }
             bottomSheetDialog.dismiss();

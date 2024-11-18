@@ -1,19 +1,30 @@
 package com.example.agrimart.data.model;
 
+
+import com.google.firebase.Timestamp;
+
 public class Rating {
     private String userId;
     private String rating;
     private String review;
-    private String updatedAt;
+    private String userImage;
+    private String fullName;
+    private Timestamp updatedAt;
 
     // Constructor mặc định (bắt buộc)
     public Rating() {}
 
     // Constructor đầy đủ
     public Rating(String userId, String rating, String review, String updatedAt) {
+
+    }
+
+    public Rating(String userId, String rating, String review, Timestamp updatedAt, String userImage, String fullName) {
         this.userId = userId;
         this.rating = rating;
         this.review = review;
+        this.userImage = userImage;
+        this.fullName = fullName;
         this.updatedAt = updatedAt;
     }
 
@@ -36,13 +47,7 @@ public class Rating {
         this.review = review;
     }
 
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
 
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     public String getUserId() {
         return userId;
@@ -50,5 +55,29 @@ public class Rating {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(String userImage) {
+        this.userImage = userImage;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

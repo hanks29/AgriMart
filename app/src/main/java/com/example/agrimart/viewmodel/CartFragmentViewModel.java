@@ -240,6 +240,7 @@ public class CartFragmentViewModel extends ViewModel {
                             newCart.put("storeId", storeId);
                             String updatedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
                             newCart.put("updatedAt", updatedAt);
+                            newCart.put("checked", false);
 
                             // Create the initial list of products
                             List<Map<String, Object>> productCarts = new ArrayList<>();

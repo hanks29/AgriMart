@@ -1,5 +1,7 @@
 package com.example.agrimart.adapter;
 
+import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -10,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.databinding.ItemProductBinding;
+import com.example.agrimart.ui.ProductPage.ProductDetailActivity;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -44,7 +47,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Product product = products.get(position);
         holder.bindData(product);
-        holder.itemView.setOnClickListener(v -> listener.onItemClick(product));
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), ProductDetailActivity.class);
+            intent.putExtra("product", (Parcelable) product);
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override

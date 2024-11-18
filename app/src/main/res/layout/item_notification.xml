@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="10dp"
@@ -9,7 +10,7 @@
     android:background="@drawable/round_border">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/notification_icon"
+        android:id="@+id/notification_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:src="@drawable/banana"
@@ -19,21 +20,31 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
+        android:id="@+id/notification_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đặt hàng thành công"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/notification_message"
+        app:layout_constraintEnd_toStartOf="@+id/notification_time"
+        app:layout_constraintHorizontal_bias="0.151"
+        app:layout_constraintStart_toEndOf="@+id/notification_image"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.421" />
+
+    <TextView
         android:id="@+id/notification_message"
-        android:layout_width="252dp"
-        android:layout_height="43dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="14dp"
-        android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/notification_message"
+        android:text="Đơn hàng của bạn đang được xử lý và sẽ sớm chuyển đến đơn vị giao hàng."
         android:textColor="@android:color/black"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/notification_time"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@id/notification_icon"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toEndOf="@id/notification_image" />
 
     <TextView
         android:id="@+id/notification_time"

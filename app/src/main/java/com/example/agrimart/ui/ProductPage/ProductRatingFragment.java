@@ -16,9 +16,12 @@ import com.example.agrimart.R;
 import com.example.agrimart.adapter.RatingAdapter;
 import com.example.agrimart.data.model.Rating;
 import com.example.agrimart.viewmodel.ProductRatingFragmentViewModel;
+import com.google.firebase.Timestamp;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ProductRatingFragment extends Fragment {
@@ -53,11 +56,14 @@ public class ProductRatingFragment extends Fragment {
                     // Chuyển đổi danh sách Map thành danh sách Rating
                     ratingList.clear();
                     for (Map<String, Object> data : ratingsData) {
+                        Timestamp timestamp = (Timestamp) data.get("updatedAt");
+                        String updatedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(timestamp.toDate());
+
                         Rating rating = new Rating(
                                 (String) data.get("userId"),
                                 (String) data.get("rating"),
                                 (String) data.get("review"),
-                                (String) data.get("updatedAt")
+                                updatedAt
                         );
                         ratingList.add(rating);
                     }

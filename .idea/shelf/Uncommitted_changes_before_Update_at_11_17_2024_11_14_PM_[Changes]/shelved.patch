@@ -1,0 +1,26 @@
+Index: app/src/main/res/menu/menu.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/menu/menu.xml b/app/src/main/res/menu/menu.xml
+new file mode 100644
+--- /dev/null	(date 1731854757854)
++++ b/app/src/main/res/menu/menu.xml	(date 1731854757854)
+@@ -0,0 +1,15 @@
++<!-- res/menu/menu_product_detail.xml -->
++<menu xmlns:android="http://schemas.android.com/apk/res/android">
++    <item
++        android:id="@+id/action_report"
++        android:title="Báo cáo sản phẩm"
++        android:orderInCategory="100"
++        android:icon="@drawable/error"
++        android:showAsAction="never" />
++    <item
++        android:id="@+id/action_home"
++        android:title="Trở về trang chủ"
++        android:icon="@drawable/home"
++        android:orderInCategory="101"
++        android:showAsAction="never" />
++</menu>
+\ No newline at end of file

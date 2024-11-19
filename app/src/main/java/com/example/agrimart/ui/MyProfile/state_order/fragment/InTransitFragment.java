@@ -85,6 +85,8 @@ public class InTransitFragment extends Fragment {
         binding.rvOrder.setAdapter(shippingAdapter);
         binding.rvOrder.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        viewModel.getOrderWithStatusDelivering();
+
         viewModel.orderListPicked.observe(getViewLifecycleOwner(), orders -> {
             orderList.clear();
             orderList.addAll(orders);

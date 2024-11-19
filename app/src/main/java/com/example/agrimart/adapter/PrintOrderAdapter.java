@@ -17,7 +17,6 @@ import com.example.agrimart.data.model.Order;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.service.GHNService;
 import com.example.agrimart.databinding.ItemPrintOrderBinding;
-import com.example.agrimart.databinding.ItemStatusOrderBinding;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -102,7 +101,7 @@ public class PrintOrderAdapter extends RecyclerView.Adapter<PrintOrderAdapter.My
             binding.tvPrice.setText(order.getTotalPrice() + " đ");
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("products").document(order.getProducts().get(0))
+            db.collection("products").document(order.getProducts().get(0).getProduct_id())
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         Product product = documentSnapshot.toObject(Product.class);

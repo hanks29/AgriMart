@@ -33,7 +33,7 @@ public class PendingConfirmOrderViewModel extends ViewModel{
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         db.collection("orders")
                 .whereEqualTo("status", "Pending")
-                .whereEqualTo("sellerId", user.getUid())
+                .whereEqualTo("storeId", user.getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -50,7 +50,7 @@ public class PendingConfirmOrderViewModel extends ViewModel{
     public void getOrderWithStatusApproved(){
         db.collection("orders")
                 .whereEqualTo("status", "Approved")
-                .whereEqualTo("sellerId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .whereEqualTo("storeId", FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -67,7 +67,7 @@ public class PendingConfirmOrderViewModel extends ViewModel{
     public void getOrderWithStatusDelivering(){
         db.collection("orders")
                 .whereEqualTo("status", "delivering")
-                .whereEqualTo("sellerId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .whereEqualTo("storeId", FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -85,7 +85,7 @@ public class PendingConfirmOrderViewModel extends ViewModel{
     public void getDeliveredOrders(){
         db.collection("orders")
                 .whereEqualTo("status", "delivered")
-                .whereEqualTo("sellerId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .whereEqualTo("storeId", FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override

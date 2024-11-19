@@ -138,7 +138,6 @@ public class CheckoutViewModel extends ViewModel {
         order.put("paymentMethod", paymentMethod);
         order.put("shipping_name", shippingName);
         order.put("created_at", createdAt);
-        order.put("product_id", productIds);
         order.put("address", address);
         order.put("storeId", storeId);
         order.put("products", productList);
@@ -243,8 +242,12 @@ public class CheckoutViewModel extends ViewModel {
         void onResult(boolean isAvailable);
     }
 
-    public void createOrder(String address, String storeId){
-        String[] addressUser=address.split(",");
+    public void createOrder(String address, String storeId) {
+        String[] addressUser = address.split(",");
+        if (addressUser.length < 4) {
+            return;
+        }
+
         String province = addressUser[3].trim();
         String district = addressUser[2].trim();
         String ward = addressUser[1].trim();
@@ -288,7 +291,7 @@ public class CheckoutViewModel extends ViewModel {
                                                                         ghnService.getFeeOrder(ghnRequestFee, new GHNService.Callback<JsonNode>() {
                                                                             @Override
                                                                             public void onResponse(JsonNode rl) {
-                                                                                int fee= extractFee(rl);
+                                                                                int fee = extractFee(rl);
                                                                                 shippingFee.setValue(fee);
                                                                             }
 
@@ -301,7 +304,7 @@ public class CheckoutViewModel extends ViewModel {
 
                                                                     @Override
                                                                     public void onFailure(Exception e) {
-                                                                        Log.d("REQUEST_BODY","shop"+ e.getMessage()+shop.getAddresses().get(0).getWard());
+                                                                        Log.d("REQUEST_BODY", "shop" + e.getMessage() + shop.getAddresses().get(0).getWard());
                                                                     }
                                                                 });
                                                             }
@@ -347,7 +350,6 @@ public class CheckoutViewModel extends ViewModel {
                 Log.d("REQUEST_BODY", "Province code: " + e.getMessage());
             }
         });
-
     }
 
 

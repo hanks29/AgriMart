@@ -1,9 +1,7 @@
 package com.example.agrimart.ui.Cart;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,11 +25,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.CheckoutAdapter;
 import com.example.agrimart.data.model.Product;
-import com.example.agrimart.data.model.User;
 import com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;
 import com.example.agrimart.ui.Payment.VNPaymentActivity;
 import com.example.agrimart.viewmodel.CheckoutViewModel;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -54,7 +50,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private List<Product> selectedProducts;
     private TextView tvTotalProductPrice, tvTotalShippingPrice, tvFinalTotalPrice, tvTotalPrice;
     private TextView tvUserName, tvPhoneNumber, tvAddress, tvChangeAddress;
-    private Button btnCheckout, btnPlaceOrder;
+    private Button btnPlaceOrder;
     private RadioGroup paymentMethodGroup;
     private RadioButton radVNPay, radCOD;
     private LinearLayout linearLayout;
@@ -74,6 +70,7 @@ public class CheckoutActivity extends AppCompatActivity {
         setupViewModel();
         setupListeners();
         updatePrices();
+        calculateShippingFee();
     }
 
     private void setupWindowInsets() {
@@ -130,17 +127,6 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        linearLayout.setOnClickListener(view -> calculateShippingFee());
-                    int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
-                    int totalPrice=price+Integer.parseInt(String.valueOf(shippingFee));
-                    tvTotalPrice.setText(totalPrice+" đ");
-                    checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
-                        checkoutViewModel.updateStatusOrder(orderId,shippingFee);
-                    });
-                });
-                Log.d("REQUEST_BODY", "onClick: ");
-            }
-        });
         tvChangeAddress.setOnClickListener(v -> {
             Intent intent = new Intent(CheckoutActivity.this, MyAddressActivity.class);
             startActivity(intent);
@@ -148,20 +134,15 @@ public class CheckoutActivity extends AppCompatActivity {
 
         paymentMethodGroup.setOnCheckedChangeListener((group, checkId) -> {
             if (checkId == R.id.radVNPay) {
-                //radCOD.setChecked(false);
+                radCOD.setChecked(false);
             } else if (checkId == R.id.radCOD) {
-                //radVNPay.setChecked(false);
+                radVNPay.setChecked(false);
             }
         });
-
-        paymentMethodGroup.check(R.id.radCOD);
-
-        paymentMethodGroup.clearCheck();
 
         btnPlaceOrder.setOnClickListener(v -> placeOrder());
     }
 
-    // Tính phí vận chuyển
     private void calculateShippingFee() {
         checkoutViewModel.createOrder(tvAddress.getText().toString(), selectedProducts.get(0).getStoreId());
         checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
@@ -170,46 +151,15 @@ public class CheckoutActivity extends AppCompatActivity {
             int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
             int totalPrice = price + Integer.parseInt(String.valueOf(shippingFee));
             tvTotalPrice.setText(totalPrice + " đ");
-            checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
-                checkoutViewModel.updateStatusOrder("0889d08260464d0597fbf7e38357f5b8", shippingFee);
-            });
+            checkoutViewModel.updateStatusOrder(orderId, shippingFee);
         });
-        Log.d("REQUEST_BODY", "onClick: ");
     }
 
-    // Đặt hàng
     private void placeOrder() {
         String address = tvAddress.getText().toString();
         String storeId = selectedProducts.get(0).getStoreId();
 
         if (radVNPay.isChecked()) {
-            radCOD.setChecked(false);
-            int price = Integer.parseInt(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
-            String orderInfo = "Thanh toán đơn hàng " + orderId;
-            List<String> productIds = selectedProducts.stream()
-                    .map(Product::getProduct_id)
-                    .collect(Collectors.toList());
-            checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
-                int fee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll("[^0-9]", ""));
-                checkoutViewModel.updateStatusOrder(orderId,fee);
-            });
-            Intent intent = new Intent(CheckoutActivity.this, VNPaymentActivity.class);
-            intent.putExtra("price", price);
-            intent.putExtra("orderInfo", orderInfo);
-            intent.putStringArrayListExtra("productIds", new ArrayList<>(productIds));
-            intent.putExtra("address", address);
-            startActivity(intent);
-        } else if (radCOD.isChecked()) {
-            radVNPay.setChecked(false);
-            new AlertDialog.Builder(this)
-                    .setTitle("Xác nhận đặt hàng")
-                    .setMessage("Bạn có chắc chắn muốn đặt hàng?")
-                    .setPositiveButton("Đặt hàng", (dialog, which) -> {
-                        double totalPrice = Double.parseDouble(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
-                        String expectedDeliveryTime = "3-5 ngày";
-                        double shippingFee = 0;
-                        String paymentMethod = "COD";
-                        String shippingName = "Giao hàng nhanh";
             handleVNPayPayment(address, storeId);
         } else if (radCOD.isChecked()) {
             handleCODPayment(address, storeId);
@@ -218,9 +168,7 @@ public class CheckoutActivity extends AppCompatActivity {
         }
     }
 
-    //VNPay
     private void handleVNPayPayment(String address, String storeId) {
-        radCOD.setChecked(false);
         int price = Integer.parseInt(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
         String orderInfo = "Thanh toán đơn hàng " + orderId;
         List<String> productIds = selectedProducts.stream()
@@ -236,9 +184,7 @@ public class CheckoutActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //COD
     private void handleCODPayment(String address, String storeId) {
-        radVNPay.setChecked(false);
         new AlertDialog.Builder(this)
                 .setTitle("Xác nhận đặt hàng")
                 .setMessage("Bạn có chắc chắn muốn đặt hàng?")
@@ -248,25 +194,6 @@ public class CheckoutActivity extends AppCompatActivity {
                     double shippingFee = 0;
                     String paymentMethod = "COD";
                     String shippingName = "Giao hàng nhanh";
-
-                        List<String> productIds = selectedProducts.stream()
-                                .map(Product::getProduct_id)
-                                .collect(Collectors.toList());
-                        checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, new CheckoutViewModel.OrderCallback() {
-                            @Override
-                            public void onSuccess(String orderId) {
-                                checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {
-                                    @Override
-                                    public void onSuccess(String orderId) {
-                                        Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
-                                        intent.putExtra("orderId", orderId);
-                                        checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
-                                        checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
-                                            int fee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll("[^0-9]", ""));
-                                            checkoutViewModel.updateStatusOrder(orderId,fee);
-                                        });
-                                        startActivity(intent);
-                                    }
                     List<String> productIds = selectedProducts.stream()
                             .map(Product::getProduct_id)
                             .collect(Collectors.toList());
@@ -321,7 +248,6 @@ public class CheckoutActivity extends AppCompatActivity {
                 .show();
     }
 
-    // Cập nhật giá
     private void updatePrices() {
         double totalProductPrice = 0;
         for (Product product : selectedProducts) {
@@ -357,41 +283,33 @@ public class CheckoutActivity extends AppCompatActivity {
         });
     }
 
-    private void createOrderWithGHN(){
-        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseFirestore db=FirebaseFirestore.getInstance();
+    private void createOrderWithGHN() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users").document(user.getUid())
-                        .get()
-                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    List<Map<String, Object>> addresses = (List<Map<String, Object>>) documentSnapshot.get("addresses");
 
-                                        List<Map<String,Object>> addresses=(List<Map<String, Object>>) documentSnapshot.get("addresses");
+                    if (addresses != null && !addresses.isEmpty()) {
+                        Map<String, Object> address = addresses.get(0);
 
-                                        if (addresses != null && !addresses.isEmpty()) {
+                        String province = (String) address.get("province");
+                        String district = (String) address.get("district");
+                        String commune = (String) address.get("commune");
+                        String street = (String) address.get("street");
 
-                                            Map<String, Object> address = addresses.get(0);
+                        String address5 = street + ", " + commune + ", " + district + ", " + province;
+                        checkoutViewModel.createOrder(address5, selectedProducts.get(0).getStoreId());
+                        checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
+                            tvTotalShippingPrice.setText(shippingFee + " đ");
 
-                                            String province = (String) address.get("province");
-                                            String district = (String) address.get("district");
-                                            String commune = (String) address.get("commune");
-                                            String street = (String) address.get("street");
-
-                                            String address5 = street + ", " + commune + ", " + district + ", " + province;
-                                            checkoutViewModel.createOrder(address5,selectedProducts.get(0).getStoreId());
-                                            checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
-                                                tvTotalShippingPrice.setText(shippingFee+" đ");
-
-                                                int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
-                                                int totalPrice=price+Integer.parseInt(String.valueOf(shippingFee));
-                                                tvTotalPrice.setText(totalPrice+" đ");
-
-                                            });
-                                        }
-                                    }
-                                });
-
-
-
+                            int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
+                            int totalPrice = price + Integer.parseInt(String.valueOf(shippingFee));
+                            tvTotalPrice.setText(totalPrice + " đ");
+                            checkoutViewModel.updateStatusOrder(orderId, shippingFee);
+                        });
+                    }
+                });
     }
 }

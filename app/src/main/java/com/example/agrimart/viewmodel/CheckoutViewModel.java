@@ -121,8 +121,8 @@ public class CheckoutViewModel extends ViewModel {
         List<Map<String, Object>> productList = new ArrayList<>();
         for (Product product : products) {
             Map<String, Object> productMap = new HashMap<>();
-            productMap.put("productId", product.getProduct_id());
-            productMap.put("productName", product.getName());
+            productMap.put("product_id", product.getProduct_id());
+            productMap.put("name", product.getName());
             productMap.put("quantity", product.getQuantity());
             productMap.put("price", product.getPrice());
             productList.add(productMap);

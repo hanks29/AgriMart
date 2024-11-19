@@ -10,8 +10,8 @@ public class Order implements Serializable {
     @PropertyName("orderId")
     private String orderId;
 
-    @PropertyName("product_id")
-    private List<String> products;
+    @PropertyName("products")
+    private List<Product> products;
 
     @PropertyName("status")
     private String status;
@@ -22,7 +22,7 @@ public class Order implements Serializable {
     @PropertyName("userId")
     private String userId;
 
-    @PropertyName("sellerId")
+    @PropertyName("storeId")
     private String sellerId;
 
     @PropertyName("order_code")
@@ -36,9 +36,8 @@ public class Order implements Serializable {
     public Order() {
     }
 
-    public Order(String orderId, List<String> products, String status, int totalPrice) {
+    public Order(String orderId, String status, int totalPrice) {
         this.orderId = orderId;
-        this.products = products;
         this.status = status;
         this.totalPrice = totalPrice;
     }
@@ -51,16 +50,6 @@ public class Order implements Serializable {
     @PropertyName("orderId")
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    @PropertyName("product_id")
-    public List<String> getProducts() {
-        return products;
-    }
-
-    @PropertyName("product_id")
-    public void setProducts(List<String> products) {
-        this.products = products;
     }
 
     @PropertyName("status")
@@ -121,13 +110,21 @@ public class Order implements Serializable {
         this.address = address;
     }
 
-    @PropertyName("sellerId")
+    @PropertyName("storeId")
     public String getSellerId() {
         return sellerId;
     }
 
-    @PropertyName("sellerId")
+    @PropertyName("storeId")
     public void setSellerId(String sellerId) {
         this.sellerId = sellerId;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 }

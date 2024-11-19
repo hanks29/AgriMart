@@ -71,6 +71,7 @@ public class CheckoutActivity extends AppCompatActivity {
         setupListeners();
         updatePrices();
         calculateShippingFee();
+        createOrderWithGHN();
     }
 
     private void setupWindowInsets() {

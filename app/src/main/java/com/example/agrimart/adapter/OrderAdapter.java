@@ -215,7 +215,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
             binding.tvPrice.setText(order.getTotalPrice() + " đ");
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("products").document(order.getProducts().get(0))
+            db.collection("products").document(order.getProducts().get(0).getProduct_id())
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         Product product = documentSnapshot.toObject(Product.class);

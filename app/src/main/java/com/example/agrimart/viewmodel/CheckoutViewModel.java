@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.agrimart.data.model.Address;
 import com.example.agrimart.data.model.GHNRequestFee;
+import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.User;
 import com.example.agrimart.data.model.ghn.Item;
 import com.example.agrimart.data.service.GHNService;
@@ -112,10 +113,20 @@ public class CheckoutViewModel extends ViewModel {
         });
     }
 
-    public void placeOrder(double totalPrice, String expectedDeliveryTime, double shippingFee, String paymentMethod, String shippingName, List<String> productIds, String address, OrderCallback callback) {
+    public void placeOrder(double totalPrice, String expectedDeliveryTime, double shippingFee, String paymentMethod, String shippingName, List<String> productIds, String address, String storeId, List<Product> products, OrderCallback callback) {
         String userId = auth.getCurrentUser().getUid();
         String orderId = generateOrderId();
         Date createdAt = new Date();
+
+        List<Map<String, Object>> productList = new ArrayList<>();
+        for (Product product : products) {
+            Map<String, Object> productMap = new HashMap<>();
+            productMap.put("productId", product.getProduct_id());
+            productMap.put("productName", product.getName());
+            productMap.put("quantity", product.getQuantity());
+            productMap.put("price", product.getPrice());
+            productList.add(productMap);
+        }
 
         Map<String, Object> order = new HashMap<>();
         order.put("userId", userId);
@@ -127,8 +138,9 @@ public class CheckoutViewModel extends ViewModel {
         order.put("paymentMethod", paymentMethod);
         order.put("shipping_name", shippingName);
         order.put("created_at", createdAt);
-        order.put("product_id", productIds);
         order.put("address", address);
+        order.put("storeId", storeId);
+        order.put("products", productList);
 
         db.collection("orders").document(orderId).set(order)
                 .addOnSuccessListener(aVoid -> callback.onSuccess(orderId))
@@ -230,8 +242,12 @@ public class CheckoutViewModel extends ViewModel {
         void onResult(boolean isAvailable);
     }
 
-    public void createOrder(String address, String storeId){
-        String[] addressUser=address.split(",");
+    public void createOrder(String address, String storeId) {
+        String[] addressUser = address.split(",");
+        if (addressUser.length < 4) {
+            return;
+        }
+
         String province = addressUser[3].trim();
         String district = addressUser[2].trim();
         String ward = addressUser[1].trim();
@@ -275,7 +291,7 @@ public class CheckoutViewModel extends ViewModel {
                                                                         ghnService.getFeeOrder(ghnRequestFee, new GHNService.Callback<JsonNode>() {
                                                                             @Override
                                                                             public void onResponse(JsonNode rl) {
-                                                                                int fee= extractFee(rl);
+                                                                                int fee = extractFee(rl);
                                                                                 shippingFee.setValue(fee);
                                                                             }
 
@@ -288,7 +304,7 @@ public class CheckoutViewModel extends ViewModel {
 
                                                                     @Override
                                                                     public void onFailure(Exception e) {
-                                                                        Log.d("REQUEST_BODY","shop"+ e.getMessage()+shop.getAddresses().get(0).getWard());
+                                                                        Log.d("REQUEST_BODY", "shop" + e.getMessage() + shop.getAddresses().get(0).getWard());
                                                                     }
                                                                 });
                                                             }
@@ -334,7 +350,6 @@ public class CheckoutViewModel extends ViewModel {
                 Log.d("REQUEST_BODY", "Province code: " + e.getMessage());
             }
         });
-
     }
 
 
@@ -364,6 +379,4 @@ public class CheckoutViewModel extends ViewModel {
                     Log.d("REQUEST_BODY", "Order updated: ");
                 });
     }
-
-
 }

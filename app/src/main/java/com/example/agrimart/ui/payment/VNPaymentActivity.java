@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.agrimart.R;
 import com.example.agrimart.data.API.Config_VNPAY;
 import com.example.agrimart.data.model.Address;
+import com.example.agrimart.data.model.Product;
 import com.example.agrimart.ui.Cart.PlaceOrderActivity;
 import com.example.agrimart.ui.MainActivity;
 import com.example.agrimart.utils.VnpayUtils;
@@ -35,6 +36,8 @@ public class VNPaymentActivity extends AppCompatActivity {
         String orderInfo = getIntent().getStringExtra("orderInfo");
 
         String address = getIntent().getStringExtra("address");
+        String storeId = getIntent().getStringExtra("storeId");
+        ArrayList<Product> products = getIntent().getParcelableArrayListExtra("products");
 
         Address addr = new Address();
         addr.setStreet(address);
@@ -58,7 +61,7 @@ public class VNPaymentActivity extends AppCompatActivity {
                         List<Address> addresses = new ArrayList<>();
                         addresses.add(addr);
 
-                        checkoutViewModel.placeOrder(price, "3-5 ngày", 0, "VNPay", "Giao hàng nhanh", productIds, address, new CheckoutViewModel.OrderCallback() {
+                        checkoutViewModel.placeOrder(price, "3-5 ngày", 0, "VNPay", "Giao hàng nhanh", productIds, address, storeId, products, new CheckoutViewModel.OrderCallback() {
                             @Override
                             public void onSuccess(String orderId) {
                                 Intent intent = new Intent(VNPaymentActivity.this, PlaceOrderActivity.class);

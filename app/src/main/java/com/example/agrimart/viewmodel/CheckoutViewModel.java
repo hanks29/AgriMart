@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.agrimart.data.model.Address;
 import com.example.agrimart.data.model.GHNRequestFee;
+import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.User;
 import com.example.agrimart.data.model.ghn.Item;
 import com.example.agrimart.data.service.GHNService;
@@ -112,10 +113,20 @@ public class CheckoutViewModel extends ViewModel {
         });
     }
 
-    public void placeOrder(double totalPrice, String expectedDeliveryTime, double shippingFee, String paymentMethod, String shippingName, List<String> productIds, String address, OrderCallback callback) {
+    public void placeOrder(double totalPrice, String expectedDeliveryTime, double shippingFee, String paymentMethod, String shippingName, List<String> productIds, String address, String storeId, List<Product> products, OrderCallback callback) {
         String userId = auth.getCurrentUser().getUid();
         String orderId = generateOrderId();
         Date createdAt = new Date();
+
+        List<Map<String, Object>> productList = new ArrayList<>();
+        for (Product product : products) {
+            Map<String, Object> productMap = new HashMap<>();
+            productMap.put("productId", product.getProduct_id());
+            productMap.put("productName", product.getName());
+            productMap.put("quantity", product.getQuantity());
+            productMap.put("price", product.getPrice());
+            productList.add(productMap);
+        }
 
         Map<String, Object> order = new HashMap<>();
         order.put("userId", userId);
@@ -129,6 +140,8 @@ public class CheckoutViewModel extends ViewModel {
         order.put("created_at", createdAt);
         order.put("product_id", productIds);
         order.put("address", address);
+        order.put("storeId", storeId);
+        order.put("products", productList);
 
         db.collection("orders").document(orderId).set(order)
                 .addOnSuccessListener(aVoid -> callback.onSuccess(orderId))
@@ -364,6 +377,4 @@ public class CheckoutViewModel extends ViewModel {
                     Log.d("REQUEST_BODY", "Order updated: ");
                 });
     }
-
-
 }

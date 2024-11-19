@@ -60,6 +60,16 @@ public class CheckoutActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_checkout);
 
+        setupWindowInsets();
+        setupToolbar();
+        initializeViews();
+        setupRecyclerView();
+        setupViewModel();
+        setupListeners();
+        updatePrices();
+    }
+
+    private void setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main1), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -71,20 +81,20 @@ public class CheckoutActivity extends AppCompatActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(ContextCompat.getColor(this, R.color.green));
         }
+    }
 
+    private void setupToolbar() {
         toolbar = findViewById(R.id.header);
         toolbar.setNavigationOnClickListener(v -> finish());
+    }
 
+    private void initializeViews() {
         selectedProducts = getIntent().getParcelableArrayListExtra("selectedProducts");
         if (selectedProducts == null) {
             selectedProducts = new ArrayList<>();
         }
 
         rvProduct = findViewById(R.id.rv_product);
-        rvProduct.setLayoutManager(new LinearLayoutManager(this));
-        checkoutAdapter = new CheckoutAdapter(selectedProducts);
-        rvProduct.setAdapter(checkoutAdapter);
-
         tvTotalProductPrice = findViewById(R.id.tvTotalProductPrice);
         tvTotalShippingPrice = findViewById(R.id.tvTotalShippingPrice);
         tvFinalTotalPrice = findViewById(R.id.tvFinalTotalPrice);
@@ -98,35 +108,26 @@ public class CheckoutActivity extends AppCompatActivity {
         radCOD = findViewById(R.id.radCOD);
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
         linearLayout = findViewById(R.id.lnGHN);
+    }
 
-        linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkoutViewModel.createOrder(tvAddress.getText().toString(),selectedProducts.get(0).getStoreId());
-                checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
-                    tvTotalShippingPrice.setText(shippingFee+" đ");
+    private void setupRecyclerView() {
+        rvProduct.setLayoutManager(new LinearLayoutManager(this));
+        checkoutAdapter = new CheckoutAdapter(selectedProducts);
+        rvProduct.setAdapter(checkoutAdapter);
+    }
 
-                    int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
-                    int totalPrice=price+Integer.parseInt(String.valueOf(shippingFee));
-                    tvTotalPrice.setText(totalPrice+" đ");
-                    checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
-                        checkoutViewModel.updateStatusOrder("0889d08260464d0597fbf7e38357f5b8",shippingFee);
-                    });
-                });
-                Log.d("REQUEST_BODY", "onClick: ");
-            }
-        });
+    private void setupViewModel() {
+        checkoutViewModel = new ViewModelProvider(this).get(CheckoutViewModel.class);
+        checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
+        orderId = checkoutViewModel.generateOrderId();
+    }
+
+    private void setupListeners() {
+        linearLayout.setOnClickListener(view -> calculateShippingFee());
         tvChangeAddress.setOnClickListener(v -> {
             Intent intent = new Intent(CheckoutActivity.this, MyAddressActivity.class);
             startActivity(intent);
         });
-
-        checkoutViewModel = new ViewModelProvider(this).get(CheckoutViewModel.class);
-        checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
-
-        updatePrices();
-
-        orderId = checkoutViewModel.generateOrderId();
 
         paymentMethodGroup.setOnCheckedChangeListener((group, checkId) -> {
             if (checkId == R.id.radVNPay) {
@@ -137,79 +138,112 @@ public class CheckoutActivity extends AppCompatActivity {
         });
 
         paymentMethodGroup.check(R.id.radCOD);
-
         paymentMethodGroup.clearCheck();
 
-        btnPlaceOrder.setOnClickListener(v -> { placeOrder();});
+        btnPlaceOrder.setOnClickListener(v -> placeOrder());
     }
 
+    // Tính phí vận chuyển
+    private void calculateShippingFee() {
+        checkoutViewModel.createOrder(tvAddress.getText().toString(), selectedProducts.get(0).getStoreId());
+        checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
+            tvTotalShippingPrice.setText(shippingFee + " đ");
+
+            int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
+            int totalPrice = price + Integer.parseInt(String.valueOf(shippingFee));
+            tvTotalPrice.setText(totalPrice + " đ");
+            checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee1 -> {
+                checkoutViewModel.updateStatusOrder("0889d08260464d0597fbf7e38357f5b8", shippingFee);
+            });
+        });
+        Log.d("REQUEST_BODY", "onClick: ");
+    }
+
+    // Đặt hàng
     private void placeOrder() {
         String address = tvAddress.getText().toString();
+        String storeId = selectedProducts.get(0).getStoreId();
 
         if (radVNPay.isChecked()) {
-            radCOD.setChecked(false);
-            int price = Integer.parseInt(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
-            String orderInfo = "Thanh toán đơn hàng " + orderId;
-            List<String> productIds = selectedProducts.stream()
-                    .map(Product::getProduct_id)
-                    .collect(Collectors.toList());
-            Intent intent = new Intent(CheckoutActivity.this, VNPaymentActivity.class);
-            intent.putExtra("price", price);
-            intent.putExtra("orderInfo", orderInfo);
-            intent.putStringArrayListExtra("productIds", new ArrayList<>(productIds));
-            intent.putExtra("address", address);
-            startActivity(intent);
+            handleVNPayPayment(address, storeId);
         } else if (radCOD.isChecked()) {
-            radVNPay.setChecked(false);
-            new AlertDialog.Builder(this)
-                    .setTitle("Xác nhận đặt hàng")
-                    .setMessage("Bạn có chắc chắn muốn đặt hàng?")
-                    .setPositiveButton("Đặt hàng", (dialog, which) -> {
-                        double totalPrice = Double.parseDouble(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
-                        String expectedDeliveryTime = "3-5 ngày";
-                        double shippingFee = 0;
-                        String paymentMethod = "COD";
-                        String shippingName = "Giao hàng nhanh";
-
-                        List<String> productIds = selectedProducts.stream()
-                                .map(Product::getProduct_id)
-                                .collect(Collectors.toList());
-                        checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, new CheckoutViewModel.OrderCallback() {
-                            @Override
-                            public void onSuccess(String orderId) {
-                                checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {
-                                    @Override
-                                    public void onSuccess(String orderId) {
-                                        Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
-                                        intent.putExtra("orderId", orderId);
-                                        checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
-                                        startActivity(intent);
-                                    }
-
-                                    @Override
-                                    public void onFailure(Exception e) {
-                                        Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
-                                    }
-                                }, orderId);
-                            }
-
-                            @Override
-                            public void onFailure(Exception e) {
-                                Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    })
-                    .setNegativeButton("Hủy", (dialog, which) -> {
-                    })
-                    .show();
+            handleCODPayment(address, storeId);
         } else {
-            new AlertDialog.Builder(this)
-                    .setTitle("Chọn phương thức thanh toán")
-                    .setMessage("Vui lòng chọn phương thức thanh toán")
-                    .setPositiveButton("OK", (dialog, which) -> {
-                    })
-                    .show();
+            showPaymentMethodDialog();
         }
+    }
+
+    //VNPay
+    private void handleVNPayPayment(String address, String storeId) {
+        radCOD.setChecked(false);
+        int price = Integer.parseInt(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
+        String orderInfo = "Thanh toán đơn hàng " + orderId;
+        List<String> productIds = selectedProducts.stream()
+                .map(Product::getProduct_id)
+                .collect(Collectors.toList());
+        Intent intent = new Intent(CheckoutActivity.this, VNPaymentActivity.class);
+        intent.putExtra("price", price);
+        intent.putExtra("orderInfo", orderInfo);
+        intent.putStringArrayListExtra("productIds", new ArrayList<>(productIds));
+        intent.putExtra("address", address);
+        intent.putExtra("storeId", storeId);
+        intent.putParcelableArrayListExtra("products", new ArrayList<>(selectedProducts));
+        startActivity(intent);
+    }
+
+    //COD
+    private void handleCODPayment(String address, String storeId) {
+        radVNPay.setChecked(false);
+        new AlertDialog.Builder(this)
+                .setTitle("Xác nhận đặt hàng")
+                .setMessage("Bạn có chắc chắn muốn đặt hàng?")
+                .setPositiveButton("Đặt hàng", (dialog, which) -> {
+                    double totalPrice = Double.parseDouble(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
+                    String expectedDeliveryTime = "3-5 ngày";
+                    double shippingFee = 0;
+                    String paymentMethod = "COD";
+                    String shippingName = "Giao hàng nhanh";
+
+                    List<String> productIds = selectedProducts.stream()
+                            .map(Product::getProduct_id)
+                            .collect(Collectors.toList());
+                    checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, storeId, selectedProducts, new CheckoutViewModel.OrderCallback() {
+                        @Override
+                        public void onSuccess(String orderId) {
+                            checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {
+                                @Override
+                                public void onSuccess(String orderId) {
+                                    Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
+                                    intent.putExtra("orderId", orderId);
+                                    checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
+                                    startActivity(intent);
+                                }
+
+                                @Override
+                                public void onFailure(Exception e) {
+                                    Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
+                                }
+                            }, orderId);
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("Hủy", (dialog, which) -> {
+                })
+                .show();
+    }
+
+    private void showPaymentMethodDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Chọn phương thức thanh toán")
+                .setMessage("Vui lòng chọn phương thức thanh toán")
+                .setPositiveButton("OK", (dialog, which) -> {
+                })
+                .show();
     }
 
     private void showNoAddressDialog() {
@@ -224,6 +258,7 @@ public class CheckoutActivity extends AppCompatActivity {
                 .show();
     }
 
+    // Cập nhật giá
     private void updatePrices() {
         double totalProductPrice = 0;
         for (Product product : selectedProducts) {

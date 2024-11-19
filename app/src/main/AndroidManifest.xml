@@ -28,6 +28,9 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".ui.ProductPage.ProductRatingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.Cart.PlaceOrderActivity"
             android:exported="false" />
         <activity

@@ -16,7 +16,10 @@ import com.example.agrimart.R;
 import com.example.agrimart.data.model.Rating;
 import com.example.agrimart.viewmodel.ProductRatingFragmentViewModel;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import per.wsj.library.AndRatingBar;
 
@@ -44,27 +47,23 @@ public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingView
     public void onBindViewHolder(@NonNull RatingViewHolder holder, int position) {
         Rating rating = ratings.get(position);
 
-        productRatingFragmentViewModel.fetchUserProfile(rating.getUserId());
+        holder.userName.setText(rating.getFullName());
 
-        productRatingFragmentViewModel.getFullNameLiveData().observeForever(fullName -> {
-            holder.userName.setText(fullName);  // Update full name
-        });
 
-        productRatingFragmentViewModel.getUserImageLiveData().observeForever(userImage -> {
-            if (userImage != null && !userImage.isEmpty()) {
-                Glide.with(holder.itemView.getContext())
-                        .load(userImage)
-                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh khi tải lên
-                        .placeholder(R.drawable.user_img) // ảnh mặc định khi đang tải
-                        .error(R.drawable.user_img) // ảnh mặc định nếu URL không tồn tại hoặc tải ảnh lỗi
-                        .into(holder.userImage);
-            } else {
-                Glide.with(holder.itemView.getContext())
-                        .load(R.drawable.error_image)
-                        .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh mặc định
-                        .into(holder.userImage);
-            }
-        });
+        if (rating.getUserImage() != null && !rating.getUserImage().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(rating.getUserImage())
+                    .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh khi tải lên
+                    .placeholder(R.drawable.user_img) // ảnh mặc định khi đang tải
+                    .error(R.drawable.user_img) // ảnh mặc định nếu URL không tồn tại hoặc tải ảnh lỗi
+                    .into(holder.userImage);
+        } else {
+            Glide.with(holder.itemView.getContext())
+                    .load(R.drawable.error_image)
+                    .apply(RequestOptions.circleCropTransform()) // Bo tròn ảnh mặc định
+                    .into(holder.userImage);
+        }
+
 
         if (rating.getRating() != null) {
             holder.ratingBar.setRating(Float.parseFloat(rating.getRating()));
@@ -73,7 +72,18 @@ public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingView
         }
 
 
-        holder.date.setText(rating.getUpdatedAt());
+        // Chuyển đổi và định dạng ngày tháng
+        if (rating.getUpdatedAt() != null) {
+            com.google.firebase.Timestamp timestamp = (com.google.firebase.Timestamp) rating.getUpdatedAt();
+            Date date = timestamp.toDate();
+
+            // Định dạng ngày theo kiểu dd-MM-yyyy
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String formattedDate = sdf.format(date);
+
+            holder.date.setText(formattedDate);  // Hiển thị ngày đã định dạng
+        }
+
         holder.review.setText(rating.getReview());
     }
 

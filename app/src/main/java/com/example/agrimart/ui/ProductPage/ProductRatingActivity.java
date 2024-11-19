@@ -1,23 +1,17 @@
 package com.example.agrimart.ui.ProductPage;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.RatingAdapter;
 import com.example.agrimart.data.model.Rating;
@@ -30,42 +24,32 @@ import java.util.Map;
 
 import per.wsj.library.AndRatingBar;
 
-public class ProductRatingFragment extends Fragment {
+public class ProductRatingActivity extends AppCompatActivity {
 
     private RecyclerView ratingRecyclerView;
     private RatingAdapter ratingAdapter;
     private List<Rating> ratingList = new ArrayList<>();
     private String productId;
     private ProductRatingFragmentViewModel productRatingFragmentViewModel;
-    private TextView numberReviews, numberRating, allRating;
+    private TextView numberReviews, numberRating;
     private AndRatingBar rating;
-    private LinearLayout nextAllRating;
 
-    public ProductRatingFragment(String productId) {
-        this.productId = productId;
-    }
-
-    @SuppressLint("MissingInflatedId")
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_product_rating, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_product_rating);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
-        // Ánh xạ RecyclerView
-        ratingRecyclerView = view.findViewById(R.id.ratingProduct);
-        numberRating = view.findViewById(R.id.numberRating);
-        numberReviews = view.findViewById(R.id.numberReviews);
-        rating = view.findViewById(R.id.rating);
-        allRating = view.findViewById(R.id.allRating);
-        nextAllRating = view.findViewById(R.id.nextAllRating);
+        addControl();
 
-        // Khởi tạo ViewModel
-        productRatingFragmentViewModel = new ProductRatingFragmentViewModel();
+        productId = getIntent().getStringExtra("productId");
 
-
-        // Lắng nghe sự thay đổi của LiveData từ ViewModel
-        productRatingFragmentViewModel.getRatingsLiveData().observe(getViewLifecycleOwner(), new Observer<List<Map<String, Object>>>() {
+        productRatingFragmentViewModel.getRatingsLiveData().observe(this, new Observer<List<Map<String, Object>>>() {
             @Override
             public void onChanged(List<Map<String, Object>> ratingsData) {
                 if (ratingsData != null) {
@@ -93,8 +77,8 @@ public class ProductRatingFragment extends Fragment {
                     rating.setRating((float) (averageRating*1.0));
 
 
-                    // Giới hạn chỉ lấy 3 đánh giá đầu tiên
-                    for (int i = 1; i < Math.min(ratingsData.size(), 4); i++) {
+
+                    for (int i = 1; i < ratingsData.size(); i++) {
                         Map<String, Object> data = ratingsData.get(i);
                         String userId = (String) data.get("userId");
 
@@ -110,6 +94,7 @@ public class ProductRatingFragment extends Fragment {
                         ratingList.add(rating);
                     }
 
+
                     // Cập nhật lại adapter
                     ratingAdapter.notifyDataSetChanged();
                 }
@@ -120,27 +105,23 @@ public class ProductRatingFragment extends Fragment {
         productRatingFragmentViewModel.fetchProductRatings(productId);
 
         // Khởi tạo RatingAdapter với danh sách Rating
-        ratingAdapter = new RatingAdapter(requireContext(), ratingList, productRatingFragmentViewModel);
+        ratingAdapter = new RatingAdapter(this, ratingList, productRatingFragmentViewModel);
 
         // Thiết lập RecyclerView với LayoutManager và Adapter
-        ratingRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        ratingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         ratingRecyclerView.setAdapter(ratingAdapter);
 
-        allRating.setOnClickListener(v -> nextAllRating());
-        nextAllRating.setOnClickListener(v -> nextAllRating());
 
-        return view;
     }
 
-    void nextAllRating() {
-        // Create an Intent to start ProductRatingActivity
-        Intent intent = new Intent(requireActivity(), ProductRatingActivity.class);
+    void addControl()
+    {
+        ratingRecyclerView = findViewById(R.id.ratingProduct);
+        numberRating = findViewById(R.id.numberRating);
+        numberReviews = findViewById(R.id.numberReviews);
+        rating = findViewById(R.id.rating);
 
-        // Pass the productId as an extra to the intent
-        intent.putExtra("productId", productId);
 
-        // Start the activity
-        startActivity(intent);
+        productRatingFragmentViewModel = new ProductRatingFragmentViewModel();
     }
-
 }

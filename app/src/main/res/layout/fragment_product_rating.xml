@@ -9,8 +9,11 @@
     tools:context=".ui.ProductPage.ProductRatingFragment">
 
     <LinearLayout
+        android:id="@+id/nextAllRating"
         android:layout_width="match_parent"
         android:layout_height="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -28,6 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="start|center"
             android:text="(100)"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -58,13 +62,14 @@
             app:keepOriginColor="true"
             app:starColor="#FFD700" />
 
-        <TextView
+        <ImageView
             android:id="@+id/textView15"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="11dp"
             android:layout_marginStart="5dp"
+            android:layout_gravity="center"
             android:gravity="center|end"
-            android:text=">"
+            android:src="@drawable/next_ic"
             android:textSize="20sp" />
     </LinearLayout>
 
@@ -75,7 +80,7 @@
         android:layout_height="match_parent" />
 
     <TextView
-        android:id="@+id/textView16"
+        android:id="@+id/allRating"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/green"

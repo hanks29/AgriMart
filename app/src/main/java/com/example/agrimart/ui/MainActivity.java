@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         createNotificationChannel();
-        createNotificationsForUser();
+        createNotifications();
     }
 
     @Override
@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }).addOnFailureListener(e -> {
+            Log.e("FirebaseError", "Error getting user role", e);
         });
     }
 
@@ -169,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                 String userId = documentSnapshot.getString("userId");
             }
         }).addOnFailureListener(e -> {
+            Log.e("FirebaseError", "Error getting user info", e);
         });
     }
 
@@ -196,7 +198,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("NotificationPermission", "Notification permission granted");
             } else {
+                Log.d("NotificationPermission", "Notification permission denied");
             }
         }
     }
@@ -217,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
 
-    private void createNotificationsForUser() {
+    private void createNotifications() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("orders")
@@ -230,70 +234,66 @@ public class MainActivity extends AppCompatActivity {
 
                     if (snapshots != null && !snapshots.isEmpty()) {
                         for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                            if (dc.getType() == DocumentChange.Type.ADDED) {
-                                // Kiểm tra đơn hàng mới
-                                String status = dc.getDocument().getString("status");
-                                if ("pending".equals(status)) {
-                                    String orderCode = dc.getDocument().getString("order_code");
-                                    String imageUrl = dc.getDocument().getString("image_url");
-                                    long timestamp = System.currentTimeMillis();
-
-                                    String title = "Đặt hàng thành công!";
-                                    String message = "Đơn hàng của bạn đang được xử lý và sẽ sớm chuyển đến đơn vị vận chuyển.";
-
-                                    if (!title.isEmpty() && !message.isEmpty()) {
-                                        Notification notification = new Notification(title, message, timestamp, imageUrl);
-                                        sendNotification(title, message);
-                                        saveNotificationToFirestore(notification);
-                                    }
-                                }
-                            }
-
-                            if (dc.getType() == DocumentChange.Type.MODIFIED) {
-                                String status = dc.getDocument().getString("status");
-                                String orderCode = dc.getDocument().getString("order_code");
-                                String imageUrl = dc.getDocument().getString("image_url");
-                                long timestamp = System.currentTimeMillis();
-
-                                String title = "";
-                                String message = "";
-
-                                switch (status) {
-                                    case "pending":
-                                        title = "Đặt hàng thành công!";
-                                        message = "Đơn hàng của bạn đang được xử lý và sẽ sớm chuyển đến đơn vị vận chuyển.";
-                                        break;
-                                    case "approved":
-                                        title = "Đơn hàng đang trên đường đến bạn!";
-                                        message = "Đơn hàng của bạn đã được giao cho đơn vị vận chuyển và đang trên đường đến địa chỉ của bạn. Vui lòng theo dõi để biết thời gian giao hàng dự kiến.";
-                                        break;
-                                    case "delivering":
-                                        title = "Đơn hàng đang trong quá trình vận chuyển";
-                                        message = "Đơn hàng của bạn hiện đang trong quá trình vận chuyển. Bạn có thể theo dõi tình trạng giao hàng trong mục Theo dõi đơn hàng.";
-                                        break;
-                                    case "delivered":
-                                        title = "Đơn hàng đã được giao thành công";
-                                        message = "Đơn hàng của bạn đã được giao thành công. Bạn có hài lòng với sản phẩm đã nhận? Để lại đánh giá của bạn để giúp người dùng khác hiểu hơn về sản phẩm nhé.";
-                                        break;
-                                    case "cancelled":
-                                        title = "Yêu cầu huỷ đơn hàng đã được chấp nhận";
-                                        message = "Yêu cầu huỷ đơn hàng đã được chấp nhận. Số tiền đã thanh toán sẽ được hoàn lại vào tài khoản của bạn trong thời gian sớm nhất nếu bạn thanh toán bằng VNPAY.";
-                                        break;
-                                    case "delivery_failed":
-                                        title = "Giao hàng thất bại";
-                                        message = "Đơn hàng của bạn giao không thành công. Đơn vị vận chuyển sẽ thực hiện giao hàng lại trong thời gian sớm nhất.";
-                                        break;
-                                }
-
-                                if (!title.isEmpty() && !message.isEmpty()) {
-                                    Notification notification = new Notification(title, message, timestamp, imageUrl);
-                                    sendNotification(title, message);  // Gửi thông báo
-                                    saveNotificationToFirestore(notification);  // Lưu vào Firestore
-                                }
-                            }
+                            createNotificationForOrder(dc, db);
                         }
                     }
                 });
+    }
+
+    private void createNotificationForOrder(DocumentChange dc, FirebaseFirestore db) {
+        String status = dc.getDocument().getString("status");
+        String orderCode = dc.getDocument().getString("order_code");
+        String imageUrl = dc.getDocument().getString("image_url");
+        long timestamp = System.currentTimeMillis();
+
+        String title = "";
+        String message = "";
+
+        if (status.equals("pending")) {
+            boolean notificationSent = dc.getDocument().getBoolean("notificationSent") != null && dc.getDocument().getBoolean("notificationSent");
+            if (!notificationSent) {
+                title = "Đặt hàng thành công!";
+                message = "Đơn hàng của bạn đang được xử lý và sẽ sớm chuyển đến đơn vị vận chuyển.";
+                Notification notification = new Notification(title, message, timestamp, imageUrl);
+                sendNotification(title, message);
+                saveNotificationToFirestore(notification);
+
+                // Update the order document to indicate that the notification has been sent
+                db.collection("orders").document(dc.getDocument().getId())
+                        .update("notificationSent", true)
+                        .addOnSuccessListener(aVoid -> Log.d("Firestore", "Order updated with notificationSent flag"))
+                        .addOnFailureListener(e -> Log.e("FirestoreError", "Error updating order with notificationSent flag", e));
+            }
+        } else {
+            switch (status) {
+                case "approved":
+                    title = "Đơn hàng đang trên đường đến bạn!";
+                    message = "Đơn hàng của bạn đã được giao cho đơn vị vận chuyển và đang trên đường đến địa chỉ của bạn.";
+                    break;
+                case "delivering":
+                    title = "Đơn hàng đang trong quá trình vận chuyển";
+                    message = "Đơn hàng của bạn hiện đang trong quá trình vận chuyển.";
+                    break;
+                case "delivered":
+                    title = "Đơn hàng đã được giao thành công";
+                    message = "Đơn hàng của bạn đã được giao thành công. Bạn có hài lòng với sản phẩm đã nhận?";
+                    break;
+                case "cancelled":
+                    title = "Yêu cầu huỷ đơn hàng đã được chấp nhận";
+                    message = "Yêu cầu huỷ đơn hàng đã được chấp nhận. Số tiền đã thanh toán sẽ được hoàn lại vào tài khoản của bạn.";
+                    break;
+                case "delivery_failed":
+                    title = "Giao hàng thất bại";
+                    message = "Đơn hàng của bạn giao không thành công. Đơn vị vận chuyển sẽ thực hiện giao hàng lại.";
+                    break;
+            }
+
+            if (!title.isEmpty() && !message.isEmpty()) {
+                Notification notification = new Notification(title, message, timestamp, imageUrl);
+                sendNotification(title, message);
+                saveNotificationToFirestore(notification);
+            }
+        }
     }
 
     public void saveNotificationToFirestore(Notification notification) {
@@ -304,8 +304,10 @@ public class MainActivity extends AppCompatActivity {
             notification.setUserId(currentUser.getUid());
             db.collection("notifications").add(notification)
                     .addOnSuccessListener(documentReference -> {
+                        Log.d("Firestore", "Notification saved successfully");
                     })
                     .addOnFailureListener(e -> {
+                        Log.e("FirestoreError", "Error saving notification", e);
                     });
         }
     }

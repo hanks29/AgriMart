@@ -107,7 +107,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
                                                                                 String orderCodes = extractOrderCode(result);
                                                                                 db.collection("orders").document(orderList.get(holder.getAdapterPosition()).getOrderId())
                                                                                         .update(
-                                                                                                "status", "Approved",
+                                                                                                "status", "approved",
                                                                                                 "order_code", orderCodes)
                                                                                         .addOnSuccessListener(aVoid -> {
                                                                                             orderList.remove(holder.getAdapterPosition());

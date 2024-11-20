@@ -33,6 +33,8 @@ public class Order implements Serializable {
 
     private String statusDelivery;
 
+    private String storeName;
+
     public Order() {
     }
 
@@ -126,5 +128,13 @@ public class Order implements Serializable {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 }

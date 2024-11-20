@@ -36,7 +36,11 @@ public class EditAddressActivity extends AppCompatActivity {
     private LinearLayout save_address, delete_address, getAddress;
     private String detailedAddressID;
     private TextView edtTinh;
-    ImageButton btnBack;
+    private ImageButton btnBack;
+    private String province;
+    private String district;
+    private String commune;
+
 
 
     @SuppressLint("MissingInflatedId")
@@ -133,7 +137,11 @@ public class EditAddressActivity extends AppCompatActivity {
                                 edtHoTen.setText((String) address.get("name"));
                                 edtSDT.setText((String) address.get("phone"));
                                 edtTenDuong.setText((String) address.get("street"));
-                                edtTinh.setText((String) address.get("province"));
+                                province = (String) address.get("province");
+                                district = (String) address.get("district");
+                                commune = (String) address.get("commune");
+
+                                edtTinh.setText(commune + ", " + district + ", " + province);
                                 detailedAddressID = (String) address.get("detailedAddressID");
 
                                 Boolean isDefault = (Boolean) address.get("default");
@@ -153,14 +161,15 @@ public class EditAddressActivity extends AppCompatActivity {
         String name = edtHoTen.getText().toString();
         String phone = edtSDT.getText().toString();
         String street = edtTenDuong.getText().toString();
-        String detailedAddress = edtTinh.getText().toString();
         boolean isDefault = switchDefault.isChecked();
 
         Map<String, Object> updatedAddress = new HashMap<>();
         updatedAddress.put("addressId", AddressId);
         updatedAddress.put("street", street);
         updatedAddress.put("phone", phone);
-        updatedAddress.put("detailedAddress", detailedAddress);
+        updatedAddress.put("province", province);
+        updatedAddress.put("district", district);
+        updatedAddress.put("commune", commune);
         updatedAddress.put("detailedAddressID", detailedAddressID);
         updatedAddress.put("name", name);
         updatedAddress.put("default", isDefault);

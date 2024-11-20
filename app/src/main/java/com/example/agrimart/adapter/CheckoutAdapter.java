@@ -35,7 +35,7 @@ public class CheckoutAdapter extends RecyclerView.Adapter<CheckoutAdapter.Produc
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = productList.get(position);
         holder.tvProductName.setText(product.getName());
-        holder.price.setText(formatPrice(product.getPrice()));
+        //holder.price.setText(formatPrice(product.getPrice()));
         holder.quantityProduct.setText("x" + product.getQuantity());
         Picasso.get().load(product.getImages().get(0)).into(holder.imgProduct);
     }

@@ -47,7 +47,7 @@
         android:layout_below="@id/tvPrice"
         android:layout_toStartOf="@id/tvStatus"
         android:layout_marginTop="24dp"
-        android:text="Trạng thái vận chuyển " />
+        android:text="Trạng thái vận chuyển: " />
 
     <TextView
         android:id="@+id/tvStatus"
@@ -58,6 +58,6 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@id/tvPrice"
         android:textColor="@color/black"
-        android:text="ready_to_pick1" />
+        android:text="Đã giao" />
 
 </RelativeLayout>

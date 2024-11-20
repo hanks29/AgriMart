@@ -160,28 +160,29 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
         holder.binding.btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GHNService ghnService = new GHNService();
-                ghnService.cancelShippingOrder(orderList.get(holder.getAdapterPosition()).getOrderCode(), new GHNService.Callback<JsonNode>() {
-                    @Override
-                    public void onResponse(JsonNode result) {
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("orders").document(orderList.get(holder.getAdapterPosition()).getOrderId())
-                                .update("status", "delete")
-                                .addOnSuccessListener(aVoid -> {
-                                    orderList.remove(holder.getAdapterPosition());
-                                    notifyDataSetChanged();
-                                    Toast.makeText(holder.binding.getRoot().getContext(), "Đã hủy đơn hàng", Toast.LENGTH_SHORT).show();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(holder.binding.getRoot().getContext(), "Hủy đơn hàng thất bại", Toast.LENGTH_SHORT).show();
-                                });
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        Toast.makeText(holder.binding.getRoot().getContext(), "Hủy đơn hàng thất bại", Toast.LENGTH_SHORT).show();
-                    }
-                });
+//                GHNService ghnService = new GHNService();
+//                ghnService.cancelShippingOrder(orderList.get(holder.getAdapterPosition()).getOrderCode(), new GHNService.Callback<JsonNode>() {
+//                    @Override
+//                    public void onResponse(JsonNode result) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Exception e) {
+//                        Toast.makeText(holder.binding.getRoot().getContext(), "Hủy đơn hàng thất bại", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("orders").document(orderList.get(holder.getAdapterPosition()).getOrderId())
+                        .update("status", "delete")
+                        .addOnSuccessListener(aVoid -> {
+                            orderList.remove(holder.getAdapterPosition());
+                            notifyDataSetChanged();
+                            Toast.makeText(holder.binding.getRoot().getContext(), "Đã hủy đơn hàng", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(holder.binding.getRoot().getContext(), "Hủy đơn hàng thất bại", Toast.LENGTH_SHORT).show();
+                        });
             }
         });
 

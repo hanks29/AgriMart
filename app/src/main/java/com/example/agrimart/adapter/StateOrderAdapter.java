@@ -28,6 +28,9 @@ public class StateOrderAdapter extends FragmentStateAdapter {
             case 2:{
                 return new InTransitFragment();
             }
+            case 3:{
+                return new DeliveredFragment();
+            }
             default:
                 return new PendingConfirmationFragment();
         }

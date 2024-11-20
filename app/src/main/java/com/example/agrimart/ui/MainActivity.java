@@ -3,31 +3,38 @@ package com.example.agrimart.ui;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import com.example.agrimart.R;
+import com.example.agrimart.data.model.Notification;
 import com.example.agrimart.ui.Account.SignInActivity;
 import com.example.agrimart.ui.Cart.CartFragment;
 import com.example.agrimart.ui.Explore.ExploreFragment;
 import com.example.agrimart.ui.Homepage.HomeFragment;
 import com.example.agrimart.ui.MyProfile.MyProfileFragment;
 import com.example.agrimart.ui.Notification.NotificationFragment;
+import com.example.agrimart.viewmodel.NotificationViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -36,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
     private static final int REQUEST_NOTIFICATION_PERMISSION = 1;
+    NotificationViewModel notificationViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         createNotificationChannel();
+        createNotificationsForUser();
     }
 
     @Override
@@ -187,10 +196,117 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
             } else {
-                // Permission denied
             }
+        }
+    }
+
+    public void sendNotification(String title, String message) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default_channel")
+                .setSmallIcon(R.drawable.logo_icon)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION_PERMISSION);
+            return;
+        }
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+    }
+
+    private void createNotificationsForUser() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("orders")
+                .whereEqualTo("userId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        Log.e("FirebaseError", "Error listening to orders", e);
+                        return;
+                    }
+
+                    if (snapshots != null && !snapshots.isEmpty()) {
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            if (dc.getType() == DocumentChange.Type.ADDED) {
+                                // Kiểm tra đơn hàng mới
+                                String status = dc.getDocument().getString("status");
+                                if ("pending".equals(status)) {
+                                    String orderCode = dc.getDocument().getString("order_code");
+                                    String imageUrl = dc.getDocument().getString("image_url");
+                                    long timestamp = System.currentTimeMillis();
+
+                                    String title = "Đặt hàng thành công!";
+                                    String message = "Đơn hàng của bạn đang được xử lý và sẽ sớm chuyển đến đơn vị vận chuyển.";
+
+                                    if (!title.isEmpty() && !message.isEmpty()) {
+                                        Notification notification = new Notification(title, message, timestamp, imageUrl);
+                                        sendNotification(title, message);
+                                        saveNotificationToFirestore(notification);
+                                    }
+                                }
+                            }
+
+                            if (dc.getType() == DocumentChange.Type.MODIFIED) {
+                                String status = dc.getDocument().getString("status");
+                                String orderCode = dc.getDocument().getString("order_code");
+                                String imageUrl = dc.getDocument().getString("image_url");
+                                long timestamp = System.currentTimeMillis();
+
+                                String title = "";
+                                String message = "";
+
+                                switch (status) {
+                                    case "pending":
+                                        title = "Đặt hàng thành công!";
+                                        message = "Đơn hàng của bạn đang được xử lý và sẽ sớm chuyển đến đơn vị vận chuyển.";
+                                        break;
+                                    case "approved":
+                                        title = "Đơn hàng đang trên đường đến bạn!";
+                                        message = "Đơn hàng của bạn đã được giao cho đơn vị vận chuyển và đang trên đường đến địa chỉ của bạn. Vui lòng theo dõi để biết thời gian giao hàng dự kiến.";
+                                        break;
+                                    case "delivering":
+                                        title = "Đơn hàng đang trong quá trình vận chuyển";
+                                        message = "Đơn hàng của bạn hiện đang trong quá trình vận chuyển. Bạn có thể theo dõi tình trạng giao hàng trong mục Theo dõi đơn hàng.";
+                                        break;
+                                    case "delivered":
+                                        title = "Đơn hàng đã được giao thành công";
+                                        message = "Đơn hàng của bạn đã được giao thành công. Bạn có hài lòng với sản phẩm đã nhận? Để lại đánh giá của bạn để giúp người dùng khác hiểu hơn về sản phẩm nhé.";
+                                        break;
+                                    case "cancelled":
+                                        title = "Yêu cầu huỷ đơn hàng đã được chấp nhận";
+                                        message = "Yêu cầu huỷ đơn hàng đã được chấp nhận. Số tiền đã thanh toán sẽ được hoàn lại vào tài khoản của bạn trong thời gian sớm nhất nếu bạn thanh toán bằng VNPAY.";
+                                        break;
+                                    case "delivery_failed":
+                                        title = "Giao hàng thất bại";
+                                        message = "Đơn hàng của bạn giao không thành công. Đơn vị vận chuyển sẽ thực hiện giao hàng lại trong thời gian sớm nhất.";
+                                        break;
+                                }
+
+                                if (!title.isEmpty() && !message.isEmpty()) {
+                                    Notification notification = new Notification(title, message, timestamp, imageUrl);
+                                    sendNotification(title, message);  // Gửi thông báo
+                                    saveNotificationToFirestore(notification);  // Lưu vào Firestore
+                                }
+                            }
+                        }
+                    }
+                });
+    }
+
+    public void saveNotificationToFirestore(Notification notification) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+            notification.setUserId(currentUser.getUid());
+            db.collection("notifications").add(notification)
+                    .addOnSuccessListener(documentReference -> {
+                    })
+                    .addOnFailureListener(e -> {
+                    });
         }
     }
 }

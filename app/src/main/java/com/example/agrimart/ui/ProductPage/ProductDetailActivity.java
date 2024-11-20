@@ -163,13 +163,12 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         if (product.getImages() != null && !product.getImages().isEmpty()) {
             Glide.with(this)
-                    .load(product.getImages().get(0)) // lấy URL đầu tiên từ danh sách ảnh
+                    .load(product.getImages().get(0))
                     .into(img_product);
         }
 
         tvPrice.setText(productPrice.getText());
         warehouse.setText("Kho: " + product.getQuantity());
-        // Thiết lập sự kiện cho nút "Thêm vào giỏ"
 
         AtomicInteger dem = new AtomicInteger(1);
         quantity.setText(String.valueOf(dem.get()));

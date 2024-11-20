@@ -214,8 +214,8 @@ public class HomeFragment extends Fragment {
 
     private List<String> getCarouselItems() {
         List<String> items = new ArrayList<>();
-        items.add("https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/categories%2Fgiavi.jpg?alt=media&token=3670aa28-c5ff-483c-bf9a-3325bf48ce9c");
-        items.add("https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/categories%2Fgiavi.jpg?alt=media&token=3670aa28-c5ff-483c-bf9a-3325bf48ce9c");
+        items.add("https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/categories%2Ftraicay.jpg?alt=media&token=e62cd0f0-1f44-47f6-b258-f8173fe6adb7");
+        items.add("https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/categories%2Fraucuqua.jpg?alt=media&token=36486e13-adfc-4ee3-83ac-18b9cc351e67");
         items.add("https://firebasestorage.googleapis.com/v0/b/agri-mart-2342e.appspot.com/o/categories%2Fgiavi.jpg?alt=media&token=3670aa28-c5ff-483c-bf9a-3325bf48ce9c");
         return items;
     }

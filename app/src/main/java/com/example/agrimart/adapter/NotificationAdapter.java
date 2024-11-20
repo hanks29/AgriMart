@@ -38,16 +38,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.title.setText(notification.getTitle());
         holder.message.setText(notification.getMessage());
 
-        // Format thời gian
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         String formattedDate = sdf.format(new Date(notification.getTimestamp()));
         holder.time.setText(formattedDate);
 
-        // Tải ảnh từ URL bằng Glide
         Glide.with(holder.itemView.getContext())
                 .load(notification.getImageUrl())
                 .placeholder(R.drawable.placeholder_image)
-                .error(R.drawable.error_image)
+                .error(R.drawable.logo_icon)
                 .into(holder.notificationImage);
     }
 

@@ -13,8 +13,9 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.example.agrimart.R;
 import com.example.agrimart.ui.MainActivity;
@@ -34,8 +35,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             sendNotification(remoteMessage.getNotification().getTitle(),
                     remoteMessage.getNotification().getBody(),
-                    remoteMessage.getNotification().getIcon()
-            );
+                    remoteMessage.getNotification().getIcon());
         }
     }
 
@@ -49,7 +49,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.bell)  // Use bell icon from drawable
+                        .setSmallIcon(R.drawable.bell)
                         .setContentTitle(title)
                         .setContentText(messageBody)
                         .setAutoCancel(true)
@@ -64,23 +64,26 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
             }
         }
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId,
-                    "Thông báo mặc định",
+                    "Default Channel",
                     NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                notificationManager.notify(0, notificationBuilder.build());
-            }
-        } else {
-            notificationManager.notify(0, notificationBuilder.build());
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
         }
+        notificationManager.notify((int) System.currentTimeMillis(), notificationBuilder.build());
     }
 
     private Bitmap getBitmapFromURL(String strURL) {

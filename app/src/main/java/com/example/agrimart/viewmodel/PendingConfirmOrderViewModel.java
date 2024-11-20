@@ -32,7 +32,7 @@ public class PendingConfirmOrderViewModel extends ViewModel{
     public void getOrderListFromFirebase() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         db.collection("orders")
-                .whereEqualTo("status", "Pending")
+                .whereEqualTo("status", "pending")
                 .whereEqualTo("storeId", user.getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -49,7 +49,7 @@ public class PendingConfirmOrderViewModel extends ViewModel{
 
     public void getOrderWithStatusApproved(){
         db.collection("orders")
-                .whereEqualTo("status", "Approved")
+                .whereEqualTo("status", "approved")
                 .whereEqualTo("storeId", FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {

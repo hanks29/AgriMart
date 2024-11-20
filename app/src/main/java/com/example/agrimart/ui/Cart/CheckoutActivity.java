@@ -2,7 +2,6 @@ package com.example.agrimart.ui.Cart;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -30,7 +29,6 @@ import com.example.agrimart.ui.Payment.VNPaymentActivity;
 import com.example.agrimart.viewmodel.CheckoutViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.NumberFormat;

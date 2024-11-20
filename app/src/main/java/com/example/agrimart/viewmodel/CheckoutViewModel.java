@@ -207,17 +207,30 @@ public class CheckoutViewModel extends ViewModel {
                             }
                         }
 
-                        Map<String, Object> updatedCart = new HashMap<>();
-                        updatedCart.put("products", updatedProducts);
+                        if (updatedProducts.isEmpty()) {
+                            db.collection("cart").document(cartDoc.getId()).delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Cart", "Cart document deleted as no products are left.");
+                                        updateProductQuantities(products.stream()
+                                                .map(product -> (String) product.get("product_id"))
+                                                .collect(Collectors.toList()), callback, orderId);
+                                    })
+                                    .addOnFailureListener(e -> Log.e("Cart", "Error deleting cart document", e));
+                        } else {
+                            Map<String, Object> updatedCart = new HashMap<>();
+                            updatedCart.put("products", updatedProducts);
 
-                        db.collection("cart")
-                                .document(cartDoc.getId())
-                                .update(updatedCart)
-                                .addOnSuccessListener(aVoid -> {
-                                    Log.d("Cart", "Ordered products have been removed from the cart.");
-                                    callback.onSuccess(orderId);
-                                })
-                                .addOnFailureListener(e -> Log.e("Cart", "Error removing ordered products from cart", e));
+                            db.collection("cart")
+                                    .document(cartDoc.getId())
+                                    .update(updatedCart)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Cart", "Ordered products have been removed from the cart.");
+                                        updateProductQuantities(products.stream()
+                                                .map(product -> (String) product.get("product_id"))
+                                                .collect(Collectors.toList()), callback, orderId);
+                                    })
+                                    .addOnFailureListener(e -> Log.e("Cart", "Error removing ordered products from cart", e));
+                        }
                     }
                 })
                 .addOnFailureListener(e -> Log.e("Cart", "Error querying Firestore", e));
@@ -268,72 +281,73 @@ public class CheckoutViewModel extends ViewModel {
                                             @Override
                                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                 User shop = documentSnapshot.toObject(User.class);
-                                                ghnService.getProvinceId(shop.getStoreAddress().getCity(), new GHNService.Callback<Integer>() {
-                                                    @Override
-                                                    public void onResponse(Integer pro) {
-                                                        ghnService.getDistrictId(shop.getStoreAddress().getDistrict(), pro, new GHNService.Callback<Integer>() {
-                                                            @Override
-                                                            public void onResponse(Integer dis) {
-                                                                ghnService.getWardCode(shop.getStoreAddress().getWard(), dis, new GHNService.Callback<String>() {
-                                                                    @Override
-                                                                    public void onResponse(String wa) {
-                                                                        GHNRequestFee ghnRequestFee = new GHNRequestFee();
-                                                                        ghnRequestFee.setServiceTypeId(2);
-                                                                        ghnRequestFee.setFromWardCode(wa);
-                                                                        ghnRequestFee.setFromDistrictId(dis);
-                                                                        ghnRequestFee.setToWardCode(result);
-                                                                        ghnRequestFee.setToDistrictId(districtId);
-                                                                        ghnRequestFee.setWeight(1000);
-                                                                        List<Item> items = new ArrayList<>();
-                                                                        items.add(new Item("Khanh", 1, 100));
-                                                                        ghnRequestFee.setItems(items);
-                                                                        ghnService.getFeeOrder(ghnRequestFee, new GHNService.Callback<JsonNode>() {
-                                                                            @Override
-                                                                            public void onResponse(JsonNode rl) {
-                                                                                int fee = extractFee(rl);
-                                                                                shippingFee.setValue(fee);
-                                                                            }
+                                                if (shop != null && shop.getStoreAddress() != null) {
+                                                    ghnService.getProvinceId(shop.getStoreAddress().getCity(), new GHNService.Callback<Integer>() {
+                                                        @Override
+                                                        public void onResponse(Integer pro) {
+                                                            ghnService.getDistrictId(shop.getStoreAddress().getDistrict(), pro, new GHNService.Callback<Integer>() {
+                                                                @Override
+                                                                public void onResponse(Integer dis) {
+                                                                    ghnService.getWardCode(shop.getStoreAddress().getWard(), dis, new GHNService.Callback<String>() {
+                                                                        @Override
+                                                                        public void onResponse(String wa) {
+                                                                            GHNRequestFee ghnRequestFee = new GHNRequestFee();
+                                                                            ghnRequestFee.setServiceTypeId(2);
+                                                                            ghnRequestFee.setFromWardCode(wa);
+                                                                            ghnRequestFee.setFromDistrictId(dis);
+                                                                            ghnRequestFee.setToWardCode(result);
+                                                                            ghnRequestFee.setToDistrictId(districtId);
+                                                                            ghnRequestFee.setWeight(1000);
+                                                                            List<Item> items = new ArrayList<>();
+                                                                            items.add(new Item("Khanh", 1, 100));
+                                                                            ghnRequestFee.setItems(items);
+                                                                            ghnService.getFeeOrder(ghnRequestFee, new GHNService.Callback<JsonNode>() {
+                                                                                @Override
+                                                                                public void onResponse(JsonNode rl) {
+                                                                                    int fee = extractFee(rl);
+                                                                                    shippingFee.setValue(fee);
+                                                                                }
 
-                                                                            @Override
-                                                                            public void onFailure(Exception e) {
-                                                                                Log.d("REQUEST_BODY", e.getMessage());
-                                                                            }
-                                                                        });
-                                                                    }
+                                                                                @Override
+                                                                                public void onFailure(Exception e) {
+                                                                                    Log.d("REQUEST_BODY", e.getMessage());
+                                                                                }
+                                                                            });
+                                                                        }
 
-                                                                    @Override
-                                                                    public void onFailure(Exception e) {
-                                                                        Log.d("REQUEST_BODY", "shop" + e.getMessage() + shop.getAddresses().get(0).getWard());
-                                                                    }
-                                                                });
-                                                            }
+                                                                        @Override
+                                                                        public void onFailure(Exception e) {
+                                                                            Log.d("REQUEST_BODY", "shop" + e.getMessage() + shop.getAddresses().get(0).getWard());
+                                                                        }
+                                                                    });
+                                                                }
 
-                                                            @Override
-                                                            public void onFailure(Exception e) {
-                                                                Log.d("REQUEST_BODY", e.getMessage());
-                                                            }
-                                                        });
-                                                    }
+                                                                @Override
+                                                                public void onFailure(Exception e) {
+                                                                    Log.d("REQUEST_BODY", e.getMessage());
+                                                                }
+                                                            });
+                                                        }
 
-                                                    @Override
-                                                    public void onFailure(Exception e) {
-                                                        Log.d("REQUEST_BODY", e.getMessage());
-                                                    }
-                                                });
-
+                                                        @Override
+                                                        public void onFailure(Exception e) {
+                                                            Log.d("REQUEST_BODY", e.getMessage());
+                                                        }
+                                                    });
+                                                } else {
+                                                    Log.d("REQUEST_BODY", "Shop or StoreAddress is null");
+                                                }
                                             }
                                         })
                                         .addOnFailureListener(e -> {
                                             Log.d("REQUEST_BODY", "Shop: " + e.getMessage());
                                         });
-
                             }
 
                             @Override
                             public void onFailure(Exception e) {
                                 Log.d("REQUEST_BODY", "Ward code: " + e.getMessage());
                             }
-
                         });
                     }
 

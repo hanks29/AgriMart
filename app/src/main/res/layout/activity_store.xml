@@ -55,22 +55,12 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/store_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_below="@id/storeName"
-        android:layout_toEndOf="@id/storeAvatar"
-        android:text="Đánh giá: 4.5" />
-
-    <TextView
         android:id="@+id/storeAddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_below="@id/store_rating"
+        android:layout_below="@id/storeName"
         android:layout_toEndOf="@id/storeAvatar"
         android:text="Đia chỉ: 123, ABC, XYZ" />
 

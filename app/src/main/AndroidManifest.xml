@@ -27,6 +27,14 @@
         android:theme="@style/Theme.AgriMart"
         tools:ignore="ExtraText"
         tools:targetApi="31">
+
+        <service
+            android:name=".data.service.FirebaseNotificationService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
         <activity
             android:name=".ui.ProductPage.ProductRatingActivity"
             android:exported="false" />

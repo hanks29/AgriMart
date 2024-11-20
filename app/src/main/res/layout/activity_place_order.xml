@@ -14,50 +14,70 @@
         android:background="@color/transparent"
         app:titleTextColor="@color/black"
         app:titleTextAppearance="@style/TextAppearance.AppCompat.Large"
-        app:navigationIcon="@drawable/ic_arrow_left" />
+        app:navigationIcon="@drawable/ic_arrow_left"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/tvOrderStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="180dp"
+        android:gravity="center"
         android:text="Đặt hàng thành công"
-        android:textSize="24sp"
         android:textColor="@android:color/black"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:gravity="center" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="240dp"
+        android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/tvOrderStatus"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:gravity="center">
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvOrderStatus">
 
         <Button
             android:id="@+id/btnReturnToHome"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_weight="1"
-            android:text="Trở về trang chủ"
-            android:layout_marginEnd="20dp"
             android:backgroundTint="@color/green"
-            android:layout_marginStart="40dp"/>
+            app:cornerRadius="8dp"
+            android:elevation="6dp"
+            android:fontFamily="sans-serif-medium"
+            android:shadowColor="#55000000"
+            android:text="Trang chủ"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/btnViewOrders"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Đơn mua"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="40dp"
-            android:backgroundTint="@color/green"/>
+            android:layout_weight="1"
+            android:backgroundTint="@color/green"
+            app:cornerRadius="8dp"
+            android:elevation="6dp"
+            android:fontFamily="sans-serif-medium"
+            android:shadowColor="#55000000"
+            android:text="Đơn mua"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

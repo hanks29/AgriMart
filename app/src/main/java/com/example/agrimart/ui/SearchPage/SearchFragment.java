@@ -51,7 +51,7 @@ public class SearchFragment extends Fragment {
 
         productAdapter = new ProductAdapter(products, product -> {
             Intent intent = new Intent(getContext(), ProductDetailActivity.class);
-            intent.putExtra("product", (Parcelable) product);
+            intent.putExtra("products", (Parcelable) product);
             intent.putExtra("storeId", product.getStoreId());
             startActivity(intent);
         });

@@ -25,6 +25,7 @@ public class SearchViewModel extends ViewModel {
 
     public void searchProductsByName(String query) {
         db.collection("products")
+                .whereEqualTo("status", "available")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -33,7 +34,7 @@ public class SearchViewModel extends ViewModel {
                         List<Product> remainingList = new ArrayList<>();
 
                         for (Product product : products) {
-                            if (product.getName() != null && "available".equals(product.getActive())) {
+                            if (product.getName() != null) {
                                 String productName = product.getName().toLowerCase();
                                 String lowerCaseQuery = query.toLowerCase();
                                 if (productName.startsWith(lowerCaseQuery)) {
@@ -55,15 +56,14 @@ public class SearchViewModel extends ViewModel {
     public void searchProductsByCategory(String categoryId) {
         db.collection("products")
                 .whereEqualTo("category_id", categoryId)
+                .whereEqualTo("status", "available")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<Product> products = task.getResult().toObjects(Product.class);
                         List<Product> availableProducts = new ArrayList<>();
                         for (Product product : products) {
-                            if ("available".equals(product.getActive())) {
-                                availableProducts.add(product);
-                            }
+                            availableProducts.add(product);
                         }
                         originalProductList = new ArrayList<>(availableProducts);
                         filteredProducts.setValue(availableProducts);
@@ -82,15 +82,14 @@ public class SearchViewModel extends ViewModel {
                         String storeId = storeTask.getResult().getDocuments().get(0).getId();
                         db.collection("products")
                                 .whereEqualTo("storeId", storeId)
+                                .whereEqualTo("status", "available")
                                 .get()
                                 .addOnCompleteListener(productTask -> {
                                     if (productTask.isSuccessful()) {
                                         List<Product> products = productTask.getResult().toObjects(Product.class);
                                         List<Product> availableProducts = new ArrayList<>();
                                         for (Product product : products) {
-                                            if ("available".equals(product.getActive())) {
-                                                availableProducts.add(product);
-                                            }
+                                            availableProducts.add(product);
                                         }
                                         originalProductList = new ArrayList<>(availableProducts);
                                         filteredProducts.setValue(availableProducts);

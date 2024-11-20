@@ -132,7 +132,7 @@ public class CheckoutViewModel extends ViewModel {
         order.put("userId", userId);
         order.put("total_price", totalPrice);
         order.put("expected_delivery_time", expectedDeliveryTime);
-        order.put("status", "Pending");
+        order.put("status", "pending");
         order.put("shipping_fee", shippingFee);
         order.put("orderId", orderId);
         order.put("paymentMethod", paymentMethod);
@@ -168,7 +168,6 @@ public class CheckoutViewModel extends ViewModel {
                     long quantity = documentSnapshot.getLong("quantity");
                     db.collection("products").document(productId).update("quantity", quantity - 1)
                             .addOnSuccessListener(aVoid -> {
-                                Log.d(TAG, "Product quantity updated.");
                                 callback.onSuccess(orderId);
                             })
                             .addOnFailureListener(e -> Log.e(TAG, "Error updating product quantity", e));

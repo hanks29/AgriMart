@@ -1,0 +1,94 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@color/background_light_blur" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="10dp">
+
+
+        <ImageView
+            android:id="@+id/imageView9"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:layout_weight="0"
+            app:srcCompat="@drawable/cart_store" />
+
+        <TextView
+            android:id="@+id/tv_store_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:text="@string/store_name"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:layout_weight="1"
+            android:textColor="@color/green"
+            android:text="Đã hủy"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/background_light_blur" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewItemOrder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/total_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:text="Tổng số tiền: 100000" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_buy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:layout_gravity="end"
+            android:background="@drawable/rounded_edittext_order"
+            android:text="Mua lại"
+            android:textAllCaps="false"
+            android:textColor="@color/green"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</LinearLayout>

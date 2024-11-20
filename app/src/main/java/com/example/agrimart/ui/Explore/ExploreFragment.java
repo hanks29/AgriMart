@@ -65,6 +65,7 @@ public class ExploreFragment extends Fragment {
 
         viewModel.getData();
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
             List<Fragment> fragments = new ArrayList<>();
             List<String> titles = new ArrayList<>();

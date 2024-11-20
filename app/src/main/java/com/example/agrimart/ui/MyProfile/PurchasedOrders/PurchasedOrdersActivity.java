@@ -1,7 +1,6 @@
 package com.example.agrimart.ui.MyProfile.PurchasedOrders;
 
 import android.os.Bundle;
-import android.util.Log; // Thêm import cho Log
 import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
@@ -10,10 +9,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.example.agrimart.R;
-import com.example.agrimart.adapter.PurchasedOrdersPagerAdapter;
+import com.example.agrimart.adapter.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
+import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PurchasedOrdersActivity extends AppCompatActivity {
     private static final String TAG = "PurchasedOrdersActivity"; // Thêm hằng số TAG cho log
@@ -35,50 +40,26 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
         ViewPager2 viewPager = findViewById(R.id.view_pager);
         ImageButton btn_back = findViewById(R.id.btn_back);
 
+        //------------------------------------------------------------------------------------------
+        List<Fragment> fragments = new ArrayList<>();
+        List<String> titles = Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Đang giao", "Đã giao", "Đã hủy");
+        List<String> statuses = Arrays.asList("pending", "approved", "delivering", "delivered", "cancel");
 
-        // Tạo adapter cho ViewPager2
-        PurchasedOrdersPagerAdapter pagerAdapter = new PurchasedOrdersPagerAdapter(this);
-        viewPager.setAdapter(pagerAdapter);
+        int selectedCategoryIndex = -1;
 
-        // Kết nối TabLayout với ViewPager2 thông qua TabLayoutMediator
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            switch (position) {
-                case 0:
-                    tab.setText("Chờ xác nhận");
-                    break;
-                case 1:
-                    tab.setText("Chờ lấy hàng");
-                    break;
-                case 2:
-                    tab.setText("Chờ giao hàng");
-                    break;
-                case 3:
-                    tab.setText("Đã giao");
-                    break;
-                case 4:
-                    tab.setText("Đã hủy");
-                    break;
-                case 5:
-                    tab.setText("Trả hàng");
-                    break;
-            }
-        }).attach();
+        for (int i = 0; i < statuses.size(); i++) {
+            fragments.add(new OrderStatusFragment(statuses.get(i)));
+        }
 
-        // Lấy giá trị tab được chọn từ Intent
-        int selectedTab = getIntent().getIntExtra("selectedTab", 0);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this, fragments, titles);
+        viewPager.setAdapter(viewPagerAdapter);
 
-        // Ghi log giá trị selectedTab
-        Log.d(TAG, "Selected tab: " + selectedTab);
 
-        // Sử dụng post để đảm bảo giao diện đã sẵn sàng trước khi chuyển tab
-        viewPager.post(() -> {
-            if (selectedTab >= 0 && selectedTab < viewPager.getAdapter().getItemCount()) {
-                viewPager.setCurrentItem(selectedTab, false);
-                Log.d(TAG, "Navigated to tab: " + selectedTab);
-            } else {
-                Log.d(TAG, "Invalid tab index: " + selectedTab);
-            }
-        });
+        new TabLayoutMediator(tabLayout, viewPager, (tab, pos) -> tab.setText(titles.get(pos))).attach();
+
+
+
+
 
         btn_back.setOnClickListener(v -> onBackPressed());
     }

@@ -27,7 +27,6 @@ public class CategoryViewModel extends ViewModel {
 
     public void setSortOrder(String sortOrder) {
         this.sortOrder.setValue(sortOrder);  // Đảm bảo việc thay đổi giá trị trong ViewModel
-        Log.e("CategoryViewModel", "Co truyen vao "+ sortOrder);
     }
 
     public void getProductsByCategory(String categoryID) {

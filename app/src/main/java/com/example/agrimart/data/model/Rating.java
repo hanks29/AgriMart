@@ -10,6 +10,8 @@ public class Rating {
     private String userImage;
     private String fullName;
     private Timestamp updatedAt;
+    private String status;
+    private String quantity;
 
     // Constructor mặc định (bắt buộc)
     public Rating() {}

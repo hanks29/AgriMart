@@ -35,6 +35,15 @@ public class OrderStatusFragment extends Fragment {
         this.status = status;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Load lại dữ liệu khi tab được hiển thị
+        if (viewModel != null) {
+            viewModel.getData(status);
+        }
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

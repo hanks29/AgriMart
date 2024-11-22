@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/background_light_blur" />
+
+    <LinearLayout
+        android:id="@+id/llLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:orientation="vertical">
+
+        <!-- Ratings Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/product_image"
+                app:srcCompat="@drawable/apple"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="centerCrop" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txt_productName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Móc khóa"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/txt_quantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="1 cái" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/background_light_blur" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/numberRating"
+                android:layout_width="139dp"
+                android:layout_height="wrap_content"
+                android:text="Chất lượng sản phẩm"
+                android:textColor="@color/black"
+                android:textSize="19sp" />
+            <!-- Rating Bar and Number of Reviews -->
+            <per.wsj.library.AndRatingBar
+                android:id="@+id/rating"
+                app:bgColor="#C0C0C0"
+                app:keepOriginColor="true"
+                app:starColor="#FFD700"
+                android:layout_width="172dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:rating="4.2" />
+
+            <TextView
+                android:id="@+id/Satus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Hài lòng"
+                android:textColor="@color/gray"
+                android:textSize="19sp" />
+
+        </LinearLayout>
+
+        <!-- Review List -->
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/edtReview"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/rounded_edittext"
+        android:backgroundTint="@color/background_light_blur_1"
+        android:gravity="top"
+        android:hint="Hãy chia sẻ nhận xét cho sản phẩm này bạn nhé!"
+        android:padding="10dp" />
+</LinearLayout>

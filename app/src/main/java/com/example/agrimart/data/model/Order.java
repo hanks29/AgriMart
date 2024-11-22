@@ -35,6 +35,8 @@ public class Order implements Serializable {
 
     private String storeName;
 
+    private String paymentMethod;
+
     public Order() {
     }
 
@@ -136,5 +138,13 @@ public class Order implements Serializable {
 
     public void setStoreName(String storeName) {
         this.storeName = storeName;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

@@ -127,6 +127,20 @@ public class OrderStatusFragmentViewModel extends ViewModel {
         }
     }
 
+    public void updateOrderStatus(String orderId, String newStatus, OnStatusUpdateListener listener) {
+        firestore.collection("orders")
+                .document(orderId)
+                .update("status", newStatus)
+                .addOnSuccessListener(unused -> listener.onSuccess("Order status updated successfully"))
+                .addOnFailureListener(e -> listener.onError("Failed to update order status: " + e.getMessage()));
+    }
+
+    public interface OnStatusUpdateListener {
+        void onSuccess(String message);
+        void onError(String errorMessage);
+    }
+
+
     public interface OnDataFetchedListener {
         void onDataFetched(List<Order> updatedOrders);
         void onError(String errorMessage);

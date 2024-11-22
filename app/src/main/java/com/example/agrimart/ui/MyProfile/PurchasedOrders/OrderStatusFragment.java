@@ -71,7 +71,7 @@ public class OrderStatusFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(OrderStatusFragmentViewModel.class);
 
         // Khởi tạo Adapter
-        orderStoreAdapter = new OrderStoreAdapter(new ArrayList<>());
+        orderStoreAdapter = new OrderStoreAdapter(new ArrayList<>(), viewModel);
         recyclerView.setAdapter(orderStoreAdapter);
 
         viewModel.getData(status);

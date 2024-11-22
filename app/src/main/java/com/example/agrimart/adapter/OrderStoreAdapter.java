@@ -79,7 +79,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 translatedStatus = "Hoàn thành";
                 if (!orderStore.isCheckRating())
                 {
-                    holder.btnBuy.setVisibility(View.GONE);
+                    holder.btnBuy.setText("Đánh giá");
                     holder.btnDetail.setVisibility(View.GONE);
                 }
                 break;
@@ -148,11 +148,26 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         }
         else if(orderStore.getStatus().equals("approved"))
         {
-            holder.btnBuy.setOnClickListener(v -> {
-                Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
-                intent.putExtra("order", orderStore); // Đính kèm đối tượng Order
-                holder.itemView.getContext().startActivity(intent);
+            viewModel.updateOrderStatus(orderStore.getOrderId(), "delivered", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+                @Override
+                public void onSuccess(String message) {
+                    // Xử lý khi cập nhật thành công
+                    viewModel.getData("approved");
+
+                    Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
+                    intent.putExtra("order", orderStore);
+                    holder.itemView.getContext().startActivity(intent);
+                }
+
+
+
+                @Override
+                public void onError(String errorMessage) {
+                    // Xử lý khi có lỗi
+
+                }
             });
+
         }
     }
 

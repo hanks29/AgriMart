@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Product implements Serializable, Parcelable {
-
     private String product_id;
     private String name;
     private double price;

@@ -24,7 +24,7 @@ import java.util.Map;
 
 import per.wsj.library.AndRatingBar;
 
-public class ProductRatingActivity extends AppCompatActivity {
+public class ListProductRatingActivity extends AppCompatActivity {
 
     private RecyclerView ratingRecyclerView;
     private RatingAdapter ratingAdapter;
@@ -38,7 +38,7 @@ public class ProductRatingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_product_rating);
+        setContentView(R.layout.activity_list_product_rating);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

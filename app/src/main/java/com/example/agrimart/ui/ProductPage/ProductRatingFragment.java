@@ -16,8 +16,6 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.RatingAdapter;
 import com.example.agrimart.data.model.Rating;
@@ -134,7 +132,7 @@ public class ProductRatingFragment extends Fragment {
 
     void nextAllRating() {
         // Create an Intent to start ProductRatingActivity
-        Intent intent = new Intent(requireActivity(), ProductRatingActivity.class);
+        Intent intent = new Intent(requireActivity(), ListProductRatingActivity.class);
 
         // Pass the productId as an extra to the intent
         intent.putExtra("productId", productId);

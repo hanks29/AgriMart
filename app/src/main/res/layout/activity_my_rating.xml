@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:id="@+id/main1"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <!-- Tiêu đề -->
     <LinearLayout
@@ -34,7 +35,7 @@
             android:layout_weight="1"
             android:gravity="start"
             android:layout_marginStart="15dp"
-            android:text="Đơn đã mua"
+            android:text="Đánh giá của tôi"
             android:textColor="@color/black"
             android:textSize="11pt" />
     </LinearLayout>
@@ -55,20 +56,14 @@
             android:id="@+id/tab_waiting_confirmation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chờ xác nhận" />
+            android:text="Chưa đánh giá" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/tab_waiting_goods"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chờ lấy hàng" />
+            android:text="Đã đánh giá" />
 
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/tab_return_goods"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Trả hàng" />
 
 
 

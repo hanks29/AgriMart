@@ -1,5 +1,8 @@
 package com.example.agrimart.adapter;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Order;
 import com.example.agrimart.data.model.Product;
+import com.example.agrimart.ui.Account.SignInActivity;
+import com.example.agrimart.ui.MainActivity;
+import com.example.agrimart.ui.MyProfile.MyRating.ProductRatingActivity;
 import com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;
 
 import java.util.ArrayList;
@@ -22,6 +28,7 @@ import java.util.List;
 public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.OrderStoreViewHolder> {
     private final List<Order> orderStoreList = new ArrayList<>();
     private OrderStatusFragmentViewModel viewModel;
+    Order orderStore;
 
     // Constructor
     public OrderStoreAdapter(List<Order> orderStoreList, OrderStatusFragmentViewModel viewModel) {
@@ -48,7 +55,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
     @Override
     public void onBindViewHolder(@NonNull OrderStoreViewHolder holder, int position) {
         // Get the current OrderStore
-        Order orderStore = orderStoreList.get(position);
+        orderStore = orderStoreList.get(position);
 
         List<Product> products = orderStore.getProducts();
         ProductOrderAdapter productOrderAdapter = new ProductOrderAdapter(products);
@@ -66,15 +73,15 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 break;
             case "approved":
                 translatedStatus = "Chờ giao hàng";
-                holder.btnBuy.setVisibility(View.GONE);
-                break;
-            case "delivering":
-                translatedStatus = "Đang giao";
-                holder.btnBuy.setVisibility(View.GONE);
+                holder.btnBuy.setText("Đã nhận được hàng");
                 break;
             case "delivered":
-                translatedStatus = "Đã giao";
-                holder.btnBuy.setVisibility(View.GONE);
+                translatedStatus = "Hoàn thành";
+                if (!orderStore.isCheckRating())
+                {
+                    holder.btnBuy.setVisibility(View.GONE);
+                    holder.btnDetail.setVisibility(View.GONE);
+                }
                 break;
             case "cancel":
                 translatedStatus = "Đã hủy";
@@ -85,11 +92,15 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         }
         holder.tvStatus.setText(translatedStatus);
 
-        holder.btnBuy.setOnClickListener(v -> cancelOrder(orderStore.getOrderId(), orderStore.getStatus(), orderStore.getPaymentMethod()));
+        holder.btnBuy.setOnClickListener(v -> cancelOrder(holder, orderStore.getOrderId(), orderStore.getStatus(), orderStore.getPaymentMethod()));
 
         holder.tvTotalPrice.setText("Tổng số tiền: " + orderStore.getTotalPrice() + " VND");
 
+
+
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -102,7 +113,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         TextView tvStoreName, tvStatus, tvTotalPrice;
         ImageView imageView;
         RecyclerView recyclerViewItemOrder;
-        AppCompatButton btnBuy;
+        AppCompatButton btnBuy, btnDetail;
 
         public OrderStoreViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -112,10 +123,11 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             imageView = itemView.findViewById(R.id.imageView9);
             recyclerViewItemOrder= itemView.findViewById(R.id.recyclerViewItemOrder);
             btnBuy = itemView.findViewById(R.id.btn_buy);
+            btnDetail = itemView.findViewById(R.id.btn_detail);
         }
     }
 
-    public void cancelOrder(String orderId, String status, String pay)
+    private void cancelOrder(OrderStoreViewHolder holder, String orderId, String status, String pay)
     {
         if(status.equals("pending")&& pay.equals("COD"))
         {
@@ -134,5 +146,17 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             });
 
         }
+
+        if(orderStore.getStatus().equals("approved"))
+        {
+            holder.btnBuy.setOnClickListener(v -> {
+                Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
+                intent.putExtra("order", orderStore); // Đính kèm đối tượng Order
+                holder.itemView.getContext().startActivity(intent);
+            });
+        }
     }
+
+
+
 }

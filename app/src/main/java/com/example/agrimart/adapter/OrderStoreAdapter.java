@@ -92,7 +92,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         }
         holder.tvStatus.setText(translatedStatus);
 
-        holder.btnBuy.setOnClickListener(v -> cancelOrder(holder, orderStore.getOrderId(), orderStore.getStatus(), orderStore.getPaymentMethod()));
+        holder.btnBuy.setOnClickListener(v -> cancelOrder(holder));
 
         holder.tvTotalPrice.setText("Tổng số tiền: " + orderStore.getTotalPrice() + " VND");
 
@@ -127,11 +127,11 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         }
     }
 
-    private void cancelOrder(OrderStoreViewHolder holder, String orderId, String status, String pay)
+    private void cancelOrder(OrderStoreViewHolder holder)
     {
-        if(status.equals("pending")&& pay.equals("COD"))
+        if(orderStore.getStatus().equals("pending")&& orderStore.getPaymentMethod().equals("COD"))
         {
-            viewModel.updateOrderStatus(orderId, "cancel", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+            viewModel.updateOrderStatus(orderStore.getOrderId(), "cancel", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
                 @Override
                 public void onSuccess(String message) {
                     // Xử lý khi cập nhật thành công
@@ -146,8 +146,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             });
 
         }
-
-        if(orderStore.getStatus().equals("approved"))
+        else if(orderStore.getStatus().equals("approved"))
         {
             holder.btnBuy.setOnClickListener(v -> {
                 Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);

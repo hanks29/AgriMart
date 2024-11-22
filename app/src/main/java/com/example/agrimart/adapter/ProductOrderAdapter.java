@@ -39,7 +39,7 @@ public class ProductOrderAdapter extends RecyclerView.Adapter<ProductOrderAdapte
         holder.tvProductName.setText(product.getName());
         holder.tvUnit.setText(product.getUnit());
         holder.tvQuantity.setText("x" + product.getQuantity());
-        holder.tvPrice.setText(String.valueOf(product.getPrice()));
+        holder.tvPrice.setText(String.format("%,.0f", product.getPrice()));
         Glide.with(holder.itemView.getContext())
                 .load(product.getImages().get(0))
                 .placeholder(R.drawable.placeholder_image)

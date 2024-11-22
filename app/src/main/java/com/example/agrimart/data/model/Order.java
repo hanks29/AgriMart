@@ -37,6 +37,8 @@ public class Order implements Serializable {
 
     private String paymentMethod;
 
+    private boolean checkRating;
+
     public Order() {
     }
 
@@ -146,5 +148,13 @@ public class Order implements Serializable {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public boolean isCheckRating() {
+        return checkRating;
+    }
+
+    public void setCheckRating(boolean checkRating) {
+        this.checkRating = checkRating;
     }
 }

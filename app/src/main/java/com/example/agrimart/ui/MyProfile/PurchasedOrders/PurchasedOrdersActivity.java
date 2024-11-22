@@ -42,8 +42,8 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
 
         //------------------------------------------------------------------------------------------
         List<Fragment> fragments = new ArrayList<>();
-        List<String> titles = Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Đang giao", "Đã giao", "Đã hủy");
-        List<String> statuses = Arrays.asList("pending", "approved", "delivering", "delivered", "cancel");
+        List<String> titles = Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Đã giao", "Đã hủy");
+        List<String> statuses = Arrays.asList("pending", "approved", "delivered", "cancel");
 
         int selectedCategoryIndex = -1;
 

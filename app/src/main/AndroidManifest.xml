@@ -27,16 +27,23 @@
         android:theme="@style/Theme.AgriMart"
         tools:ignore="ExtraText"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.MyProfile.MyRating.ProductRatingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.MyProfile.MyRating.MyRatingActivity"
+            android:exported="false" />
 
         <service
             android:name=".data.service.FirebaseNotificationService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <activity
-            android:name=".ui.ProductPage.ProductRatingActivity"
+            android:name=".ui.ProductPage.ListProductRatingActivity"
             android:exported="false" />
         <activity
             android:name=".ui.Cart.PlaceOrderActivity"
@@ -49,8 +56,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.PostProduct.ProductPreviewActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.MyProfile.MyAddress.GetAddressActivity"
             android:exported="false" />

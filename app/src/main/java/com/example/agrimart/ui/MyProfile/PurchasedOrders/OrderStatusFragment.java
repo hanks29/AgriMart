@@ -59,11 +59,7 @@ public class OrderStatusFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_order_status, container, false);
 
-
         addControl(view);
-
-
-
 
         return view;
     }
@@ -89,8 +85,6 @@ public class OrderStatusFragment extends Fragment {
 
             orderStoreAdapter.updateOrders(orders);
         });
-
-
 
     }
 }

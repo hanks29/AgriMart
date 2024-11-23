@@ -8,10 +8,14 @@ import com.example.agrimart.data.model.Order;
 import com.example.agrimart.data.model.Product;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderStatusFragmentViewModel extends ViewModel {
@@ -34,6 +38,7 @@ public class OrderStatusFragmentViewModel extends ViewModel {
         firestore.collection("orders")
                 .whereEqualTo("userId", userId)
                 .whereEqualTo("status", status)
+                .orderBy("created_at", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
@@ -128,12 +133,17 @@ public class OrderStatusFragmentViewModel extends ViewModel {
     }
 
     public void updateOrderStatus(String orderId, String newStatus, OnStatusUpdateListener listener) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", newStatus);
+        updates.put("created_at", FieldValue.serverTimestamp()); // Thêm thời gian hiện hành
+
         firestore.collection("orders")
                 .document(orderId)
-                .update("status", newStatus)
+                .update(updates)
                 .addOnSuccessListener(unused -> listener.onSuccess("Order status updated successfully"))
                 .addOnFailureListener(e -> listener.onError("Failed to update order status: " + e.getMessage()));
     }
+
 
     public interface OnStatusUpdateListener {
         void onSuccess(String message);

@@ -10,13 +10,9 @@ public class Rating {
     private String userImage;
     private String fullName;
     private Timestamp updatedAt;
-    private String status;
-    private String quantity;
 
-    // Constructor mặc định (bắt buộc)
     public Rating() {}
 
-    // Constructor đầy đủ
     public Rating(String userId, String rating, String review, String updatedAt) {
 
     }
@@ -30,7 +26,6 @@ public class Rating {
         this.updatedAt = updatedAt;
     }
 
-    // Getter và Setter
 
 
     public String getRating() {

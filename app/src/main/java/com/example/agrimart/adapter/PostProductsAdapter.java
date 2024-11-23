@@ -1,6 +1,7 @@
 // PostProductsAdapter.java
 package com.example.agrimart.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +50,7 @@ public class PostProductsAdapter extends RecyclerView.Adapter<PostProductsAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PostProductsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PostProductsViewHolder holder, @SuppressLint("RecyclerView") int position) {
         ProductResponse postProduct = postProductList.get(position);
         holder.bindData(postProduct);
         holder.binding.btnDetailPL.setOnClickListener(v -> onItemClickListener.onItemClick(postProduct));

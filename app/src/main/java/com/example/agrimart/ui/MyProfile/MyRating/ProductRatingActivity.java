@@ -1,9 +1,11 @@
 package com.example.agrimart.ui.MyProfile.MyRating;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +20,7 @@ import com.example.agrimart.adapter.ProductReviewAdapter;
 import com.example.agrimart.data.model.Order;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.ProductReview;
+import com.example.agrimart.viewmodel.ProductRatingActivityViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,7 @@ public class ProductRatingActivity extends AppCompatActivity {
     ProductReviewAdapter adapter;
     List<ProductReview> listProductReview;
     ImageButton btnBack;
+    ProductRatingActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,7 @@ public class ProductRatingActivity extends AppCompatActivity {
         listProductReview = new ArrayList<>();
         order = (Order) getIntent().getSerializableExtra("order");
         products = order.getProducts();
+        viewModel = new ProductRatingActivityViewModel();
 
         for (Product product : products) {
             ProductReview productReview = new ProductReview();
@@ -58,6 +63,7 @@ public class ProductRatingActivity extends AppCompatActivity {
 
             listProductReview.add(productReview);
         }
+
 
 
         addControl();
@@ -84,6 +90,28 @@ public class ProductRatingActivity extends AppCompatActivity {
     }
 
     private void saveRating() {
+        // Lấy danh sách đánh giá từ adapter
+        List<ProductReview> productReviews = adapter.getProductReviews();
 
+        // Lưu vào ViewModel
+        for (ProductReview productReview : productReviews) {
+            viewModel.saveProductRating(
+                    productReview.getProductId(),
+                    productReview.getRating(),
+                    productReview.getReview(),
+                    order.getOrderId()
+            );
+        }
+
+
+        // Hiển thị thông báo thành công
+        Toast.makeText(this, "Đánh giá đã được gửi!", Toast.LENGTH_SHORT).show();
+
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("ratingSaved", true);  // Truyền dữ liệu về Activity gọi
+        setResult(RESULT_OK, resultIntent);  // Trả về kết quả với mã RESULT_OK
+        finish();
     }
+
+
 }

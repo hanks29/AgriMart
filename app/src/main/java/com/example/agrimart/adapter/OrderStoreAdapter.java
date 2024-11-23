@@ -2,6 +2,7 @@ package com.example.agrimart.adapter;
 
 import static androidx.core.content.ContextCompat.startActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,8 +28,7 @@ import java.util.List;
 public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.OrderStoreViewHolder> {
     private final List<Order> orderStoreList = new ArrayList<>();
     private OrderStatusFragmentViewModel viewModel;
-
-    String po;
+    private final int REQUEST_CODE_RATING = 100;
 
     // Constructor
     public OrderStoreAdapter(List<Order> orderStoreList, OrderStatusFragmentViewModel viewModel) {
@@ -56,7 +56,6 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
     public void onBindViewHolder(@NonNull OrderStoreViewHolder holder, int position) {
         // Get the current OrderStore
         Order orderStore = orderStoreList.get(position);
-        po = String.valueOf(position);
 
         List<Product> products = orderStore.getProducts();
         ProductOrderAdapter productOrderAdapter = new ProductOrderAdapter(products);
@@ -156,7 +155,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
 
                     Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
                     intent.putExtra("order", order);
-                    holder.itemView.getContext().startActivity(intent);
+                    ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);
                 }
 
                 @Override
@@ -172,7 +171,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
 
             Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
             intent.putExtra("order", order);
-            holder.itemView.getContext().startActivity(intent);
+            ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);
 
 
         }

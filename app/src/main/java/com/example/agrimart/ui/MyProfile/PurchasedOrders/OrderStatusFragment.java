@@ -1,5 +1,8 @@
 package com.example.agrimart.ui.MyProfile.PurchasedOrders;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderStatusFragment extends Fragment {
+    private static final int REQUEST_CODE_RATING = 100;
     private OrderStatusFragmentViewModel viewModel;
     private String status;
     private TextView text;
@@ -63,6 +67,21 @@ public class OrderStatusFragment extends Fragment {
 
         return view;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_RATING) {
+            if (resultCode == RESULT_OK) {
+                // Kiểm tra nếu kết quả trả về là thành công
+                boolean ratingSaved = data.getBooleanExtra("ratingSaved", false);
+                if (ratingSaved) {
+                    viewModel.getData(status);
+                }
+            }
+        }
+    }
+
 
     private void addControl(View view) {
 

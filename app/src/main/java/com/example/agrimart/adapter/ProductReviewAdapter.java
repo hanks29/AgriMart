@@ -49,30 +49,43 @@ public class ProductReviewAdapter extends RecyclerView.Adapter<ProductReviewAdap
                 .error(R.drawable.error_image)
                 .into(holder.productImage);
 
-        // Set product name
         holder.productName.setText(productReview.getProductName());
-
-        // Set product quantity
         holder.productQuantity.setText(String.valueOf(productReview.getQuantity()));
-
-        // Set rating
         holder.ratingBar.setRating(productReview.getRating());
+        holder.reviewEditText.setText(productReview.getReview());
+
+        // Theo dõi sự thay đổi trên RatingBar
+        holder.ratingBar.setOnRatingChangeListener((ratingBar, rating, fromUser) -> {
+            if (fromUser) {
+                productReview.setRating(rating);
+            }
+        });
+
+        // Theo dõi sự thay đổi trên EditText
+        holder.reviewEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                productReview.setReview(holder.reviewEditText.getText().toString());
+            }
+        });
 
         if (position == productReviewList.size() - 1) {
-            // Increase the height of the last item
             holder.main.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, 2500));  // Set desired height for last item
-
-            holder.itemView.post(() -> {
-                RecyclerView recyclerView = (RecyclerView) holder.itemView.getParent();
-                if (recyclerView != null) {
-                    recyclerView.smoothScrollToPosition(getItemCount() - 1);
-                }
-            });
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    2500));
+        } else {
+            holder.main.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
         }
-
-
     }
+
+
+    public List<ProductReview> getProductReviews() {
+        // Trả về danh sách đã được cập nhật
+        return productReviewList;
+    }
+
+
 
     @Override
     public int getItemCount() {
@@ -102,6 +115,9 @@ public class ProductReviewAdapter extends RecyclerView.Adapter<ProductReviewAdap
 
 
         }
+
+
+
 
     }
 

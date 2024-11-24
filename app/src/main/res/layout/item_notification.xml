@@ -5,8 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
     android:paddingStart="10dp"
     android:paddingEnd="10dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     android:background="@drawable/round_border">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -22,40 +25,44 @@
     <TextView
         android:id="@+id/notification_title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Đặt hàng thành công"
+        android:layout_height="31dp"
+        android:layout_marginStart="12dp"
+        android:text="Tiêu đề"
         android:textSize="16sp"
+        android:textStyle="bold"
+
         app:layout_constraintBottom_toTopOf="@+id/notification_message"
-        app:layout_constraintEnd_toStartOf="@+id/notification_time"
-        app:layout_constraintHorizontal_bias="0.151"
         app:layout_constraintStart_toEndOf="@+id/notification_image"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.421" />
+        app:layout_constraintVertical_bias="0.5" />
 
     <TextView
         android:id="@+id/notification_message"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginBottom="16dp"
-        android:text="Đơn hàng của bạn đang được xử lý và sẽ sớm chuyển đến đơn vị giao hàng."
+        android:layout_width="264dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:text="nội dung."
         android:textColor="@android:color/black"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/notification_time"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@id/notification_image" />
+        app:layout_constraintStart_toEndOf="@id/notification_image"
+        app:layout_constraintTop_toBottomOf="@id/notification_title" />
 
     <TextView
         android:id="@+id/notification_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/notification_time"
-        android:textSize="12sp"
         android:textColor="@android:color/darker_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/notification_message" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/notification_message"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.967" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

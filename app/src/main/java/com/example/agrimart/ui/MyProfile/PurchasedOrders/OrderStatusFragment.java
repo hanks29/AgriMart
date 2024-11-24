@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderStatusFragment extends Fragment {
-    private static final int REQUEST_CODE_RATING = 100;
+
     private OrderStatusFragmentViewModel viewModel;
     private String status;
     private TextView text;
@@ -38,6 +38,10 @@ public class OrderStatusFragment extends Fragment {
         // Required empty public constructor
         this.status = status;
     }
+
+
+
+
 
     @Override
     public void onResume() {
@@ -68,19 +72,6 @@ public class OrderStatusFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_RATING) {
-            if (resultCode == RESULT_OK) {
-                // Kiểm tra nếu kết quả trả về là thành công
-                boolean ratingSaved = data.getBooleanExtra("ratingSaved", false);
-                if (ratingSaved) {
-                    viewModel.getData(status);
-                }
-            }
-        }
-    }
 
 
     private void addControl(View view) {
@@ -101,7 +92,6 @@ public class OrderStatusFragment extends Fragment {
         viewModel.getData(status);
 
         viewModel.getOrders().observe(getViewLifecycleOwner(), orders -> {
-
             orderStoreAdapter.updateOrders(orders);
         });
 

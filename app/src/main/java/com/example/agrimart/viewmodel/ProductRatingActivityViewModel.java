@@ -122,7 +122,12 @@ public class ProductRatingActivityViewModel extends ViewModel {
 
         // Tạo dữ liệu đánh giá
         Map<String, Object> ratingData = new HashMap<>();
-        ratingData.put("rating", rating);  // Lưu rating dưới dạng double
+        ratingData.put("rating", String.valueOf(rating));
+
+        if (review == null)
+        {
+            review = "";
+        }
         ratingData.put("review", review);
         ratingData.put("updatedAt", new Timestamp(new Date()));
         ratingData.put("userId", userId);

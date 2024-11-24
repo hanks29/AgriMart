@@ -28,7 +28,7 @@ import java.util.List;
 public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.OrderStoreViewHolder> {
     private final List<Order> orderStoreList = new ArrayList<>();
     private OrderStatusFragmentViewModel viewModel;
-    private final int REQUEST_CODE_RATING = 100;
+    private final int REQUEST_CODE_RATING = 1001;
 
     // Constructor
     public OrderStoreAdapter(List<Order> orderStoreList, OrderStatusFragmentViewModel viewModel) {
@@ -42,6 +42,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         orderStoreList.addAll(newOrders);
         notifyDataSetChanged();
     }
+
 
     @NonNull
     @Override
@@ -75,6 +76,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             case "approved":
                 translatedStatus = "Chờ giao hàng";
                 holder.btnBuy.setText("Đã nhận hàng");
+                holder.btnDetail.setVisibility(View.GONE);
                 break;
             case "delivered":
                 translatedStatus = "Hoàn thành";
@@ -155,7 +157,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
 
                     Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
                     intent.putExtra("order", order);
-                    ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);
+                    holder.itemView.getContext().startActivity(intent);
                 }
 
                 @Override
@@ -171,9 +173,8 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
 
             Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
             intent.putExtra("order", order);
+            intent.putExtra("position", position);
             ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);
-
-
         }
     }
 

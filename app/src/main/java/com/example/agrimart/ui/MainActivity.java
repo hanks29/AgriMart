@@ -23,7 +23,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import com.example.agrimart.R;
-import com.example.agrimart.data.model.Notification;
 import com.example.agrimart.ui.Account.SignInActivity;
 import com.example.agrimart.ui.Cart.CartFragment;
 import com.example.agrimart.ui.Explore.ExploreFragment;
@@ -34,7 +33,6 @@ import com.example.agrimart.viewmodel.NotificationViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -43,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
     private static final int REQUEST_NOTIFICATION_PERMISSION = 1;
-    NotificationViewModel notificationViewModel;
+    private NotificationViewModel notificationViewModel;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         if (sharedPreferences.getBoolean("is_logged_in", false)) {
             FirebaseUser currentUser = mAuth.getCurrentUser();
             if (currentUser != null) {
+                userId = currentUser.getUid();
                 navigateToHome();
                 getUserRole(currentUser);
             } else {
@@ -90,15 +90,15 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION_PERMISSION);
             }
         }
-
-        createNotificationChannel();
-        createNotifications();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         getUserInfo(mAuth.getCurrentUser());
+        notificationViewModel = new NotificationViewModel(getApplication());
+        notificationViewModel.createNotificationsForUser();
+        notificationViewModel.createNotificationsForSeller();
     }
 
     private void navigateToHome() {
@@ -132,6 +132,9 @@ public class MainActivity extends AppCompatActivity {
             selectedFragment = new ExploreFragment();
         } else if (item.getItemId() == R.id.notification) {
             selectedFragment = new NotificationFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("userId", userId);
+            selectedFragment.setArguments(bundle);
         } else if (item.getItemId() == R.id.profile) {
             selectedFragment = new MyProfileFragment();
         } else if (item.getItemId() == R.id.cart) {
@@ -167,7 +170,8 @@ public class MainActivity extends AppCompatActivity {
         DocumentReference docRef = db.collection("users").document(user.getUid());
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                String userId = documentSnapshot.getString("userId");
+                userId = documentSnapshot.getString("userId");
+                Log.d("MainActivity", "User ID: " + userId);
             }
         }).addOnFailureListener(e -> {
             Log.e("FirebaseError", "Error getting user info", e);
@@ -180,19 +184,6 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Default Channel";
-            String description = "Channel for default notifications";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("default_channel", name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -202,113 +193,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Log.d("NotificationPermission", "Notification permission denied");
             }
-        }
-    }
-
-    public void sendNotification(String title, String message) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default_channel")
-                .setSmallIcon(R.drawable.logo_icon)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATION_PERMISSION);
-            return;
-        }
-        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
-    }
-
-    private void createNotifications() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("orders")
-                .whereEqualTo("userId", FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .addSnapshotListener((snapshots, e) -> {
-                    if (e != null) {
-                        Log.e("FirebaseError", "Error listening to orders", e);
-                        return;
-                    }
-
-                    if (snapshots != null && !snapshots.isEmpty()) {
-                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                            createNotificationForOrder(dc, db);
-                        }
-                    }
-                });
-    }
-
-    private void createNotificationForOrder(DocumentChange dc, FirebaseFirestore db) {
-        String status = dc.getDocument().getString("status");
-        String orderCode = dc.getDocument().getString("order_code");
-        String imageUrl = dc.getDocument().getString("image_url");
-        long timestamp = System.currentTimeMillis();
-
-        String title = "";
-        String message = "";
-
-        if (status.equals("pending")) {
-            boolean notificationSent = dc.getDocument().getBoolean("notificationSent") != null && dc.getDocument().getBoolean("notificationSent");
-            if (!notificationSent) {
-                title = "Đặt hàng thành công!";
-                message = "Đơn hàng của bạn đang được xử lý và sẽ sớm chuyển đến đơn vị vận chuyển.";
-                Notification notification = new Notification(title, message, timestamp, imageUrl);
-                sendNotification(title, message);
-                saveNotificationToFirestore(notification);
-
-                // Update the order document to indicate that the notification has been sent
-                db.collection("orders").document(dc.getDocument().getId())
-                        .update("notificationSent", true)
-                        .addOnSuccessListener(aVoid -> Log.d("Firestore", "Order updated with notificationSent flag"))
-                        .addOnFailureListener(e -> Log.e("FirestoreError", "Error updating order with notificationSent flag", e));
-            }
-        } else {
-            switch (status) {
-                case "approved":
-                    title = "Đơn hàng đang trên đường đến bạn!";
-                    message = "Đơn hàng của bạn đã được giao cho đơn vị vận chuyển và đang trên đường đến địa chỉ của bạn.";
-                    break;
-                case "delivering":
-                    title = "Đơn hàng đang trong quá trình vận chuyển";
-                    message = "Đơn hàng của bạn hiện đang trong quá trình vận chuyển.";
-                    break;
-                case "delivered":
-                    title = "Đơn hàng đã được giao thành công";
-                    message = "Đơn hàng của bạn đã được giao thành công. Bạn có hài lòng với sản phẩm đã nhận?";
-                    break;
-                case "cancelled":
-                    title = "Yêu cầu huỷ đơn hàng đã được chấp nhận";
-                    message = "Yêu cầu huỷ đơn hàng đã được chấp nhận. Số tiền đã thanh toán sẽ được hoàn lại vào tài khoản của bạn.";
-                    break;
-                case "delivery_failed":
-                    title = "Giao hàng thất bại";
-                    message = "Đơn hàng của bạn giao không thành công. Đơn vị vận chuyển sẽ thực hiện giao hàng lại.";
-                    break;
-            }
-
-            if (!title.isEmpty() && !message.isEmpty()) {
-                Notification notification = new Notification(title, message, timestamp, imageUrl);
-                sendNotification(title, message);
-                saveNotificationToFirestore(notification);
-            }
-        }
-    }
-
-    public void saveNotificationToFirestore(Notification notification) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (currentUser != null) {
-            notification.setUserId(currentUser.getUid());
-            db.collection("notifications").add(notification)
-                    .addOnSuccessListener(documentReference -> {
-                        Log.d("Firestore", "Notification saved successfully");
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("FirestoreError", "Error saving notification", e);
-                    });
         }
     }
 }

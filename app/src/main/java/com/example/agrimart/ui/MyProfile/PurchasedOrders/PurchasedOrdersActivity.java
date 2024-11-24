@@ -1,5 +1,6 @@
 package com.example.agrimart.ui.MyProfile.PurchasedOrders;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 
@@ -22,45 +23,68 @@ import java.util.List;
 
 public class PurchasedOrdersActivity extends AppCompatActivity {
     private static final String TAG = "PurchasedOrdersActivity"; // Thêm hằng số TAG cho log
+    private static final int REQUEST_CODE_RATING = 1001;
 
+    private ViewPager2 viewPager;
+    private List<Fragment> fragments;
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_RATING) {
+            if (resultCode == RESULT_OK) {
+                // Lấy giá trị position từ Intent nếu có
+                int position = data.getIntExtra("position", -1); // -1 là giá trị mặc định nếu không có
+                if (position != -1) {
+                    // Load lại Fragment tại vị trí thứ 2 (hoặc bất kỳ vị trí nào bạn muốn)
+                    loadFragmentAtPosition(3); // Thay thế với vị trí bạn muốn
+                }
+            }
+        }
+    }
+
+    private void loadFragmentAtPosition(int position) {
+        if (position >= 0 && position < fragments.size()) {
+            // Lấy Fragment tại vị trí cần load lại
+            Fragment newFragment = new OrderStatusFragment("delivered"); // Hoặc trạng thái nào bạn muốn
+
+            // Thay thế Fragment hiện tại tại vị trí đó
+            fragments.set(position, newFragment);
+
+            // Cập nhật lại adapter với danh sách fragment mới
+            ViewPagerAdapter adapter = new ViewPagerAdapter(this, fragments, Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Đã giao", "Đã hủy"));
+            viewPager.setAdapter(adapter);
+            adapter.notifyDataSetChanged(); // Thông báo adapter để cập nhật
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_purchased_orders);
-        EdgeToEdge.enable(this);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main1), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         // Khởi tạo TabLayout và ViewPager2
         TabLayout tabLayout = findViewById(R.id.tab_layout);
-        ViewPager2 viewPager = findViewById(R.id.view_pager);
+        viewPager = findViewById(R.id.view_pager);
         ImageButton btn_back = findViewById(R.id.btn_back);
 
-        //------------------------------------------------------------------------------------------
-        List<Fragment> fragments = new ArrayList<>();
+        // Tạo danh sách Fragment và trạng thái
+        fragments = new ArrayList<>();
         List<String> titles = Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Đã giao", "Đã hủy");
         List<String> statuses = Arrays.asList("pending", "approved", "delivered", "cancel");
 
-        int selectedCategoryIndex = -1;
-
-        for (int i = 0; i < statuses.size(); i++) {
-            fragments.add(new OrderStatusFragment(statuses.get(i)));
+        for (String status : statuses) {
+            fragments.add(new OrderStatusFragment(status)); // Thêm các fragment vào danh sách
         }
 
+        // Gán adapter cho ViewPager2
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this, fragments, titles);
         viewPager.setAdapter(viewPagerAdapter);
 
-
+        // Thiết lập TabLayout với ViewPager2
         new TabLayoutMediator(tabLayout, viewPager, (tab, pos) -> tab.setText(titles.get(pos))).attach();
-
-
-
-
 
         btn_back.setOnClickListener(v -> onBackPressed());
     }
 }
+

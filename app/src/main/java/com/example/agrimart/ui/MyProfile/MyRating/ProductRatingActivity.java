@@ -35,6 +35,7 @@ public class ProductRatingActivity extends AppCompatActivity {
     List<ProductReview> listProductReview;
     ImageButton btnBack;
     ProductRatingActivityViewModel viewModel;
+    int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,7 @@ public class ProductRatingActivity extends AppCompatActivity {
 
         listProductReview = new ArrayList<>();
         order = (Order) getIntent().getSerializableExtra("order");
+        position = getIntent().getIntExtra("position", -1);
         products = order.getProducts();
         viewModel = new ProductRatingActivityViewModel();
 
@@ -103,13 +105,13 @@ public class ProductRatingActivity extends AppCompatActivity {
             );
         }
 
-
         // Hiển thị thông báo thành công
         Toast.makeText(this, "Đánh giá đã được gửi!", Toast.LENGTH_SHORT).show();
 
         Intent resultIntent = new Intent();
-        resultIntent.putExtra("ratingSaved", true);  // Truyền dữ liệu về Activity gọi
-        setResult(RESULT_OK, resultIntent);  // Trả về kết quả với mã RESULT_OK
+        resultIntent.putExtra("order", order); // Truyền đối tượng Order đã được cập nhật
+        resultIntent.putExtra("position", position);
+        setResult(RESULT_OK, resultIntent);
         finish();
     }
 

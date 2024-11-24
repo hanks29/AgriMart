@@ -39,6 +39,10 @@ public class ProductRatingFragment extends Fragment {
     private AndRatingBar rating;
     private LinearLayout nextAllRating;
 
+    public ProductRatingFragment() {
+
+    }
+
     public ProductRatingFragment(String productId) {
         this.productId = productId;
     }

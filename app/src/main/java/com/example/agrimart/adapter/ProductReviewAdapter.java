@@ -1,6 +1,8 @@
 package com.example.agrimart.adapter;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +56,7 @@ public class ProductReviewAdapter extends RecyclerView.Adapter<ProductReviewAdap
         holder.ratingBar.setRating(productReview.getRating());
         holder.reviewEditText.setText(productReview.getReview());
 
+
         // Theo dõi sự thay đổi trên RatingBar
         holder.ratingBar.setOnRatingChangeListener((ratingBar, rating, fromUser) -> {
             if (fromUser) {
@@ -62,11 +65,25 @@ public class ProductReviewAdapter extends RecyclerView.Adapter<ProductReviewAdap
         });
 
         // Theo dõi sự thay đổi trên EditText
-        holder.reviewEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                productReview.setReview(holder.reviewEditText.getText().toString());
+        holder.reviewEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Không cần xử lý
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Cập nhật dữ liệu khi văn bản thay đổi
+                productReview.setReview(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Không cần xử lý
             }
         });
+
+
 
         if (position == productReviewList.size() - 1) {
             holder.main.setLayoutParams(new LinearLayout.LayoutParams(

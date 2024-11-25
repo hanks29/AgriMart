@@ -3,6 +3,8 @@ package com.example.agrimart.data.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -12,6 +14,8 @@ public class Product implements Serializable, Parcelable {
     private double price;
     private String active;
     private String unit;
+
+    @PropertyName("category_id")
     private String category;
     private String description;
     private int height;
@@ -87,10 +91,12 @@ public class Product implements Serializable, Parcelable {
         this.unit = unit;
     }
 
+    @PropertyName("category_id")
     public String getCategory() {
         return category;
     }
 
+    @PropertyName("category_id")
     public void setCategory(String category) {
         this.category = category;
     }

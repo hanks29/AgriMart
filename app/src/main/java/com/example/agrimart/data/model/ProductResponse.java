@@ -1,10 +1,14 @@
 package com.example.agrimart.data.model;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 
 public class ProductResponse implements Serializable {
     private String name;
     private double price;
+
+    @PropertyName("category_id")
     private String category;
     private String description;
     private int quantity;
@@ -44,10 +48,12 @@ public class ProductResponse implements Serializable {
         this.imageUrls = imageUrls;
     }
 
+    @PropertyName("category_id")
     public String getCategory() {
         return category;
     }
 
+    @PropertyName("category_id")
     public void setCategory(String category) {
         this.category = category;
     }

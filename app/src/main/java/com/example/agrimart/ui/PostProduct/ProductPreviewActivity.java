@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +29,7 @@ import com.example.agrimart.ui.MyProfile.MyStore.MyStoreActivity;
 import com.example.agrimart.viewmodel.ProductReviewViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -63,6 +65,7 @@ public class ProductPreviewActivity extends AppCompatActivity {
                 product = new ProductResponse();
             }
             viewModel.setProduct(product);
+            Log.d("khanhne", "onCreate: " + product.getCategory());
             getCategoryFromFirebase(product.getCategory());
 //            viewModel.setCategory(product.getCategory());
 
@@ -75,16 +78,29 @@ public class ProductPreviewActivity extends AppCompatActivity {
         });
 
         binding.editPro.setOnClickListener(view -> {
-            Dialog dialog = new Dialog(ProductPreviewActivity.this);
-            dialog.setContentView(R.layout.dialog_edit_product);
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            Button btnUpdate = dialog.findViewById(R.id.btnUpdate);
-            Button btnCancel = dialog.findViewById(R.id.btnCancel);
-            EditText edtName = dialog.findViewById(R.id.edtName);
-            EditText edtPrice = dialog.findViewById(R.id.edtPrice);
-            EditText edtDes = dialog.findViewById(R.id.edtDescription);
-            EditText edtQuantity = dialog.findViewById(R.id.edtQuantity);
-            dialog.show();
+
+            View view2 = getLayoutInflater().inflate(R.layout.dialog_edit_product, null);
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(ProductPreviewActivity.this);
+            bottomSheetDialog.setContentView(view2);
+//            Dialog dialog = new Dialog(ProductPreviewActivity.this);
+//            dialog.setContentView(R.layout.dialog_edit_product);
+//            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            Button btnUpdate = view2.findViewById(R.id.btnUpdate);
+            Button btnCancel = view2.findViewById(R.id.btnCancel);
+            EditText edtName = view2.findViewById(R.id.edtName);
+            edtName.setText(product.getName());
+
+            EditText edtPrice = view2.findViewById(R.id.edtPrice);
+            String price = String.valueOf(product.getPrice());
+            edtPrice.setText(String.valueOf((int) Double.parseDouble(price)));
+
+            EditText edtDes = view2.findViewById(R.id.edtDescription);
+            edtDes.setText(product.getDescription());
+
+            EditText edtQuantity = view2.findViewById(R.id.edtQuantity);
+            edtQuantity.setText(String.valueOf(product.getQuantity()));
+
+            bottomSheetDialog.show();
             btnUpdate.setOnClickListener(view1 -> {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 if(edtName.getText().toString().equals("") || edtPrice.getText().toString().equals("") || edtDes.getText().toString().equals("") || edtQuantity.getText().toString().equals(""))
@@ -94,20 +110,24 @@ public class ProductPreviewActivity extends AppCompatActivity {
                 }
                 db.collection("products").document(product.getProductId())
                                 .update("name", edtName.getText().toString(),
+                                        "status", "edited",
                                         "price", Integer.parseInt(edtPrice.getText().toString()),
                                         "quantity", Integer.parseInt(edtQuantity.getText().toString())+product.getQuantity(),
                                         "description", product.getDescription())
                                         .addOnSuccessListener(aVoid -> {
                                             binding.tvStockQuantity.setText("Còn "+Integer.parseInt(edtQuantity.getText().toString())+product.getQuantity());
+                                            binding.tvPrice.setText("Giá: "+Integer.parseInt(edtPrice.getText().toString())+"đ");
+                                            binding.textView10.setText(edtDes.getText().toString());
+                                            binding.tvNameProduct.setText(edtName.getText().toString());
                                             Toast.makeText(ProductPreviewActivity.this, "Update product successful", Toast.LENGTH_SHORT).show();
                                         })
                                         .addOnFailureListener(e -> {
                                             Toast.makeText(ProductPreviewActivity.this, "Update product failed", Toast.LENGTH_SHORT).show();
                                         });
-                dialog.dismiss();
+                bottomSheetDialog.dismiss();
             });
             btnCancel.setOnClickListener(view1 -> {
-                dialog.dismiss();
+                bottomSheetDialog.dismiss();
             });
         });
     }
@@ -122,9 +142,13 @@ public class ProductPreviewActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             List<Category> categories = task.getResult().toObjects(Category.class);
-                            Log.d("KHANHHI", "onComplete: "+categories.get(0).getName());
-                            viewModel.setCategory(categories.get(0).getName());
-                            binding.tvCategory.setText(categories.get(0).getName());
+                            if (!categories.isEmpty()) {
+                                viewModel.setCategory(categories.get(0).getName());
+                                binding.tvCategory.setText(categories.get(0).getName());
+                            }else {
+                                Log.d("khanhne", "onComplete: " + "null");
+                            }
+
 
                         }
                     }

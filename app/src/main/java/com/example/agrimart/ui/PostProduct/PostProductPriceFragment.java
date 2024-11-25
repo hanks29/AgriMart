@@ -28,6 +28,7 @@ import com.example.agrimart.R;
 import com.example.agrimart.data.model.AddressRequestProduct;
 import com.example.agrimart.data.model.PostProduct;
 import com.example.agrimart.data.model.ProductRequest;
+import com.example.agrimart.data.model.ProductResponse;
 import com.example.agrimart.databinding.FragmentPostProductPriceBinding;
 import com.example.agrimart.ui.MyProfile.MyStore.EditProfileStoreActivity;
 import com.example.agrimart.ui.MyProfile.MyStore.RegisterSellerActivity;
@@ -139,13 +140,13 @@ public class PostProductPriceFragment extends Fragment {
                     Toast.makeText(requireContext(), "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(Integer.parseInt(binding.edtPrice.getText().toString())<=10000000 && Integer.parseInt(binding.edtPrice.getText().toString())>0)
+                if(Integer.parseInt(binding.edtPrice.getText().toString())>10000000 || Integer.parseInt(binding.edtPrice.getText().toString())<=0)
                 {
                     Toast.makeText(requireContext(), "Giá tiền phải nhỏ hơn hoặc bằng 10 triêu và lớn hơn 0.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if(Integer.parseInt(binding.edtQuantity.getText().toString())>0 && Integer.parseInt(binding.edtQuantity.getText().toString())<=1000000)
+                if(Integer.parseInt(binding.edtQuantity.getText().toString())<=0 || Integer.parseInt(binding.edtQuantity.getText().toString())>1000000)
                 {
                     Toast.makeText(requireContext(), "Số lượng phải lớn hơn 0 và bé hơn 1 triệu.", Toast.LENGTH_SHORT).show();
                     return;
@@ -161,6 +162,8 @@ public class PostProductPriceFragment extends Fragment {
         });
         binding.btnEdit.setOnClickListener(v -> {
             enableSpinner();
+//            Intent intent = new Intent(requireContext(), EditProfileStoreActivity.class);
+//            startActivity(intent);
         });
         return binding.getRoot();
     }
@@ -233,24 +236,14 @@ public class PostProductPriceFragment extends Fragment {
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
-                            Map<String, Object> storeAddress = (Map<String, Object>) document.get("store_address");
-
-                            if (storeAddress != null && !isEdit) {
-                                String city = (String) storeAddress.get("city");
-                                String district = (String) storeAddress.get("district");
-                                String ward = (String) storeAddress.get("ward");
-                                String street = (String) storeAddress.get("street");
-
-                                product.setAddress(new AddressRequestProduct(city, district, ward, street));
-                                product.setUnit(binding.edtUnit.getText().toString());
-                                saveProduct(newProductRef);
-                            }
-                            else{
-                                street=binding.edtStreet.getText().toString();
-                                product.setUnit(binding.edtUnit.getText().toString());
-                                product.setAddress(new AddressRequestProduct(selectedProvinceName, selectedDistrictName, selectedWardName, street));
-                                saveProduct(newProductRef);
-                                product.setAddress(new AddressRequestProduct(selectedProvinceName, selectedDistrictName, selectedWardName, street));
+//                            Map<String, Object> storeAddress = (Map<String, Object>) document.get("store_address");
+                            product.setUnit(binding.edtUnit.getText().toString());
+                            saveProduct(newProductRef);
+                            if (isEdit) {
+                                db.collection("users").document(currentUser.getUid()).update("store_address", new AddressRequestProduct(selectedProvinceName, selectedDistrictName, selectedWardName, street))
+                                        .addOnSuccessListener(aVoid -> {
+                                            Toast.makeText(requireContext(), "Cập nhật địa chỉ cửa hàng thành công", Toast.LENGTH_SHORT).show();
+                                        });
                             }
                         } else {
                             Log.d("Firestore", "Không tìm thấy tài liệu người dùng.");
@@ -268,8 +261,16 @@ public class PostProductPriceFragment extends Fragment {
                     Toast.makeText(requireContext(), "Tạo sản phẩm thành công", Toast.LENGTH_SHORT).show();
                     // Intent để mở ProductPreviewActivity nếu cần
                     Intent intent = new Intent(requireContext(), ProductPreviewActivity.class);
+                    ProductResponse product1 = new ProductResponse();
+                    product1.setProductId(this.product.getProductId());
+                    product1.setName(this.product.getName());
+                    product1.setPrice(this.product.getPrice());
+                    product1.setCategory(categoryName);
+                    product1.setQuantity(this.product.getQuantity());
+                    product1.setDescription(this.product.getDescription());
+                    product1.setImageUrls(this.product.getImageUrls().get(0));
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("product", product);
+                    bundle.putSerializable("product", product1);
                     intent.putExtras(bundle);
                     intent.putExtra("category", categoryName);
                     startActivity(intent);
@@ -290,6 +291,7 @@ public class PostProductPriceFragment extends Fragment {
         binding.spinnerCity.setEnabled(true);
         binding.spinnerDistrict.setEnabled(true);
         binding.spinnerWard.setEnabled(true);
+        isEdit=true;
     }
 
     private void loadProvinces(){

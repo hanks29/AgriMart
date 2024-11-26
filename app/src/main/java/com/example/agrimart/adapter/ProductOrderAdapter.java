@@ -18,6 +18,15 @@ import java.util.List;
 public class ProductOrderAdapter extends RecyclerView.Adapter<ProductOrderAdapter.ProductOrderViewHolder> {
 
     private List<Product> productList;
+    private OnProductClickListener productClickListener;
+
+    public interface OnProductClickListener {
+        void onProductClick(Product product);
+    }
+
+    public void setOnProductClickListener(OnProductClickListener listener) {
+        this.productClickListener = listener;
+    }
 
     // Constructor
     public ProductOrderAdapter(List<Product> productList) {
@@ -45,6 +54,12 @@ public class ProductOrderAdapter extends RecyclerView.Adapter<ProductOrderAdapte
                 .placeholder(R.drawable.placeholder_image)
                 .error(R.drawable.error_image)
                 .into(holder.imgProduct);
+
+        holder.itemView.setOnClickListener(v -> {
+            if(productClickListener != null){
+                productClickListener.onProductClick(product);
+            }
+        });
     }
 
     @Override

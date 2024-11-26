@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Order;
 import com.example.agrimart.data.model.Product;
+import com.example.agrimart.ui.Cart.CheckoutActivity;
 import com.example.agrimart.ui.MyProfile.MyRating.ProductRatingActivity;
+import com.example.agrimart.ui.MyProfile.PurchasedOrders.OrderInformationActivity;
 import com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;
 
 import java.util.ArrayList;
@@ -29,6 +32,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
     private final List<Order> orderStoreList = new ArrayList<>();
     private OrderStatusFragmentViewModel viewModel;
     private final int REQUEST_CODE_RATING = 1001;
+
 
     // Constructor
     public OrderStoreAdapter(List<Order> orderStoreList, OrderStatusFragmentViewModel viewModel) {
@@ -60,6 +64,9 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
 
         List<Product> products = orderStore.getProducts();
         ProductOrderAdapter productOrderAdapter = new ProductOrderAdapter(products);
+        productOrderAdapter.setOnProductClickListener(product -> {
+            openDetail(holder, orderStore);
+        });
 
         holder.recyclerViewItemOrder.setAdapter(productOrderAdapter);
         holder.recyclerViewItemOrder.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
@@ -76,16 +83,18 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             case "approved":
                 translatedStatus = "Chờ giao hàng";
                 holder.btnBuy.setText("Đã nhận hàng");
-                holder.btnDetail.setVisibility(View.GONE);
+
                 break;
             case "delivered":
                 translatedStatus = "Hoàn thành";
                 if (!orderStore.isCheckRating()) {
                     holder.btnBuy.setText("Đánh giá");
-                    holder.btnDetail.setVisibility(View.GONE);
+                }else {
+                    holder.btnDetail.setVisibility(View.VISIBLE);
                 }
+
                 break;
-            case "cancel":
+            case "canceled":
                 translatedStatus = "Đã hủy";
                 break;
             default:
@@ -98,7 +107,12 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         holder.btnBuy.setOnClickListener(v -> cancelOrder(holder, orderStore));  // Truyền đúng item vào đây
 
         holder.tvTotalPrice.setText("Tổng số tiền: " + orderStore.getTotalPrice() + " VND");
+
+        holder.main.setOnClickListener(v -> openDetail(holder, orderStore));
+
     }
+
+
 
 
     @Override
@@ -113,9 +127,11 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         ImageView imageView;
         RecyclerView recyclerViewItemOrder;
         AppCompatButton btnBuy, btnDetail;
+        LinearLayout main;
 
         public OrderStoreViewHolder(@NonNull View itemView) {
             super(itemView);
+            main = itemView.findViewById(R.id.main);
             tvStoreName = itemView.findViewById(R.id.tv_store_name);
             tvStatus = itemView.findViewById(R.id.status);
             tvTotalPrice = itemView.findViewById(R.id.total_price);
@@ -133,11 +149,11 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         }
 
         if (order.getStatus().equals("pending") && order.getPaymentMethod().equals("COD")) {
-            viewModel.updateOrderStatus(order.getOrderId(), "cancel", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+            viewModel.updateOrderStatus(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
                 @Override
                 public void onSuccess(String message) {
                     // Cập nhật trạng thái của item trong adapter
-                    order.setStatus("cancel");
+                    order.setStatus("pending");
                     notifyItemChanged(position); // Chỉ cập nhật item tại vị trí hiện tại
                     Toast.makeText(holder.itemView.getContext(), "Đơn hàng đã hủy!", Toast.LENGTH_SHORT).show();
                 }
@@ -152,10 +168,11 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 @Override
                 public void onSuccess(String message) {
                     // Cập nhật trạng thái của item trong adapter
-                    order.setStatus("delivered");
+                    order.setStatus("approved");
                     notifyItemChanged(position);
 
                     Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
+
                     intent.putExtra("order", order);
                     holder.itemView.getContext().startActivity(intent);
                 }
@@ -175,8 +192,39 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             intent.putExtra("order", order);
             intent.putExtra("position", position);
             ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);
+        } else {
+            onCheckoutButtonClicked(holder, order);
         }
     }
 
+    private void openDetail(OrderStoreViewHolder holder, Order order) {
+        int position = holder.getAdapterPosition(); // Lấy đúng vị trí của item
+        if (position == RecyclerView.NO_POSITION) {
+            return; // Nếu vị trí không hợp lệ, thoát khỏi phương thức
+        }
+
+        Intent intent = new Intent(holder.itemView.getContext(), OrderInformationActivity.class);
+        intent.putExtra("order", order);
+        holder.itemView.getContext().startActivity(intent);
+    }
+
+    private void onCheckoutButtonClicked(OrderStoreViewHolder holder, Order order) {
+        List<Product> selectedProducts = new ArrayList<>();
+        List<String> productIds = new ArrayList<>();
+
+        selectedProducts = order.getProducts();
+
+        for (Product p : selectedProducts)
+        {
+            productIds.add(p.getProduct_id());
+        }
+
+        Intent intent = new Intent(holder.itemView.getContext(), CheckoutActivity.class);
+        intent.putParcelableArrayListExtra("selectedProducts", new ArrayList<>(selectedProducts));
+        intent.putStringArrayListExtra("productIds", new ArrayList<>(productIds));
+        intent.putExtra("storeName", order.getStoreName());
+        holder.itemView.getContext().startActivity(intent);
+
+    }
 
 }

@@ -28,9 +28,12 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
-            android:name=".ui.MyProfile.MyRating.ProductRatingActivity"
-            android:windowSoftInputMode="adjustResize"
+            android:name=".ui.MyProfile.PurchasedOrders.OrderInformationActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.MyProfile.MyRating.ProductRatingActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.MyProfile.MyRating.MyRatingActivity"
             android:exported="false" />

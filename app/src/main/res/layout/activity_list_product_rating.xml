@@ -107,33 +107,4 @@
 
 
 
-    <LinearLayout
-        android:id="@+id/footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_product_detail">
-
-        <Button
-            android:id="@+id/buy_now"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/orange"
-            android:text="Mua ngay"
-            android:textAllCaps="false" />
-
-        <Button
-            android:id="@+id/add_cart"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/green"
-            android:text="Thêm vào giỏ"
-            android:textAllCaps="false" />
-    </LinearLayout>
-
-
 </LinearLayout>

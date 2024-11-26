@@ -49,12 +49,14 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
             Fragment newFragment = new OrderStatusFragment("delivered"); // Hoặc trạng thái nào bạn muốn
 
             // Thay thế Fragment hiện tại tại vị trí đó
-            fragments.set(position, newFragment);
+            fragments.set(position - 1, newFragment);
 
             // Cập nhật lại adapter với danh sách fragment mới
             ViewPagerAdapter adapter = new ViewPagerAdapter(this, fragments, Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Đã giao", "Đã hủy"));
             viewPager.setAdapter(adapter);
-            adapter.notifyDataSetChanged(); // Thông báo adapter để cập nhật
+
+
+            viewPager.setCurrentItem(position - 1 , true);
         }
     }
 
@@ -71,7 +73,7 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
         // Tạo danh sách Fragment và trạng thái
         fragments = new ArrayList<>();
         List<String> titles = Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Đã giao", "Đã hủy");
-        List<String> statuses = Arrays.asList("pending", "approved", "delivered", "cancel");
+        List<String> statuses = Arrays.asList("pending", "approved", "delivered", "canceled");
 
         for (String status : statuses) {
             fragments.add(new OrderStatusFragment(status)); // Thêm các fragment vào danh sách

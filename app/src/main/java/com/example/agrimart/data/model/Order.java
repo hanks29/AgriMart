@@ -1,9 +1,13 @@
 package com.example.agrimart.data.model;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.PropertyName;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class Order implements Serializable {
 
@@ -31,6 +35,12 @@ public class Order implements Serializable {
     @PropertyName("address")
     private String address;
 
+    @PropertyName("shipping_name")
+    private String shippingName;
+
+    @PropertyName("shipping_fee")
+    private Double shippingFee;
+
     private String statusDelivery;
 
     private String storeName;
@@ -38,6 +48,13 @@ public class Order implements Serializable {
     private String paymentMethod;
 
     private boolean checkRating;
+
+    private String username;
+
+    private String phonenumber;
+
+    @PropertyName("created_at")
+    private Timestamp createdAt;
 
     public Order() {
     }
@@ -156,5 +173,65 @@ public class Order implements Serializable {
 
     public void setCheckRating(boolean checkRating) {
         this.checkRating = checkRating;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
+    }
+
+    @PropertyName("shipping_name")
+    public String getShippingName() {
+        return shippingName;
+    }
+
+    @PropertyName("shipping_name")
+    public void setShippingName(String shippingName) {
+        this.shippingName = shippingName;
+    }
+
+    @PropertyName("shipping_fee")
+    public Double getShippingFee() {
+        return shippingFee;
+    }
+
+    @PropertyName("shipping_fee")
+    public void setShippingFee(Double shippingFee) {
+        this.shippingFee = shippingFee;
+    }
+
+    private long createdAtMillis;  // Chúng ta sẽ sử dụng long thay vì Timestamp để truyền qua Intent
+
+    // Getter và setter cho createdAtMillis
+    public long getCreatedAtMillis() {
+        return createdAtMillis;
+    }
+
+    @PropertyName("created_at")
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAtMillis = createdAt.toDate().getTime(); // Chuyển Timestamp thành long
+    }
+
+    @PropertyName("created_at")
+    public Timestamp getCreatedAt()
+    {
+        return createdAt;
+    }
+
+    public String getFormattedCreatedAtDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        Date date = new Date(createdAtMillis);
+        return dateFormat.format(date);
     }
 }

@@ -98,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
 
-                android:weightSum="4">
+                android:weightSum="3">
 
                 <!-- Icon and Label for "Chờ xác nhận" -->
 
@@ -187,6 +187,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:orientation="vertical"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp">

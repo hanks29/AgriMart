@@ -28,6 +28,7 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private List<Fragment> fragments;
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -52,7 +53,7 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
             fragments.set(position - 1, newFragment);
 
             // Cập nhật lại adapter với danh sách fragment mới
-            ViewPagerAdapter adapter = new ViewPagerAdapter(this, fragments, Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Đã giao", "Đã hủy"));
+            ViewPagerAdapter adapter = new ViewPagerAdapter(this, fragments, Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Trả hàng", "Đã giao", "Đã hủy"));
             viewPager.setAdapter(adapter);
 
 
@@ -72,8 +73,8 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
 
         // Tạo danh sách Fragment và trạng thái
         fragments = new ArrayList<>();
-        List<String> titles = Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Đã giao", "Đã hủy");
-        List<String> statuses = Arrays.asList("pending", "approved", "delivered", "canceled");
+        List<String> titles = Arrays.asList("Chờ xác nhận", "Chờ lấy hàng", "Chờ giao hàng", "Trả hàng" ,"Đã giao", "Đã hủy");
+        List<String> statuses = Arrays.asList("pending", "approved", "delivery", "refund" ,"delivered", "canceled");
 
         for (String status : statuses) {
             fragments.add(new OrderStatusFragment(status)); // Thêm các fragment vào danh sách
@@ -85,6 +86,11 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
 
         // Thiết lập TabLayout với ViewPager2
         new TabLayoutMediator(tabLayout, viewPager, (tab, pos) -> tab.setText(titles.get(pos))).attach();
+
+        int selectedTab = getIntent().getIntExtra("selectedTab", 0); // 0 là giá trị mặc định
+        if (selectedTab >= 0 && selectedTab < fragments.size()) {
+            viewPager.setCurrentItem(selectedTab, true); // Thiết lập tab được chọn
+        }
 
         btn_back.setOnClickListener(v -> onBackPressed());
     }

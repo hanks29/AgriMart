@@ -10,6 +10,8 @@ public class Rating {
     private String userImage;
     private String fullName;
     private Timestamp updatedAt;
+    private String productImg;
+    private String productName;
 
     public Rating() {}
 
@@ -26,6 +28,17 @@ public class Rating {
         this.updatedAt = updatedAt;
     }
 
+
+    public Rating(String userId, String rating, String review, Timestamp updatedAt, String userImage, String fullName, String productImg, String productName) {
+        this.userId = userId;
+        this.rating = rating;
+        this.review = review;
+        this.userImage = userImage;
+        this.fullName = fullName;
+        this.updatedAt = updatedAt;
+        this.productImg = productImg;
+        this.productName = productName;
+    }
 
 
     public String getRating() {
@@ -76,5 +89,21 @@ public class Rating {
 
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getProductImg() {
+        return productImg;
+    }
+
+    public void setProductImg(String productImg) {
+        this.productImg = productImg;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 }

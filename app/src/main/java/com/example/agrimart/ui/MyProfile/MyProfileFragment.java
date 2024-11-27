@@ -84,15 +84,6 @@ public class MyProfileFragment extends Fragment {
 
     @SuppressLint("WrongViewCast")
     void addControl(View view) {
-        purchase_order = view.findViewById(R.id.purchase_order);
-        confirm = view.findViewById(R.id.waiting_confirm);
-        goods = view.findViewById(R.id.waiting_goods);
-        delivery = view.findViewById(R.id.waiting_delivery);
-        evaluate = view.findViewById(R.id.evaluate);
-        my_store = view.findViewById(R.id.my_store);
-        my_address = view.findViewById(R.id.my_address);
-        setting = view.findViewById(R.id.setting);
-        logout = view.findViewById(R.id.logout);
         userNameTextView = view.findViewById(R.id.user_name);
         purchase_order = (LinearLayout)view.findViewById(R.id.purchase_order);
         confirm = (LinearLayout)view.findViewById(R.id.waiting_confirm);

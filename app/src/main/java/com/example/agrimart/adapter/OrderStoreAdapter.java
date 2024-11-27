@@ -2,6 +2,7 @@ package com.example.agrimart.adapter;
 
 import static androidx.core.content.ContextCompat.startActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import com.example.agrimart.data.model.Order;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.ui.Cart.CheckoutActivity;
 import com.example.agrimart.ui.MyProfile.MyRating.ProductRatingActivity;
+import com.example.agrimart.ui.MyProfile.MyRating.ShopRatingActivity;
 import com.example.agrimart.ui.MyProfile.PurchasedOrders.OrderInformationActivity;
 import com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;
 
@@ -57,6 +59,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         return new OrderStoreViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull OrderStoreViewHolder holder, int position) {
         // Get the current OrderStore
@@ -81,9 +84,18 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 holder.btnBuy.setText("Hủy đơn hàng");
                 break;
             case "approved":
+                translatedStatus = "Chờ lấy hàng";
+                break;
+            case "delivery":
                 translatedStatus = "Chờ giao hàng";
                 holder.btnBuy.setText("Đã nhận hàng");
+                holder.btnDetail.setVisibility(View.VISIBLE);
+                holder.btnDetail.setText("Trả hàng/Hoàn tiền");
+                break;
 
+            case "refund" :
+                translatedStatus = "Chờ giao hàng";
+                holder.btnBuy.setText("Đã nhận hàng");
                 break;
             case "delivered":
                 translatedStatus = "Hoàn thành";
@@ -109,6 +121,8 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         holder.tvTotalPrice.setText("Tổng số tiền: " + orderStore.getTotalPrice() + " VND");
 
         holder.main.setOnClickListener(v -> openDetail(holder, orderStore));
+
+        holder.btnDetail.setOnClickListener(v -> openRating(holder, orderStore));
 
     }
 
@@ -163,12 +177,12 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                     Toast.makeText(holder.itemView.getContext(), "Không thể hủy đơn hàng: " + errorMessage, Toast.LENGTH_SHORT).show();
                 }
             });
-        } else if (order.getStatus().equals("approved")) {
+        } else if (order.getStatus().equals("delivery")) {
             viewModel.updateOrderStatus(order.getOrderId(), "delivered", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
                 @Override
                 public void onSuccess(String message) {
                     // Cập nhật trạng thái của item trong adapter
-                    order.setStatus("approved");
+                    order.setStatus("delivery");
                     notifyItemChanged(position);
 
                     Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
@@ -225,6 +239,12 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         intent.putExtra("storeName", order.getStoreName());
         holder.itemView.getContext().startActivity(intent);
 
+    }
+
+    private void openRating(OrderStoreViewHolder holder, Order order) {
+        Intent intent = new Intent(holder.itemView.getContext(), ShopRatingActivity.class);
+        intent.putExtra("order", order);
+        holder.itemView.getContext().startActivity(intent);
     }
 
 }

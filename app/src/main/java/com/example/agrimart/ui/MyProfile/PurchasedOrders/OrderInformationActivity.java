@@ -3,6 +3,7 @@ package com.example.agrimart.ui.MyProfile.PurchasedOrders;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -31,7 +32,7 @@ import java.util.Locale;
 public class OrderInformationActivity extends AppCompatActivity {
     Order order;
     TextView status, shippingName, address, totalPriceProduct, shippingFee, totalPrice;
-    AppCompatButton btnBuy;
+    AppCompatButton btnBuy, btnDetail;
     ImageButton btnBack;
     RecyclerView recyclerViewDetail;
 
@@ -62,6 +63,7 @@ public class OrderInformationActivity extends AppCompatActivity {
         totalPrice = findViewById(R.id.total_price);
         btnBuy = findViewById(R.id.btn_buy);
         btnBack = findViewById(R.id.btn_back);
+        btnDetail = findViewById(R.id.btn_detail);
         recyclerViewDetail = findViewById(R.id.recyclerViewDetail);
     }
 
@@ -102,6 +104,7 @@ public class OrderInformationActivity extends AppCompatActivity {
             case "approved":
                 return "Chờ giao hàng ";
             case "delivered":
+                btnDetail.setVisibility(View.VISIBLE);
                 return "Đã giao vào ";
             case "canceled":
                 return "Đã hủy vào ";

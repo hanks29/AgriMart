@@ -64,6 +64,23 @@ public class CartFragment extends Fragment {
                 storeCartAdapter = new StoreCartAdapter(storeCarts);
                 storeCartAdapter.setOnTotalPriceChangedListener(totalPrice -> onTotalPriceChanged(totalPrice));
                 rvCarts.setAdapter(storeCartAdapter);
+
+                boolean allChecked = true;
+                for (Cart storeCart : storeCarts) {
+                    if (!storeCart.isChecked()) {
+                        allChecked = false;
+                        break;
+                    }
+                }
+
+                if (allChecked) {
+                    checkboxAll.setImageResource(R.drawable.checkbox_checked);
+                    checkboxAll.setTag("checked");
+                } else {
+                    checkboxAll.setImageResource(R.drawable.checkbox_empty);
+                    checkboxAll.setTag("unchecked");
+                }
+
                 storeCartAdapter.setOnCheckAllListener(check -> {
                     if (check) {
                         checkboxAll.setImageResource(R.drawable.checkbox_checked);

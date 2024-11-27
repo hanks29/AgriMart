@@ -231,11 +231,26 @@
         android:background="@drawable/rounded_product_detail">
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:padding="15dp"
+            android:visibility="gone"
+            android:background="@drawable/rounded_edittext"
+            android:text="Xem đánh giá"
+            android:layout_weight="1"
+            android:textAllCaps="false"
+            android:textSize="16sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_buy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
+            android:layout_weight="1"
             android:padding="15dp"
             android:background="@drawable/rounded_edittext_order"
             android:text="Mua lại"

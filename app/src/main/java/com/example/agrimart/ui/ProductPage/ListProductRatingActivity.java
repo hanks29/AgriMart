@@ -1,6 +1,10 @@
 package com.example.agrimart.ui.ProductPage;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -15,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.RatingAdapter;
 import com.example.agrimart.data.model.Rating;
+import com.example.agrimart.ui.MainActivity;
 import com.example.agrimart.viewmodel.ProductRatingFragmentViewModel;
 import com.google.firebase.Timestamp;
 
@@ -33,6 +38,7 @@ public class ListProductRatingActivity extends AppCompatActivity {
     private ProductRatingFragmentViewModel productRatingFragmentViewModel;
     private TextView numberReviews, numberRating;
     private AndRatingBar rating;
+    private ImageButton btnBack, btnCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +118,7 @@ public class ListProductRatingActivity extends AppCompatActivity {
         ratingRecyclerView.setAdapter(ratingAdapter);
 
 
+        addEvent();
     }
 
     void addControl()
@@ -120,8 +127,24 @@ public class ListProductRatingActivity extends AppCompatActivity {
         numberRating = findViewById(R.id.numberRating);
         numberReviews = findViewById(R.id.numberReviews);
         rating = findViewById(R.id.rating);
-
+        btnBack = findViewById(R.id.btn_back);
+        btnCart = findViewById(R.id.btn_cart);
 
         productRatingFragmentViewModel = new ProductRatingFragmentViewModel();
+    }
+
+    void addEvent()
+    {
+        btnBack.setOnClickListener(v -> finish());
+
+        btnCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create Intent to open MainActivity
+                Intent intent = new Intent(ListProductRatingActivity.this, MainActivity.class);
+                intent.putExtra("selected_item_id", R.id.cart);
+                startActivity(intent);
+            }
+        });
     }
 }

@@ -230,7 +230,7 @@ public class Order implements Serializable {
     }
 
     public String getFormattedCreatedAtDate() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault());
         Date date = new Date(createdAtMillis);
         return dateFormat.format(date);
     }

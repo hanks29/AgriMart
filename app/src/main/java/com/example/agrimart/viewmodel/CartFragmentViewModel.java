@@ -1,21 +1,16 @@
 package com.example.agrimart.viewmodel;
 
 import android.util.Log;
-
 import androidx.lifecycle.ViewModel;
-
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.Cart;
 import com.example.agrimart.data.model.ProductCart;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -174,8 +169,6 @@ public class CartFragmentViewModel extends ViewModel {
                     }
                 });
     }
-
-
 
     public void addProductToCart(String storeId, Product productToAdd, int quantity) {
         userId = auth.getCurrentUser().getUid();
@@ -405,49 +398,45 @@ public class CartFragmentViewModel extends ViewModel {
     public void removeCheckedProductsOrCart(OnDeleteCompletedListener listener) {
         String userId = auth.getCurrentUser().getUid();
 
-        // Truy vấn tất cả giỏ hàng của người dùng
         firestore.collection("cart")
                 .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
-                        // Duyệt qua tất cả các giỏ hàng của người dùng
+                        int[] pendingTasks = {querySnapshot.size()}; // Bộ đếm các nhiệm vụ cần hoàn thành
+
                         for (DocumentSnapshot cartDoc : querySnapshot.getDocuments()) {
                             List<Map<String, Object>> products = (List<Map<String, Object>>) cartDoc.get("products");
 
-                            boolean allChecked = true;  // Biến kiểm tra tất cả sản phẩm có checked = true hay không
+                            boolean allChecked = true;
 
-                            // Kiểm tra các sản phẩm có checked = true không
                             for (Map<String, Object> product : products) {
                                 if (product.get("checked") == null || !(boolean) product.get("checked")) {
-                                    allChecked = false;  // Nếu có sản phẩm không được chọn, set allChecked = false
+                                    allChecked = false;
                                     break;
                                 }
                             }
 
                             if (allChecked) {
-                                // Nếu tất cả sản phẩm đều được chọn (checked = true), xóa giỏ hàng
                                 firestore.collection("cart")
                                         .document(cartDoc.getId())
                                         .delete()
                                         .addOnSuccessListener(aVoid -> {
                                             Log.d("Cart", "Giỏ hàng đã bị xóa vì tất cả sản phẩm đều được chọn.");
-                                            // Gọi callback khi việc xóa hoàn tất
-                                            listener.onDeleteCompleted();
+                                            pendingTasks[0]--;
+                                            if (pendingTasks[0] == 0 && listener != null) {
+                                                listener.onDeleteCompleted();
+                                            }
                                         })
                                         .addOnFailureListener(e -> Log.e("Cart", "Lỗi khi xóa giỏ hàng", e));
                             } else {
-                                // Nếu không phải tất cả sản phẩm đều được chọn, chỉ xóa những sản phẩm được chọn
                                 List<Map<String, Object>> updatedProducts = new ArrayList<>();
-
-                                // Giữ lại những sản phẩm chưa được chọn (checked = false)
                                 for (Map<String, Object> product : products) {
                                     if (product.get("checked") == null || !(boolean) product.get("checked")) {
-                                        updatedProducts.add(product);  // Giữ lại sản phẩm không được chọn
+                                        updatedProducts.add(product);
                                     }
                                 }
 
-                                // Cập nhật lại giỏ hàng với các sản phẩm chưa được chọn
                                 Map<String, Object> updatedCart = new HashMap<>();
                                 updatedCart.put("products", updatedProducts);
 
@@ -456,25 +445,27 @@ public class CartFragmentViewModel extends ViewModel {
                                         .update(updatedCart)
                                         .addOnSuccessListener(aVoid -> {
                                             Log.d("Cart", "Các sản phẩm được chọn đã được xóa khỏi giỏ hàng.");
-                                            // Gọi callback khi việc xóa hoàn tất
-                                            listener.onDeleteCompleted();
+                                            pendingTasks[0]--;
+                                            if (pendingTasks[0] == 0 && listener != null) {
+                                                listener.onDeleteCompleted();
+                                            }
                                         })
                                         .addOnFailureListener(e -> Log.e("Cart", "Lỗi khi xóa sản phẩm khỏi giỏ hàng", e));
                             }
                         }
                     } else {
-                        // Nếu không có giỏ hàng cho người dùng
                         Log.e("Cart", "Không tìm thấy giỏ hàng của người dùng.");
+                        if (listener != null) {
+                            listener.onDeleteCompleted();
+                        }
                     }
                 })
                 .addOnFailureListener(e -> Log.e("Cart", "Lỗi khi truy vấn Firestore", e));
     }
 
-
     public interface OnDeleteCompletedListener {
         void onDeleteCompleted();
     }
-
 
     // Listener để callback khi lấy dữ liệu xong
     public interface OnDataFetchedListener {

@@ -47,4 +47,6 @@ public class ConfirmDeleteDialogFragment extends DialogFragment {
         dialog.setContentView(view);
         return dialog;
     }
+
+
 }

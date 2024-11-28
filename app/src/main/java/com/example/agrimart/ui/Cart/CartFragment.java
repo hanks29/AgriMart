@@ -57,50 +57,7 @@ public class CartFragment extends Fragment {
         viewModel = new CartFragmentViewModel();
         checkboxAll = view.findViewById(R.id.checkbox_all);
 
-        viewModel.getStoreCartsByUserId(new CartFragmentViewModel.OnDataFetchedListener() {
-            @Override
-            public void onDataFetched(List<Cart> storeCarts) {
-                // Cập nhật RecyclerView với danh sách StoreCart
-                storeCartAdapter = new StoreCartAdapter(storeCarts);
-                storeCartAdapter.setOnTotalPriceChangedListener(totalPrice -> onTotalPriceChanged(totalPrice));
-                rvCarts.setAdapter(storeCartAdapter);
-
-                boolean allChecked = true;
-                for (Cart storeCart : storeCarts) {
-                    if (!storeCart.isChecked()) {
-                        allChecked = false;
-                        break;
-                    }
-                }
-
-                if (allChecked) {
-                    checkboxAll.setImageResource(R.drawable.checkbox_checked);
-                    checkboxAll.setTag("checked");
-                } else {
-                    checkboxAll.setImageResource(R.drawable.checkbox_empty);
-                    checkboxAll.setTag("unchecked");
-                }
-
-                storeCartAdapter.setOnCheckAllListener(check -> {
-                    if (check) {
-                        checkboxAll.setImageResource(R.drawable.checkbox_checked);
-                        checkboxAll.setTag("checked");
-                    } else {
-                        checkboxAll.setImageResource(R.drawable.checkbox_empty);
-                        checkboxAll.setTag("unchecked");
-                    }
-                });
-
-                storeCartAdapter.notifyTotalPriceChanged();
-                //updateCheckoutButtonState();
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                // Xử lý lỗi nếu không lấy được dữ liệu
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
-            }
-        });
+        loadCartData();
 
         checkboxAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,9 +83,31 @@ public class CartFragment extends Fragment {
         });
 
         btn_delete.setOnClickListener(v -> {
-            // Hiển thị dialog xác nhận xóa
-            showDeleteDialog();
+            // Kiểm tra xem có ít nhất một sản phẩm được chọn trong giỏ hàng
+            boolean isAnyProductSelected = false;
+            if (storeCartAdapter != null) {
+                for (Cart cart : storeCartAdapter.getStoreCartList()) {
+                    for (Product product : cart.getProducts()) {
+                        if (product.isChecked()) {
+                            isAnyProductSelected = true;
+                            break;
+                        }
+                    }
+                    if (isAnyProductSelected) {
+                        break;
+                    }
+                }
+            }
+
+            if (isAnyProductSelected) {
+                // Nếu có sản phẩm được chọn, hiển thị dialog xác nhận xóa
+                showDeleteDialog();
+            } else {
+                // Nếu không có sản phẩm nào được chọn, hiển thị thông báo yêu cầu chọn sản phẩm
+                Toast.makeText(getContext(), "Vui lòng chọn ít nhất một sản phẩm để xóa", Toast.LENGTH_SHORT).show();
+            }
         });
+
 
         btnCheckout.setOnClickListener(v -> onCheckoutButtonClicked());
 
@@ -139,28 +118,24 @@ public class CartFragment extends Fragment {
         ConfirmDeleteDialogFragment dialogFragment = new ConfirmDeleteDialogFragment(new ConfirmDeleteDialogFragment.OnDeleteConfirmedListener() {
             @Override
             public void onDeleteConfirmed() {
-                // Gọi phương thức removeCheckedProductsOrCart với callback
                 viewModel.removeCheckedProductsOrCart(new CartFragmentViewModel.OnDeleteCompletedListener() {
                     @Override
                     public void onDeleteCompleted() {
-                        // Tải lại dữ liệu sau khi xóa hoàn tất
-                        viewModel.getStoreCartsByUserId(new CartFragmentViewModel.OnDataFetchedListener() {
-                            @Override
-                            public void onDataFetched(List<Cart> storeCarts) {
-                                // Cập nhật RecyclerView với danh sách StoreCart mới
-                                storeCartAdapter = new StoreCartAdapter(storeCarts);
-                                rvCarts.setAdapter(storeCartAdapter);
-
-                                // Hiển thị thông báo cho người dùng
-                                Toast.makeText(getContext(), "Sản phẩm đã được xóa", Toast.LENGTH_SHORT).show();
+                        if (checkboxAll.getTag() != null && checkboxAll.getTag().equals("checked")) {
+                            if (storeCartAdapter != null) {
+                                storeCartAdapter.clearData(); // Xóa tất cả sản phẩm trong adapter
+                                onTotalPriceChanged(0); // Cập nhật tổng giá trị về 0
+                                checkboxAll.setImageResource(R.drawable.checkbox_empty); // Đặt lại trạng thái checkbox
+                                checkboxAll.setTag("unchecked"); // Đặt lại tag cho checkbox
                             }
+                            Toast.makeText(requireContext(), "Giỏ hàng đã được xóa", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Nếu không chọn tất cả sản phẩm, gọi dialog xác nhận xóa như bình thường
+                            loadCartData();
+                            Toast.makeText(requireContext(), "Sản phẩm đã được xóa", Toast.LENGTH_SHORT).show();
+                        }
 
-                            @Override
-                            public void onError(String errorMessage) {
-                                // Xử lý lỗi khi lấy dữ liệu
-                                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+
                     }
                 });
             }
@@ -169,6 +144,7 @@ public class CartFragment extends Fragment {
         // Hiển thị dialog xác nhận
         dialogFragment.show(getChildFragmentManager(), "ConfirmDeleteDialog");
     }
+
 
     public void onTotalPriceChanged(double totalPrice) {
         // Update the total price TextView with the new total
@@ -224,4 +200,56 @@ public class CartFragment extends Fragment {
             Toast.makeText(getContext(), "Chỉ có thể thanh toán sản phẩm của cùng một cửa hàng", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void loadCartData() {
+        viewModel.getStoreCartsByUserId(new CartFragmentViewModel.OnDataFetchedListener() {
+            @Override
+            public void onDataFetched(List<Cart> storeCarts) {
+                // Cập nhật lại dữ liệu cho RecyclerView
+                if (storeCartAdapter != null) {
+                    storeCartAdapter.updateData(storeCarts); // Cập nhật dữ liệu mới
+                } else {
+                    storeCartAdapter = new StoreCartAdapter(storeCarts, viewModel);
+                    storeCartAdapter.setOnTotalPriceChangedListener(totalPrice -> onTotalPriceChanged(totalPrice));
+                    rvCarts.setAdapter(storeCartAdapter);
+                }
+
+                boolean allChecked = true;
+                for (Cart storeCart : storeCarts) {
+                    if (!storeCart.isChecked()) {
+                        allChecked = false;
+                        break;
+                    }
+                }
+
+                if (allChecked) {
+                    checkboxAll.setImageResource(R.drawable.checkbox_checked);
+                    checkboxAll.setTag("checked");
+                } else {
+                    checkboxAll.setImageResource(R.drawable.checkbox_empty);
+                    checkboxAll.setTag("unchecked");
+                }
+
+                storeCartAdapter.setOnCheckAllListener(check -> {
+                    if (check) {
+                        checkboxAll.setImageResource(R.drawable.checkbox_checked);
+                        checkboxAll.setTag("checked");
+                    } else {
+                        checkboxAll.setImageResource(R.drawable.checkbox_empty);
+                        checkboxAll.setTag("unchecked");
+                    }
+                });
+
+                storeCartAdapter.notifyTotalPriceChanged();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // Xử lý lỗi nếu không lấy được dữ liệu
+                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package com.example.agrimart.ui.ProductPage;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -150,6 +151,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void showBottomSheetDialog(boolean isBuyNow) {
+
+
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_dialog, null);
 
@@ -166,6 +169,13 @@ public class ProductDetailActivity extends AppCompatActivity {
                     .load(product.getImages().get(0))
                     .into(img_product);
         }
+
+        if (isBuyNow) {
+            addToCart.setText("Mua ngay");
+            // Sử dụng Color.parseColor() để chuyển chuỗi màu hex thành màu hợp lệ
+            addToCart.setBackgroundColor(Color.parseColor("#F2EE9A00"));
+        }
+
 
         tvPrice.setText(productPrice.getText());
         warehouse.setText("Kho: " + product.getQuantity());

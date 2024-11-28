@@ -23,9 +23,24 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
     CartFragmentViewModel viewModel;
 
 
-    public StoreCartAdapter(List<Cart> storeCartList) {
+    public StoreCartAdapter(List<Cart> storeCartList, CartFragmentViewModel viewModel) {
         this.storeCartList = storeCartList;
+        this.viewModel = viewModel;  // Khởi tạo ViewModel một lần
     }
+
+
+    public void updateData(List<Cart> newCarts) {
+        this.storeCartList.clear();
+        this.storeCartList.addAll(newCarts);
+        notifyDataSetChanged();
+    }
+
+    // Trong StoreCartAdapter
+    public void clearData() {
+        storeCartList.clear(); // Xóa hết các sản phẩm trong giỏ hàng
+        notifyDataSetChanged(); // Thông báo RecyclerView cập nhật dữ liệu
+    }
+
 
     @NonNull
     @Override
@@ -39,7 +54,6 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
     public void onBindViewHolder(@NonNull StoreCartViewHolder holder, int position) {
         Cart storeCart = storeCartList.get(position);
         holder.tvStoreName.setText(storeCart.getStore_name());
-        viewModel = new CartFragmentViewModel();
 
         List<Product> products = storeCart.getProducts();
         ProductCartAdapter productAdapter = new ProductCartAdapter(products, viewModel);
@@ -107,17 +121,19 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
 
     // StoreCartAdapter.java
     public void setCheckedAll(boolean isChecked) {
-        for (Cart storeCart : storeCartList) {
-            storeCart.setChecked(isChecked); // Cập nhật trạng thái của storeCart
+        for (int i = 0; i < storeCartList.size(); i++) {
+            Cart storeCart = storeCartList.get(i);
+            storeCart.setChecked(isChecked);
             for (Product product : storeCart.getProducts()) {
-                product.setChecked(isChecked); // Cập nhật trạng thái của từng sản phẩm
+                product.setChecked(isChecked);
             }
             viewModel.updateStoreCheckedStatusInFirebase(storeCart.getStoreId(), isChecked);
+            notifyItemChanged(i); // Cập nhật từng item thay vì toàn bộ
         }
-        notifyDataSetChanged(); // Cập nhật lại giao diện
         notifyTotalPriceChanged();
         notifyCheckAll();
     }
+
 
 
 
@@ -177,10 +193,13 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
     private double calculateTotalPrice() {
         double total = 0;
         for (Cart cart : storeCartList) {
-            total += cart.getTotalPrice(); // Đảm bảo lấy tổng tiền của mỗi giỏ hàng
+            if (cart.isChecked()) {
+                total += cart.getTotalPrice(); // Tính tổng tiền chỉ của các giỏ hàng được chọn
+            }
         }
         return total;
     }
+
 
     public void notifyCheckAll(){
         if(checkAllListener != null) {

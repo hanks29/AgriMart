@@ -62,6 +62,51 @@
             />
 
 
+        <LinearLayout
+            android:id="@+id/ll_refund"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:visibility="gone"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Đã hoàn tiền"
+                    android:textColor="@color/green"
+                    android:textSize="10pt" />
+
+                <TextView
+                    android:id="@+id/tv_refund"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:text="59,000đ đã được hoàn về tài khoản VNpay của bạn" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imageView10"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/reimbursement"
+                app:tint="@color/green" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/background_light_blur_1"
+            android:layout_height="4dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,10 +32,11 @@ import java.util.Locale;
 
 public class OrderInformationActivity extends AppCompatActivity {
     Order order;
-    TextView status, shippingName, address, totalPriceProduct, shippingFee, totalPrice;
+    TextView status, shippingName, address, totalPriceProduct, shippingFee, totalPrice, tvRefund;
     AppCompatButton btnBuy, btnDetail;
     ImageButton btnBack;
     RecyclerView recyclerViewDetail;
+    LinearLayout llRefund;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,8 @@ public class OrderInformationActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btn_back);
         btnDetail = findViewById(R.id.btn_detail);
         recyclerViewDetail = findViewById(R.id.recyclerViewDetail);
+        llRefund = findViewById(R.id.ll_refund);
+        tvRefund = findViewById(R.id.tv_refund);
     }
 
     @SuppressLint("SetTextI18n")
@@ -96,17 +100,28 @@ public class OrderInformationActivity extends AppCompatActivity {
         btnBuy.setOnClickListener(v -> onCheckoutButtonClicked());
     }
 
+    @SuppressLint("SetTextI18n")
     String getStatus(String status) {
 
         switch (status) {
             case "pending":
                 return "Chờ xác nhận ";
             case "approved":
+                return "Chờ lấy hàng ";
+            case "delivery":
+                btnDetail.setVisibility(View.VISIBLE);
+                btnDetail.setText("Trả hàng/Hoàn tiền");
                 return "Chờ giao hàng ";
             case "delivered":
                 btnDetail.setVisibility(View.VISIBLE);
+                if(!order.isCheckRating())
+                {
+                    btnDetail.setText("Trả hàng/Hoàn tiền");
+                    btnBuy.setText("Đánh giá");
+                }
                 return "Đã giao vào ";
             case "canceled":
+                llRefund.setVisibility(View.VISIBLE);
                 return "Đã hủy vào ";
         }
 

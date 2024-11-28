@@ -92,7 +92,6 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 holder.btnDetail.setVisibility(View.VISIBLE);
                 holder.btnDetail.setText("Trả hàng/Hoàn tiền");
                 break;
-
             case "refund" :
                 translatedStatus = "Chờ giao hàng";
                 holder.btnBuy.setText("Đã nhận hàng");
@@ -101,6 +100,8 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 translatedStatus = "Hoàn thành";
                 if (!orderStore.isCheckRating()) {
                     holder.btnBuy.setText("Đánh giá");
+                    holder.btnDetail.setVisibility(View.VISIBLE);
+                    holder.btnDetail.setText("Trả hàng/Hoàn tiền");
                 }else {
                     holder.btnDetail.setVisibility(View.VISIBLE);
                 }
@@ -108,6 +109,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 break;
             case "canceled":
                 translatedStatus = "Đã hủy";
+                holder.btnDetail.setText("Xem Thông tin Hoàn tiền");
                 break;
             default:
                 translatedStatus = "Không xác định";
@@ -177,6 +179,11 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                     Toast.makeText(holder.itemView.getContext(), "Không thể hủy đơn hàng: " + errorMessage, Toast.LENGTH_SHORT).show();
                 }
             });
+        } else if (order.getStatus().equals("pending") && order.getPaymentMethod().equals("VNPay")) {
+
+            //làm vô đây
+
+
         } else if (order.getStatus().equals("delivery")) {
             viewModel.updateOrderStatus(order.getOrderId(), "delivered", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
                 @Override

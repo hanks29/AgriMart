@@ -39,10 +39,6 @@ public class OrderStatusFragment extends Fragment {
         this.status = status;
     }
 
-
-
-
-
     @Override
     public void onResume() {
         super.onResume();

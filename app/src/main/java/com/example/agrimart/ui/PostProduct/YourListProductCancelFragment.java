@@ -3,8 +3,6 @@ package com.example.agrimart.ui.PostProduct;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -14,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.agrimart.R;
 import com.example.agrimart.adapter.PostProductsAdapter;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.data.model.ProductResponse;
@@ -30,57 +29,34 @@ import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link YourProductListingsFragment#newInstance} factory method to
+ * Use the {@link YourListProductCancelFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class YourProductListingsFragment extends Fragment {
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
+public class YourListProductCancelFragment extends Fragment {
 
     private PostProductsAdapter postProductsAdapter;
     private List<ProductResponse> productResponseList;
 
     private boolean isSelecting = false;
-    private FragmentYourProductListingsBinding binding;
-    public YourProductListingsFragment() {
+
+    FragmentYourProductListingsBinding binding;
+    public YourListProductCancelFragment() {
         // Required empty public constructor
     }
 
-    public static YourProductListingsFragment newInstance(String param1, String param2) {
-        YourProductListingsFragment fragment = new YourProductListingsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static YourListProductCancelFragment newInstance() {
+        return new YourListProductCancelFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentYourProductListingsBinding.inflate(inflater, container, false);
-        return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
-        super.onViewCreated(view, savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        binding= FragmentYourProductListingsBinding.inflate(inflater, container, false);
 
         productResponseList = new ArrayList<>();
 
@@ -94,7 +70,6 @@ public class YourProductListingsFragment extends Fragment {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.recyclerView.setAdapter(postProductsAdapter);
         loadData();
-
         binding.editPro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,10 +103,8 @@ public class YourProductListingsFragment extends Fragment {
             }
         });
 
-
+        return binding.getRoot();
     }
-
-
     private void loadData(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null){
@@ -140,11 +113,11 @@ public class YourProductListingsFragment extends Fragment {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("products")
                     .whereEqualTo("storeId",uid)
-                    .whereEqualTo("status","available")
+                    .whereEqualTo("status","reject")
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-
+                            Log.d("khanhne", "onComplete: "+task.getResult().size());
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
                                 Product product = document.toObject(Product.class);
@@ -183,8 +156,4 @@ public class YourProductListingsFragment extends Fragment {
                     Toast.makeText(getContext(), "Xóa sản phẩm thất bại", Toast.LENGTH_SHORT).show();
                 });
     }
-
-
-
-
 }

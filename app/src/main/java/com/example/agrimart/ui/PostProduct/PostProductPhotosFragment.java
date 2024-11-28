@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.CategoryAdapter;
+import com.example.agrimart.adapter.ImageProductAdapter;
 import com.example.agrimart.data.model.Category;
 import com.example.agrimart.data.model.ProductRequest;
 import com.example.agrimart.databinding.FragmentPostProductPhotosBinding;
@@ -40,6 +41,7 @@ public class PostProductPhotosFragment extends Fragment {
     private List<Category> categories = new ArrayList<>();
     private CategoryAdapter categoryAdapter;
 
+    private ImageProductAdapter imageProductAdapter;
     public PostProductPhotosFragment() {
         // Required empty public constructor
     }
@@ -72,34 +74,41 @@ public class PostProductPhotosFragment extends Fragment {
         addControl(view);
         addEvents(view);
 
+        imageProductAdapter=new ImageProductAdapter(imageUris);
+        binding.rvPhotos.setAdapter(imageProductAdapter);
+        binding.rvPhotos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+
         ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia =
-                registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(4), uris -> {
+                registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(2), uris -> {
                     if (!uris.isEmpty()) {
                         imageUris.addAll(uris);
-                        if (uris.size() > 0 && imageUris.size() > 0) {
-                            Glide.with(this).load(imageUris.get(0)).into(binding.imageView5);
-                            binding.frameLayout1.setVisibility(View.VISIBLE);
-                        }
-                        if (uris.size() > 1 && imageUris.size() > 1) {
-                            Glide.with(this).load(imageUris.get(1)).into(binding.imageView6);
-                            binding.frameLayout2.setVisibility(View.VISIBLE);
-                        }
-                        if (uris.size() > 2 && imageUris.size() > 2) {
-                            Glide.with(this).load(imageUris.get(2)).into(binding.imageView7);
-                            binding.frameLayout3.setVisibility(View.VISIBLE);
-                        }
-                        if (uris.size() > 3 && imageUris.size() > 3) {
-                            Glide.with(this).load(imageUris.get(3)).into(binding.imageView8);
-                            binding.frameLayout4.setVisibility(View.VISIBLE);
-                        }
-                        binding.linearLayout.setVisibility(View.VISIBLE);
+                        binding.rvPhotos.setVisibility(View.VISIBLE);
+                        imageProductAdapter.notifyDataSetChanged();
+//                        if (uris.size() > 0 && imageUris.size() > 0) {
+//                            Glide.with(this).load(imageUris.get(0)).into(binding.imageView5);
+//                            binding.frameLayout1.setVisibility(View.VISIBLE);
+//                        }
+//                        if (uris.size() > 1 && imageUris.size() > 1) {
+//                            Glide.with(this).load(imageUris.get(1)).into(binding.imageView6);
+//                            binding.frameLayout2.setVisibility(View.VISIBLE);
+//                        }
+//                        if (uris.size() > 2 && imageUris.size() > 2) {
+//                            Glide.with(this).load(imageUris.get(2)).into(binding.imageView7);
+//                            binding.frameLayout3.setVisibility(View.VISIBLE);
+//                        }
+//                        if (uris.size() > 3 && imageUris.size() > 3) {
+//                            Glide.with(this).load(imageUris.get(3)).into(binding.imageView8);
+//                            binding.frameLayout4.setVisibility(View.VISIBLE);
+//                        }
+//                        binding.linearLayout.setVisibility(View.VISIBLE);
                     } else {
                         Log.d("PhotoPicker", "No media selected");
                     }
                 });
 
         binding.imageButtonCamera.setOnClickListener(view1 -> {
-            if (!Objects.isNull(imageUris) || !imageUris.isEmpty() || imageUris.size() < 4) {
+            if (imageUris.size() < 4 || Objects.isNull(imageProductAdapter.imageUris) || imageProductAdapter.imageUris.isEmpty()) {
                 pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()
                         .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                         .build());
@@ -181,7 +190,7 @@ public class PostProductPhotosFragment extends Fragment {
             ProductRequest product = new ProductRequest(binding.edtName.getText().toString(), binding.edtDes.getText().toString(), categoryAdapter.category.getId());
             Bundle bundle = new Bundle();
             bundle.putSerializable("postProduct", product);
-            bundle.putParcelableArrayList("imageUris", (ArrayList<Uri>) imageUris);
+            bundle.putParcelableArrayList("imageUris", (ArrayList<Uri>) imageProductAdapter.imageUris);
             bundle.putString("category", categoryAdapter.category.getId());
             newFragment.setArguments(bundle);
             FragmentTransaction transaction = getFragmentManager().beginTransaction();

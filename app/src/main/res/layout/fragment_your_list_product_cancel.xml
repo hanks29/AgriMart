@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.PostProduct.YourProductListingsFragment">
+    tools:context=".ui.PostProduct.YourListProductCancelFragment">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/editPro"
@@ -15,9 +15,9 @@
         android:gravity="center"
         android:textColor="@color/black"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="10dp"
         android:backgroundTint="@color/account_my_project"
         android:text="Chỉnh sửa"
+        android:layout_marginStart="10dp"
         app:icon="@drawable/edit"/>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/editDelete"
@@ -38,4 +38,5 @@
         android:layout_below="@id/editPro"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 </RelativeLayout>

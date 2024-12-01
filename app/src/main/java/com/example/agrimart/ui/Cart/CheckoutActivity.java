@@ -69,7 +69,6 @@ public class CheckoutActivity extends AppCompatActivity {
         setupListeners();
         updatePrices();
         calculateShippingFee();
-        createOrderWithGHN();
     }
 
     private void setupWindowInsets() {
@@ -144,7 +143,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
     private void calculateShippingFee() {
         checkoutViewModel.createOrder(tvAddress.getText().toString(), selectedProducts.get(0).getStoreId());
-        checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
+        checkoutViewModel.shippingFee.observe(this, shippingFee -> {
             tvTotalShippingPrice.setText(shippingFee + " đ");
 
             int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
@@ -157,17 +156,19 @@ public class CheckoutActivity extends AppCompatActivity {
     private void placeOrder() {
         String address = tvAddress.getText().toString();
         String storeId = selectedProducts.get(0).getStoreId();
+        String username = tvUserName.getText().toString();
+        String phonenumber = tvPhoneNumber.getText().toString();
 
         if (radVNPay.isChecked()) {
-            handleVNPayPayment(address, storeId);
+            handleVNPayPayment(address, storeId, username, phonenumber);
         } else if (radCOD.isChecked()) {
-            handleCODPayment(address, storeId);
+            handleCODPayment(address, storeId, username, phonenumber);
         } else {
             showPaymentMethodDialog();
         }
     }
 
-    private void handleVNPayPayment(String address, String storeId) {
+    private void handleVNPayPayment(String address, String storeId, String username, String phonenumber) {
         int price = Integer.parseInt(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
         String orderInfo = "Thanh toán đơn hàng " + orderId;
         List<String> productIds = selectedProducts.stream()
@@ -179,11 +180,13 @@ public class CheckoutActivity extends AppCompatActivity {
         intent.putStringArrayListExtra("productIds", new ArrayList<>(productIds));
         intent.putExtra("address", address);
         intent.putExtra("storeId", storeId);
+        intent.putExtra("username", username);
+        intent.putExtra("phonenumber", phonenumber);
         intent.putParcelableArrayListExtra("products", new ArrayList<>(selectedProducts));
         startActivity(intent);
     }
 
-    private void handleCODPayment(String address, String storeId) {
+    private void handleCODPayment(String address, String storeId, String username, String phonenumber) {
         new AlertDialog.Builder(this)
                 .setTitle("Xác nhận đặt hàng")
                 .setMessage("Bạn có chắc chắn muốn đặt hàng?")
@@ -196,7 +199,7 @@ public class CheckoutActivity extends AppCompatActivity {
                     List<String> productIds = selectedProducts.stream()
                             .map(Product::getProduct_id)
                             .collect(Collectors.toList());
-                    checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, storeId, selectedProducts, new CheckoutViewModel.OrderCallback() {
+                    checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, storeId, selectedProducts, username, phonenumber, new CheckoutViewModel.OrderCallback() {
                         @Override
                         public void onSuccess(String orderId) {
                             checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {
@@ -280,35 +283,5 @@ public class CheckoutActivity extends AppCompatActivity {
                 showNoAddressDialog();
             }
         });
-    }
-
-    private void createOrderWithGHN() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(user.getUid())
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    List<Map<String, Object>> addresses = (List<Map<String, Object>>) documentSnapshot.get("addresses");
-
-                    if (addresses != null && !addresses.isEmpty()) {
-                        Map<String, Object> address = addresses.get(0);
-
-                        String province = (String) address.get("province");
-                        String district = (String) address.get("district");
-                        String commune = (String) address.get("commune");
-                        String street = (String) address.get("street");
-
-                        String address5 = street + ", " + commune + ", " + district + ", " + province;
-                        checkoutViewModel.createOrder(address5, selectedProducts.get(0).getStoreId());
-                        checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
-                            tvTotalShippingPrice.setText(shippingFee + " đ");
-
-                            int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
-                            int totalPrice = price + Integer.parseInt(String.valueOf(shippingFee));
-                            tvTotalPrice.setText(totalPrice + " đ");
-                            checkoutViewModel.updateStatusOrder(orderId, shippingFee);
-                        });
-                    }
-                });
     }
 }

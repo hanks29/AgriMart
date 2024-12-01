@@ -60,16 +60,14 @@ public class CheckoutViewModel extends ViewModel {
                         for (Address address : defaultAddresses) {
                             String name = address.getName();
                             String phone = address.getPhone();
-                            Log.d(TAG, "Name: " + name);
-                            Log.d(TAG, "Phone: " + phone);
                             tvUserName.setText(name);
                             tvPhoneNumber.setText(phone);
                             tvAddress.setText(address.getStreet() + ", " + address.getCommune() + ", " + address.getDistrict() + ", " + address.getProvince());
                         }
                     }
+                } else {
+                    Log.e(TAG, "Error getting documents: ", task.getException());
                 }
-            } else {
-                Log.e(TAG, "Error getting documents: ", task.getException());
             }
         });
     }
@@ -113,7 +111,7 @@ public class CheckoutViewModel extends ViewModel {
         });
     }
 
-    public void placeOrder(double totalPrice, String expectedDeliveryTime, double shippingFee, String paymentMethod, String shippingName, List<String> productIds, String address, String storeId, List<Product> products, OrderCallback callback) {
+    public void placeOrder(double totalPrice, String expectedDeliveryTime, double shippingFee, String paymentMethod, String shippingName, List<String> productIds, String address, String storeId, List<Product> products, String username, String phonenumber, OrderCallback callback) {
         String userId = auth.getCurrentUser().getUid();
         String orderId = generateOrderId();
         Date createdAt = new Date();
@@ -141,6 +139,8 @@ public class CheckoutViewModel extends ViewModel {
         order.put("address", address);
         order.put("storeId", storeId);
         order.put("products", productList);
+        order.put("username", username);
+        order.put("phonenumber", phonenumber);
 
         db.collection("orders").document(orderId).set(order)
                 .addOnSuccessListener(aVoid -> callback.onSuccess(orderId))

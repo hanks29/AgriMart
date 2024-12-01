@@ -8,6 +8,7 @@
     android:padding="8dp">
 
     <ImageView
+        android:layout_marginTop="30dp"
         android:id="@+id/imgPro"
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -29,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_toStartOf="@id/tvPrice"
         android:textSize="14sp"
-        android:text="Giá thực:" />
+        android:text="Tổng tiền:" />
 
     <TextView
         android:id="@+id/tvPrice"
@@ -47,23 +48,23 @@
         android:layout_marginTop="24dp"
         android:layout_toEndOf="@id/imgPro"
         android:layout_marginStart="8dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnPrint"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:textColor="@color/white"
             android:textAllCaps="false"
             android:textSize="18sp"
             android:background="@color/green"
             android:text="In hóa đơn" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnOK"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginTop="8dp"
             android:textColor="@color/white"
             android:textAllCaps="false"
             android:textSize="18sp"

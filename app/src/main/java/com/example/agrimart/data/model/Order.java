@@ -56,6 +56,13 @@ public class Order implements Serializable {
     @PropertyName("created_at")
     private Timestamp createdAt;
 
+    private String transactionId;
+
+    private Timestamp transactionDate;
+
+    @PropertyName("vnp_TxnRef")
+    private String vnpTxnRef;
+
     public Order() {
     }
 
@@ -211,27 +218,45 @@ public class Order implements Serializable {
         this.shippingFee = shippingFee;
     }
 
-    private long createdAtMillis;  // Chúng ta sẽ sử dụng long thay vì Timestamp để truyền qua Intent
-
-    // Getter và setter cho createdAtMillis
-    public long getCreatedAtMillis() {
-        return createdAtMillis;
+    @PropertyName("created_at")
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
     @PropertyName("created_at")
     public void setCreatedAt(Timestamp createdAt) {
-        this.createdAtMillis = createdAt.toDate().getTime(); // Chuyển Timestamp thành long
+        this.createdAt = createdAt;
     }
 
-    @PropertyName("created_at")
-    public Timestamp getCreatedAt()
-    {
-        return createdAt;
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public Timestamp getTransactionDate() {
+        return transactionDate;
+    }
+
+    public void setTransactionDate(Timestamp transactionDate) {
+        this.transactionDate = transactionDate;
+    }
+
+    @PropertyName("vnp_TxnRef")
+    public String getVnpTxnRef() {
+        return vnpTxnRef;
+    }
+
+    @PropertyName("vnp_TxnRef")
+    public void setVnpTxnRef(String vnpTxnRef) {
+        this.vnpTxnRef = vnpTxnRef;
     }
 
     public String getFormattedCreatedAtDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault());
-        Date date = new Date(createdAtMillis);
+        Date date = new Date(createdAt.toDate().getTime());
         return dateFormat.format(date);
     }
 }

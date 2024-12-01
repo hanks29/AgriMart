@@ -1,71 +1,71 @@
 package com.example.agrimart.ui.Payment;
 
 import com.example.agrimart.data.API.Config_VNPAY;
-
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import android.util.Log;
+import org.json.JSONObject;
 
 public class VnpayRefund {
 
-    public static String createRefundRequest(String transactionNo, int amount, String transactionDate, String orderInfo, String createBy) throws Exception {
+    public static String createRefundRequest(String txnRef, String transactionNo, int amount, String transactionDate, String orderInfo, String createBy) throws Exception {
+        String vnp_RequestId = UUID.randomUUID().toString();
         String vnp_Version = Config_VNPAY.VNP_VERSION;
-        String vnp_Command = "refund";
+        String vnp_Command = Config_VNPAY.VNP_COMMAND_REFUND;
         String vnp_TmnCode = Config_VNPAY.VNP_TMNCODE;
-        String vnp_HashSecret = Config_VNPAY.VNP_HASH_SECRET;
-        String vnp_IpAddr = "127.0.0.1";
+        String vnp_TransactionType = "02";
         String vnp_CreateDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        String vnp_IpAddr = InetAddress.getLocalHost().getHostAddress();
+        String vnp_HashSecret = Config_VNPAY.VNP_HASH_SECRET;
+        String formattedAmount = String.valueOf(amount * 100);
 
-        // Tạo tham số cho yêu cầu hoàn tiền
+        //checksum
+        String data = vnp_RequestId + "|" + vnp_Version + "|" + vnp_Command + "|" + vnp_TmnCode + "|" + vnp_TransactionType + "|" + txnRef + "|" + formattedAmount + "|" + transactionNo + "|" + transactionDate + "|" + createBy + "|" + vnp_CreateDate + "|" + vnp_IpAddr + "|" + orderInfo;
+
+        //vnp_SecureHash
+        String vnp_SecureHash = hmacSHA512(vnp_HashSecret, data);
+
+        // tạo parameters map
         Map<String, String> vnp_Params = new HashMap<>();
+        vnp_Params.put("vnp_RequestId", vnp_RequestId);
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+        vnp_Params.put("vnp_TransactionType", vnp_TransactionType);
+        vnp_Params.put("vnp_TxnRef", txnRef);
+        vnp_Params.put("vnp_Amount", formattedAmount);
         vnp_Params.put("vnp_TransactionNo", transactionNo);
-        vnp_Params.put("vnp_Amount", String.valueOf(amount * 100));
         vnp_Params.put("vnp_TransactionDate", transactionDate);
         vnp_Params.put("vnp_OrderInfo", orderInfo);
         vnp_Params.put("vnp_CreateBy", createBy);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+        vnp_Params.put("vnp_SecureHash", vnp_SecureHash);
 
-        // Tạo checksum (vnp_SecureHash)
-        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder hashData = new StringBuilder();
-        StringBuilder query = new StringBuilder();
-        for (String fieldName : fieldNames) {
-            String fieldValue = vnp_Params.get(fieldName);
-            if (fieldValue != null && fieldValue.length() > 0) {
-                hashData.append(fieldName).append("=").append(fieldValue).append("&");
-                query.append(fieldName).append("=").append(fieldValue).append("&");
-            }
-        }
+        // Create JSON body from vnp_Params
+        JSONObject jsonBody = new JSONObject(vnp_Params);
 
-        // Xóa ký tự `&` cuối cùng
-        hashData.setLength(hashData.length() - 1);
-        query.setLength(query.length() - 1);
+        Log.d("VnpayRefund", "Refund Request: " + jsonBody.toString());
 
-        // Tạo vnp_SecureHash bằng HMAC SHA512
-        String vnp_SecureHash = hmacSHA512(vnp_HashSecret, hashData.toString());
-        query.append("&vnp_SecureHash=").append(vnp_SecureHash);
-
-        // Gửi yêu cầu POST đến VNPAY
+        // gủi request đến VNPAY
         URL url = new URL(Config_VNPAY.VNPAY_SANDBOX_REFUND_URL);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Accept", "application/json");
 
         OutputStream os = connection.getOutputStream();
-        os.write(query.toString().getBytes("UTF-8"));
+        os.write(jsonBody.toString().getBytes("UTF-8"));
         os.close();
 
-        // Nhận phản hồi từ VNPAY
+        //Nhận response từ VNPAY
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
             Scanner scanner = new Scanner(connection.getInputStream());
@@ -74,13 +74,12 @@ public class VnpayRefund {
                 response.append(scanner.nextLine());
             }
             scanner.close();
-            return response.toString(); // Trả về kết quả từ API
+            return response.toString();
         } else {
             return "Lỗi: " + responseCode;
         }
     }
 
-    // Hàm tạo HMAC SHA512
     public static String hmacSHA512(String key, String data) throws Exception {
         Mac hmacSha512 = Mac.getInstance("HmacSHA512");
         SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "HmacSHA512");

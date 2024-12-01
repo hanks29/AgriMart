@@ -49,7 +49,7 @@ public class NotificationViewModel extends AndroidViewModel {
 
                     if (snapshots != null && !snapshots.isEmpty()) {
                         for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                                notificationForUser(dc, db);
+                            notificationForUser(dc, db);
                         }
                     }
                 });

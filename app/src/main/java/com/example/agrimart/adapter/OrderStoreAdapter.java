@@ -5,6 +5,8 @@ import static androidx.core.content.ContextCompat.startActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +27,16 @@ import com.example.agrimart.ui.Cart.CheckoutActivity;
 import com.example.agrimart.ui.MyProfile.MyRating.ProductRatingActivity;
 import com.example.agrimart.ui.MyProfile.MyRating.ShopRatingActivity;
 import com.example.agrimart.ui.MyProfile.PurchasedOrders.OrderInformationActivity;
+import com.example.agrimart.ui.Payment.VnpayRefund;
 import com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.OrderStoreViewHolder> {
     private final List<Order> orderStoreList = new ArrayList<>();
@@ -180,10 +188,71 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 }
             });
         } else if (order.getStatus().equals("pending") && order.getPaymentMethod().equals("VNPay")) {
+            // Khi trả hàng gọi api hoàn tiền
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("orders").document(order.getOrderId()).get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    String vnpTxnRef = documentSnapshot.getString("vnpTxnRef");
+                    order.setVnpTxnRef(vnpTxnRef);
 
-            //làm vô đây
+                    new Thread(() -> {
+                        try {
+                            String vnp_TxnRef = order.getVnpTxnRef();
+                            String transactionId = order.getTransactionId();
+                            int totalPrice = order.getTotalPrice();
+                            String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDate());
 
+                            // Gửi yêu cầu hoàn tiền
+                            String response = VnpayRefund.createRefundRequest(
+                                    vnp_TxnRef,          // Mã giao dịch của merchant (txnRef)
+                                    transactionId,       // Mã giao dịch từ VNPAY
+                                    totalPrice,          // Số tiền hoàn
+                                    formattedTransactionDate, // Ngày giao dịch gốc
+                                    "Hoàn tiền cho đơn hàng " + order.getOrderId(), // Lý do hoàn tiền
+                                    "admin"              // Người thực hiện
+                            );
 
+                            //nếu hoàn tiền thành công
+                            if (response.contains("\"vnp_ResponseCode\":\"00\"")) { //ResponseCode là 00 (Hoàn tiền thành công)
+                                new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                    Toast.makeText(holder.itemView.getContext(), "Huỷ đơn hàng thành công", Toast.LENGTH_SHORT).show();
+                                });
+
+                                // Cập nhật trạng thái đơn hàng
+                                viewModel.updateOrderStatus(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+                                    @Override
+                                    public void onSuccess(String message) {
+                                        order.setStatus("canceled");
+                                        notifyItemChanged(position);
+                                    }
+
+                                    @Override
+                                    public void onError(String errorMessage) {
+                                        new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                            Toast.makeText(holder.itemView.getContext(), "Không thể hủy đơn hàng: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
+                                });
+
+                            } else {
+                                //nếu hoàn tiền không thành công
+                                new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                    Toast.makeText(holder.itemView.getContext(), "Không thể hoàn tiền: " + response, Toast.LENGTH_SHORT).show();
+                                });
+                                Log.println(Log.ERROR, "VnpayRefund", response);
+                            }
+                        } catch (Exception e) {
+                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                Toast.makeText(holder.itemView.getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    }).start();
+                } else {
+                    Toast.makeText(holder.itemView.getContext(), "Đơn hàng không tồn tại", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(e -> {
+                Toast.makeText(holder.itemView.getContext(), "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
         } else if (order.getStatus().equals("delivery")) {
             viewModel.updateOrderStatus(order.getOrderId(), "delivered", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
                 @Override
@@ -193,7 +262,6 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                     notifyItemChanged(position);
 
                     Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
-
                     intent.putExtra("order", order);
                     holder.itemView.getContext().startActivity(intent);
                 }
@@ -204,7 +272,6 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 }
             });
         } else if (order.getStatus().equals("delivered") && !order.isCheckRating()) {
-
             // Cập nhật trạng thái của item trong adapter
             order.setStatus("delivered");
             notifyItemChanged(position);
@@ -252,6 +319,12 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         Intent intent = new Intent(holder.itemView.getContext(), ShopRatingActivity.class);
         intent.putExtra("order", order);
         holder.itemView.getContext().startActivity(intent);
+    }
+
+    public static String formatTimestampToVnpayDate(Timestamp timestamp) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
+        Date date = new Date(timestamp.toDate().getTime());
+        return formatter.format(date);
     }
 
 }

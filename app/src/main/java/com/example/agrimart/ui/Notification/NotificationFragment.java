@@ -15,7 +15,6 @@ import com.example.agrimart.R;
 import com.example.agrimart.adapter.NotificationAdapter;
 import com.example.agrimart.data.model.Notification;
 import com.example.agrimart.viewmodel.NotificationViewModel;
-
 import java.util.List;
 
 public class NotificationFragment extends Fragment {
@@ -35,9 +34,8 @@ public class NotificationFragment extends Fragment {
 
         if (getArguments() != null) {
             userId = getArguments().getString("userId");
-            Log.d(TAG, "User ID from arguments: " + userId);
         } else {
-            Log.e(TAG, "Failed to get User ID from arguments");
+            Log.e(TAG, "Không tìm thấy userId");
         }
 
         recyclerView = view.findViewById(R.id.recycler_notifications);
@@ -46,7 +44,6 @@ public class NotificationFragment extends Fragment {
         notificationViewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
         notificationViewModel.getNotifications(userId);
         notificationViewModel.getNotificationsLiveData().observe(getViewLifecycleOwner(), notifications -> {
-            Log.d(TAG, "Notifications received: " + notifications.size());
             adapter = new NotificationAdapter(notifications);
             recyclerView.setAdapter(adapter);
         });

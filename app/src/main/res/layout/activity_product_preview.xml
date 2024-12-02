@@ -130,7 +130,7 @@
             android:id="@+id/tvkhanh"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
-            android:text="x"
+            android:text="Số lượng "
             android:lineSpacingExtra="3sp"
             android:layout_below="@id/editPro"
             android:layout_marginTop="15dp"

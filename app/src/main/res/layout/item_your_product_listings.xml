@@ -5,7 +5,6 @@
     android:layout_height="130dp"
     android:layout_margin="10dp"
     android:background="@drawable/rounded_edittext"
-
     android:backgroundTint="@color/background_light"
     android:padding="5dp">
 
@@ -19,7 +18,7 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
+        android:layout_width="117dp"
         android:layout_height="117dp"
         android:layout_marginStart="-3dp"
         android:layout_marginEnd="10dp"

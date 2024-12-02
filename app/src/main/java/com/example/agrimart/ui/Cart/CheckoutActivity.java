@@ -311,11 +311,19 @@ public class CheckoutActivity extends AppCompatActivity {
                         String address5 = street + ", " + commune + ", " + district + ", " + province;
                         checkoutViewModel.createOrder(address5, selectedProducts.get(0).getStoreId());
                         checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
-                            tvTotalShippingPrice.setText(shippingFee + " đ");
+
 
                             int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
                             int totalPrice = price + Integer.parseInt(String.valueOf(shippingFee));
-                            tvTotalPrice.setText(totalPrice + " đ");
+
+
+                            NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+
+                            tvTotalShippingPrice.setText(format.format(shippingFee));
+
+                            String totalPriceString = format.format(totalPrice);
+                            tvFinalTotalPrice.setText(totalPriceString);
+                            tvTotalPrice.setText(totalPriceString);
 
                         });
                     }

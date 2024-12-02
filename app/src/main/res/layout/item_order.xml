@@ -7,12 +7,18 @@
     android:layout_marginBottom="8dp"
     android:padding="8dp">
 
-    <ImageView
+<!--    <ImageView-->
+<!--        android:id="@+id/imgPro"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        android:src="@drawable/apple" />-->
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imgPro"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/apple" />
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:background="@drawable/round_border"
+        android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/tvQuantity"

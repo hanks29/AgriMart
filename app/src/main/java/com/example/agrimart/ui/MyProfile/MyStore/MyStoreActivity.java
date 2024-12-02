@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.agrimart.R;
+import com.example.agrimart.ui.MainActivity;
 import com.example.agrimart.ui.PostProduct.PostProductActivity;
 import com.example.agrimart.ui.PostProduct.YourProductListingsActivity;
 import com.example.agrimart.ui.PostProduct.YourProductListingsFragment;
@@ -75,7 +76,8 @@ public class MyStoreActivity extends AppCompatActivity {
             startActivity(intent);
         });
         back.setOnClickListener(v -> {
-            finish();
+            Intent intent = new Intent(MyStoreActivity.this, MainActivity.class);
+            startActivity(intent);
         });
     }
 

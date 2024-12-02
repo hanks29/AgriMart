@@ -150,10 +150,12 @@ public class Order implements Serializable {
         this.sellerId = sellerId;
     }
 
+    @PropertyName("products")
     public List<Product> getProducts() {
         return products;
     }
 
+    @PropertyName("products")
     public void setProducts(List<Product> products) {
         this.products = products;
     }

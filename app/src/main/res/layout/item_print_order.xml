@@ -54,10 +54,10 @@
             android:id="@+id/btnPrint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
             android:textAllCaps="false"
             android:textSize="18sp"
-            android:background="@color/green"
+            android:textColor="@color/black"
+            android:background="@drawable/rounded_edittext_order"
             android:text="In hóa đơn" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -65,10 +65,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="@color/white"
             android:textAllCaps="false"
             android:textSize="18sp"
-            android:background="@color/green"
+            android:textColor="@color/green"
+            android:background="@drawable/rounded_edittext_order"
             android:text="Shipper đã lấy hàng" />
     </LinearLayout>
 

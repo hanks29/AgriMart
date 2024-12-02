@@ -19,6 +19,7 @@ public class PendingConfirmOrderViewModel extends ViewModel{
     public MutableLiveData<List<Order>> orderListApproved ;
     public MutableLiveData<List<Order>> orderListPicked ;
     public MutableLiveData<List<Order>> orderListDelivered ;
+    public MutableLiveData<List<Order>> orderListCancel ;
     private FirebaseFirestore db ;
 
     public PendingConfirmOrderViewModel() {
@@ -27,6 +28,7 @@ public class PendingConfirmOrderViewModel extends ViewModel{
         this.orderListApproved = new MutableLiveData<>();
         this.orderListPicked = new MutableLiveData<>();
         this.orderListDelivered = new MutableLiveData<>();
+        this.orderListCancel = new MutableLiveData<>();
     }
 
     public void getOrderListFromFirebase() {
@@ -97,6 +99,24 @@ public class PendingConfirmOrderViewModel extends ViewModel{
                 })
                 .addOnFailureListener(e -> {
                     orderListDelivered.setValue(null);
+                });
+    }
+
+    public void getCancelOrders(){
+        db.collection("orders")
+                .whereEqualTo("status", "canceled")
+                .whereEqualTo("storeId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<Order> orders = queryDocumentSnapshots.toObjects(Order.class);
+                        orderListCancel.setValue(orders);
+                        Log.d("PrintOrderAdapter111", "onSuccess: "+orders.size());
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    orderListCancel.setValue(null);
                 });
     }
 }

@@ -7,13 +7,19 @@
     android:layout_marginBottom="8dp"
     android:padding="8dp">
 
-    <ImageView
-        android:id="@+id/imgPro"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/apple" />
+<!--    <ImageView-->
+<!--        android:id="@+id/imgPro"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        android:src="@drawable/apple" />-->
 
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imgPro"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:background="@drawable/round_border"
+        android:scaleType="centerCrop" />
     <TextView
         android:id="@+id/tvQuantity"
         android:layout_width="wrap_content"
@@ -56,7 +62,7 @@
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
             android:textColor="@color/black"
-            android:background="@drawable/bg_cancel"
+            android:background="@drawable/rounded_edittext_order"
             android:textAllCaps="false"
             android:textSize="18sp"
 
@@ -67,10 +73,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/white"
             android:textAllCaps="false"
             android:textSize="18sp"
-            android:background="@color/green"
+            android:textColor="@color/green"
+            android:background="@drawable/rounded_edittext_order"
             android:text="Xác nhận" />
     </LinearLayout>
 

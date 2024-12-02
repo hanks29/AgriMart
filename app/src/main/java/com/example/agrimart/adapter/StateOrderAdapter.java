@@ -8,6 +8,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.agrimart.ui.MyProfile.state_order.fragment.AwaitingPickupFragment;
 import com.example.agrimart.ui.MyProfile.state_order.fragment.DeliveredFragment;
 import com.example.agrimart.ui.MyProfile.state_order.fragment.InTransitFragment;
+import com.example.agrimart.ui.MyProfile.state_order.fragment.OrderCancelFragment;
 import com.example.agrimart.ui.MyProfile.state_order.fragment.PendingConfirmationFragment;
 
 public class StateOrderAdapter extends FragmentStateAdapter {
@@ -31,6 +32,9 @@ public class StateOrderAdapter extends FragmentStateAdapter {
             case 3:{
                 return new DeliveredFragment();
             }
+            case 4:{
+                return new OrderCancelFragment();
+            }
             default:
                 return new PendingConfirmationFragment();
         }
@@ -39,6 +43,6 @@ public class StateOrderAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 4;
+        return 5;
     }
 }

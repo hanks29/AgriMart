@@ -97,12 +97,14 @@ public class PrintOrderAdapter extends RecyclerView.Adapter<PrintOrderAdapter.My
                 List<Product> productList = new ArrayList<>();
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 for(int i=0;i<orderList.get(holder.getAdapterPosition()).getProducts().size();i++){
+                    int index=i;
                     db.collection("products").document(orderList.get(holder.getAdapterPosition()).getProducts().get(i).getProduct_id())
                             .get()
                             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     Product product = documentSnapshot.toObject(Product.class);
+                                    product.setQuantity(orderList.get(holder.getAdapterPosition()).getProducts().get(index).getQuantity());
                                     productList.add(product);
                                     if(productList.size()==orderList.get(holder.getAdapterPosition()).getProducts().size()){
                                         ProductOrderAdapter adapter = new ProductOrderAdapter(productList);

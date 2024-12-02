@@ -170,9 +170,28 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
                 db.collection("orders").document(orderList.get(holder.getAdapterPosition()).getOrderId())
                         .update("status", "Đã hủy")
                         .addOnSuccessListener(aVoid -> {
-                            orderList.remove(holder.getAdapterPosition());
-                            notifyDataSetChanged();
-                            Toast.makeText(holder.binding.getRoot().getContext(), "Đã hủy đơn hàng", Toast.LENGTH_SHORT).show();
+                            for(int i=0;i<orderList.get(holder.getAdapterPosition()).getProducts().size();i++){
+                                int index=i;
+                                db.collection("products").document(orderList.get(holder.getAdapterPosition()).getProducts().get(i).getProduct_id())
+                                        .get()
+                                        .addOnSuccessListener(documentSnapshot -> {
+                                            Product product = documentSnapshot.toObject(Product.class);
+                                            db.collection("products").document(product.getProduct_id())
+                                                    .update("quantity", product.getQuantity() + orderList.get(holder.getAdapterPosition()).getProducts().get(index).getQuantity())
+                                                    .addOnSuccessListener(aVoid1 -> {
+                                                        orderList.remove(holder.getAdapterPosition());
+                                                        notifyDataSetChanged();
+                                                        Toast.makeText(holder.binding.getRoot().getContext(), "Đã hủy đơn hàng", Toast.LENGTH_SHORT).show();
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Toast.makeText(holder.binding.getRoot().getContext(), "Hủy đơn hàng thất bại", Toast.LENGTH_SHORT).show();
+                                                    });
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(holder.binding.getRoot().getContext(), "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
+                                        });
+                            }
+
                         })
                         .addOnFailureListener(e -> {
                             Toast.makeText(holder.binding.getRoot().getContext(), "Hủy đơn hàng thất bại", Toast.LENGTH_SHORT).show();
@@ -190,12 +209,14 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
                 List<Product> productList = new ArrayList<>();
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 for(int i=0;i<orderList.get(holder.getAdapterPosition()).getProducts().size();i++){
+                    int index=i;
                     db.collection("products").document(orderList.get(holder.getAdapterPosition()).getProducts().get(i).getProduct_id())
                             .get()
                             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     Product product = documentSnapshot.toObject(Product.class);
+                                    product.setQuantity(orderList.get(holder.getAdapterPosition()).getProducts().get(index).getQuantity());
                                     productList.add(product);
                                     if(productList.size()==orderList.get(holder.getAdapterPosition()).getProducts().size()){
                                         ProductOrderAdapter adapter = new ProductOrderAdapter(productList);

@@ -1,6 +1,7 @@
 package com.example.agrimart.ui.MyProfile.PurchasedOrders;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -16,11 +17,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.agrimart.R;
+import com.example.agrimart.adapter.OrderStoreAdapter;
 import com.example.agrimart.adapter.ProductOrderAdapter;
 import com.example.agrimart.data.model.Cart;
 import com.example.agrimart.data.model.Order;
 import com.example.agrimart.data.model.Product;
 import com.example.agrimart.ui.Cart.CheckoutActivity;
+import com.example.agrimart.ui.MyProfile.MyRating.ProductRatingActivity;
+import com.example.agrimart.ui.MyProfile.MyRating.ShopRatingActivity;
+import com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;
 import com.google.firebase.Timestamp;
 
 import java.text.NumberFormat;
@@ -37,6 +42,9 @@ public class OrderInformationActivity extends AppCompatActivity {
     ImageButton btnBack;
     RecyclerView recyclerViewDetail;
     LinearLayout llRefund;
+    private final int REQUEST_CODE_RATING = 1001;
+    private OrderStatusFragmentViewModel viewModel;
+    int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +53,7 @@ public class OrderInformationActivity extends AppCompatActivity {
 
         // Initialize order object from intent
         order = (Order) getIntent().getSerializableExtra("order");
+        viewModel = new OrderStatusFragmentViewModel();
 
         // Add controls
         addControl();
@@ -54,6 +63,16 @@ public class OrderInformationActivity extends AppCompatActivity {
 
         // Set events
         addEvent();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_RATING) {
+            if (resultCode == RESULT_OK) {
+                finish();
+            }
+        }
     }
 
     void addControl() {
@@ -75,7 +94,7 @@ public class OrderInformationActivity extends AppCompatActivity {
     void loadDetail() {
         shippingName.setText(order.getShippingName());
         String userDetail = order.getUsername() + " " + order.getPhonenumber();
-        address.setText(userDetail + "\n" + order.getAddress());
+        address.setText("Huy Long 0987654321" + "\n" + order.getAddress());
 
         // Format shipping fee and total price
         shippingFee.setText(formatCurrency(order.getShippingFee()) + " đ");
@@ -97,7 +116,22 @@ public class OrderInformationActivity extends AppCompatActivity {
 
     void addEvent() {
         btnBack.setOnClickListener(v -> finish());
-        btnBuy.setOnClickListener(v -> onCheckoutButtonClicked());
+        btnBuy.setOnClickListener(v -> {
+
+            if(order.isCheckRating())
+            {
+                onCheckoutButtonClicked();
+            }else {
+                openRating();
+            }
+
+        });
+        btnDetail.setOnClickListener(v -> {
+            if(order.isCheckRating())
+            {
+                openRatingDetail();
+            }
+        });
     }
 
     @SuppressLint("SetTextI18n")
@@ -111,7 +145,13 @@ public class OrderInformationActivity extends AppCompatActivity {
             case "delivery":
                 btnDetail.setVisibility(View.VISIBLE);
                 btnDetail.setText("Trả hàng/Hoàn tiền");
+                if(!order.isCheckRating())
+                {
+                    btnDetail.setText("Trả hàng/Hoàn tiền");
+                    btnBuy.setText("Đã nhận hàng");
+                }
                 return "Chờ giao hàng ";
+
             case "delivered":
                 btnDetail.setVisibility(View.VISIBLE);
                 if(!order.isCheckRating())
@@ -134,7 +174,6 @@ public class OrderInformationActivity extends AppCompatActivity {
         return NumberFormat.getInstance(Locale.getDefault()).format(amount);
     }
 
-
     private void onCheckoutButtonClicked() {
         List<Product> selectedProducts = new ArrayList<>();
         List<String> productIds = new ArrayList<>();
@@ -151,6 +190,41 @@ public class OrderInformationActivity extends AppCompatActivity {
         intent.putStringArrayListExtra("productIds", new ArrayList<>(productIds));
         intent.putExtra("storeName", order.getStoreName());
         startActivity(intent);
+    }
+
+    private void openRating() {
+        if (order.getStatus().equals("delivery")) {
+            viewModel.updateOrderStatus(order.getOrderId(), "delivered", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+                @Override
+                public void onSuccess(String message) {
+                    // Cập nhật trạng thái của item trong adapter
+                    viewModel.getData("delivery");
+                    order.setStatus("delivery");
+
+                    Intent intent = new Intent(OrderInformationActivity.this, ProductRatingActivity.class);
+                    intent.putExtra("order", order);
+                    startActivityForResult(intent, REQUEST_CODE_RATING);
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+
+                }
+            });
+        }
+        else {
+            order.setStatus("delivered");
+            Intent intent = new Intent(this, ProductRatingActivity.class);
+            intent.putExtra("order", order);
+            startActivityForResult(intent, REQUEST_CODE_RATING);
+        }
 
     }
+
+    private void openRatingDetail() {
+        Intent intent = new Intent(this, ShopRatingActivity.class);
+        intent.putExtra("order", order);
+        startActivity(intent);
+    }
+
 }

@@ -51,7 +51,7 @@
         android:layout_marginTop="16dp"
         android:layout_below="@id/price"
         android:layout_marginHorizontal="16dp"
-        android:hint="Increase Quantity">
+        android:hint="Quantity">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtQuantity"

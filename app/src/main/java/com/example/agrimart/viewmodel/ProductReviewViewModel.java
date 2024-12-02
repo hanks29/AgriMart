@@ -32,7 +32,7 @@ public class ProductReviewViewModel extends ViewModel {
         );
 
         quantity = Transformations.map(products, product1 ->
-                product1 != null ? "Còn "+String.valueOf(product.getQuantity()) : ""
+                product1 != null ? String.valueOf(product.getQuantity()) : ""
         );
         description = Transformations.map(products, product1 ->
                 product1 != null ? product.getDescription() : ""

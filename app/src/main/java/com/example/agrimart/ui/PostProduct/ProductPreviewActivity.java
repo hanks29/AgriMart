@@ -35,7 +35,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class ProductPreviewActivity extends AppCompatActivity {
@@ -43,6 +45,7 @@ public class ProductPreviewActivity extends AppCompatActivity {
     private ActivityProductPreviewBinding binding;
     private ProductResponse product;
     private ProductReviewViewModel viewModel;
+    int quantity=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -64,12 +67,11 @@ public class ProductPreviewActivity extends AppCompatActivity {
             if (product == null) {
                 product = new ProductResponse();
             }
+            quantity=product.getQuantity();
             viewModel.setProduct(product);
-            Log.d("khanhne", "onCreate: " + product.getCategory());
+            Glide.with(this).load(product.getImageUrls()).into(binding.imgPro);
             getCategoryFromFirebase(product.getCategory());
-//            viewModel.setCategory(product.getCategory());
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         }
         binding.btnHome.setOnClickListener(view -> {
@@ -98,7 +100,7 @@ public class ProductPreviewActivity extends AppCompatActivity {
             edtDes.setText(product.getDescription());
 
             EditText edtQuantity = view2.findViewById(R.id.edtQuantity);
-            edtQuantity.setText(String.valueOf(product.getQuantity()));
+            edtQuantity.setText(String.valueOf(quantity));
 
             bottomSheetDialog.show();
             btnUpdate.setOnClickListener(view1 -> {
@@ -112,11 +114,13 @@ public class ProductPreviewActivity extends AppCompatActivity {
                                 .update("name", edtName.getText().toString(),
                                         "status", "edited",
                                         "price", Integer.parseInt(edtPrice.getText().toString()),
-                                        "quantity", Integer.parseInt(edtQuantity.getText().toString())+product.getQuantity(),
+                                        "quantity", Integer.parseInt(edtQuantity.getText().toString()),
                                         "description", product.getDescription())
                                         .addOnSuccessListener(aVoid -> {
-                                            binding.tvStockQuantity.setText("Còn "+Integer.parseInt(edtQuantity.getText().toString())+product.getQuantity());
-                                            binding.tvPrice.setText("Giá: "+Integer.parseInt(edtPrice.getText().toString())+"đ");
+                                            quantity=Integer.parseInt(edtQuantity.getText().toString());
+                                            binding.tvStockQuantity.setText(String.valueOf(Integer.parseInt(edtQuantity.getText().toString())));
+                                            NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+                                            binding.tvPrice.setText(format.format(Integer.parseInt(edtPrice.getText().toString())));
                                             binding.textView10.setText(edtDes.getText().toString());
                                             binding.tvNameProduct.setText(edtName.getText().toString());
                                             Toast.makeText(ProductPreviewActivity.this, "Update product successful", Toast.LENGTH_SHORT).show();

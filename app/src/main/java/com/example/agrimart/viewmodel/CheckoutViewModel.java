@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -301,11 +302,15 @@ public class CheckoutViewModel extends ViewModel {
                                                                             List<Item> items = new ArrayList<>();
                                                                             items.add(new Item("Khanh", 1, 100));
                                                                             ghnRequestFee.setItems(items);
+                                                                            Gson gson = new Gson();
+                                                                            String json = gson.toJson(ghnRequestFee);
+                                                                            Log.d("REQUEST_BODY", json);
                                                                             ghnService.getFeeOrder(ghnRequestFee, new GHNService.Callback<JsonNode>() {
                                                                                 @Override
                                                                                 public void onResponse(JsonNode rl) {
                                                                                     int fee = extractFee(rl);
                                                                                     shippingFee.setValue(fee);
+                                                                                    Log.d("REQUEST_BODY", fee + " ");
                                                                                 }
 
                                                                                 @Override
@@ -386,10 +391,10 @@ public class CheckoutViewModel extends ViewModel {
         db.collection("orders").document(orderId)
                 .update("shipping_fee", fee)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("REQUEST_BODY", "Order updated: ");
+                    Log.d("REQUEST_BODY", "Order updated: "+fee);
                 })
                 .addOnFailureListener(e -> {
-                    Log.d("REQUEST_BODY", "Order updated: ");
+                    Log.d("REQUEST_BODY", "Order updated: "+orderId+" "+e.getMessage());
                 });
     }
 }

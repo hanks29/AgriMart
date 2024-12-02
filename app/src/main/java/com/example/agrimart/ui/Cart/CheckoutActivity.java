@@ -69,6 +69,7 @@ public class CheckoutActivity extends AppCompatActivity {
         setupListeners();
         updatePrices();
         calculateShippingFee();
+        createOrderWithGHN();
     }
 
     private void setupWindowInsets() {
@@ -183,6 +184,9 @@ public class CheckoutActivity extends AppCompatActivity {
         intent.putExtra("username", username);
         intent.putExtra("phonenumber", phonenumber);
         intent.putParcelableArrayListExtra("products", new ArrayList<>(selectedProducts));
+
+        int shippingFee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll("[^0-9]", ""));
+        checkoutViewModel.updateStatusOrder(orderId, shippingFee);
         startActivity(intent);
     }
 
@@ -208,6 +212,10 @@ public class CheckoutActivity extends AppCompatActivity {
                                     Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
                                     intent.putExtra("orderId", orderId);
                                     checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
+
+                                    int shippingFee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll("[^0-9]", ""));
+                                    checkoutViewModel.updateStatusOrder(orderId, shippingFee);
+
                                     startActivity(intent);
                                 }
 
@@ -283,5 +291,34 @@ public class CheckoutActivity extends AppCompatActivity {
                 showNoAddressDialog();
             }
         });
+    }
+    private void createOrderWithGHN() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(user.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    List<Map<String, Object>> addresses = (List<Map<String, Object>>) documentSnapshot.get("addresses");
+
+                    if (addresses != null && !addresses.isEmpty()) {
+                        Map<String, Object> address = addresses.get(0);
+
+                        String province = (String) address.get("province");
+                        String district = (String) address.get("district");
+                        String commune = (String) address.get("commune");
+                        String street = (String) address.get("street");
+
+                        String address5 = street + ", " + commune + ", " + district + ", " + province;
+                        checkoutViewModel.createOrder(address5, selectedProducts.get(0).getStoreId());
+                        checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {
+                            tvTotalShippingPrice.setText(shippingFee + " đ");
+
+                            int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
+                            int totalPrice = price + Integer.parseInt(String.valueOf(shippingFee));
+                            tvTotalPrice.setText(totalPrice + " đ");
+
+                        });
+                    }
+                });
     }
 }

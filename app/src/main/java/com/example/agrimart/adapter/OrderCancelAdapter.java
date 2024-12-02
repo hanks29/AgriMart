@@ -116,7 +116,7 @@ public class OrderCancelAdapter extends RecyclerView.Adapter<OrderCancelAdapter.
                         Toast.makeText(binding.getRoot().getContext(), "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
                     });
 
-            binding.tvStatus.setText("Đã hủy");
+            binding.tvStatus.setText("Trả hàng");
 
         }
     }

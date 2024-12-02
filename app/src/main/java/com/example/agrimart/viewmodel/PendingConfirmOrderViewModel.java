@@ -104,7 +104,7 @@ public class PendingConfirmOrderViewModel extends ViewModel{
 
     public void getCancelOrders(){
         db.collection("orders")
-                .whereEqualTo("status", "canceled")
+                .whereEqualTo("status", "refund")
                 .whereEqualTo("storeId", FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {

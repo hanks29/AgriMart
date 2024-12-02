@@ -54,7 +54,7 @@ public class OrderManagementActivity extends AppCompatActivity {
                     break;
                 }
                 case 4: {
-                    tab.setText("Đã hủy");
+                    tab.setText("Trả hàng");
                     break;
                 }
             }

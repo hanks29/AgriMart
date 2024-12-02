@@ -168,7 +168,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
             public void onClick(View view) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("orders").document(orderList.get(holder.getAdapterPosition()).getOrderId())
-                        .update("status", "Đã hủy")
+                        .update("status", "canceled")
                         .addOnSuccessListener(aVoid -> {
                             for(int i=0;i<orderList.get(holder.getAdapterPosition()).getProducts().size();i++){
                                 int index=i;

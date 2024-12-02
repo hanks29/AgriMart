@@ -85,7 +85,7 @@ public class RatingShopAdapter extends RecyclerView.Adapter<RatingShopAdapter.Vi
             Date date = timestamp.toDate();
 
             // Định dạng ngày theo kiểu dd-MM-yyyy
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
             String formattedDate = sdf.format(date);
 
             holder.itemDate.setText(formattedDate);  // Hiển thị ngày đã định dạng

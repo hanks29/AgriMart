@@ -100,7 +100,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 holder.btnDetail.setVisibility(View.VISIBLE);
                 holder.btnDetail.setText("Trả hàng/Hoàn tiền");
                 break;
-            case "refund" :
+            case "refund":
                 translatedStatus = "Chờ giao hàng";
                 holder.btnBuy.setText("Đã nhận hàng");
                 break;
@@ -110,7 +110,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                     holder.btnBuy.setText("Đánh giá");
                     holder.btnDetail.setVisibility(View.VISIBLE);
                     holder.btnDetail.setText("Trả hàng/Hoàn tiền");
-                }else {
+                } else {
                     holder.btnDetail.setVisibility(View.VISIBLE);
                 }
 
@@ -135,8 +135,6 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         holder.btnDetail.setOnClickListener(v -> openRating(holder, orderStore));
 
     }
-
-
 
 
     @Override
@@ -258,10 +256,12 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 @Override
                 public void onSuccess(String message) {
                     // Cập nhật trạng thái của item trong adapter
+                    viewModel.getData("delivery");
                     order.setStatus("delivery");
                     notifyItemChanged(position);
 
                     Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
+
                     intent.putExtra("order", order);
                     holder.itemView.getContext().startActivity(intent);
                 }
@@ -272,13 +272,14 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 }
             });
         } else if (order.getStatus().equals("delivered") && !order.isCheckRating()) {
+
             // Cập nhật trạng thái của item trong adapter
             order.setStatus("delivered");
             notifyItemChanged(position);
 
             Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
             intent.putExtra("order", order);
-            intent.putExtra("position", position);
+            intent.putExtra("position", 2);
             ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);
         } else {
             onCheckoutButtonClicked(holder, order);
@@ -302,8 +303,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
 
         selectedProducts = order.getProducts();
 
-        for (Product p : selectedProducts)
-        {
+        for (Product p : selectedProducts) {
             productIds.add(p.getProduct_id());
         }
 

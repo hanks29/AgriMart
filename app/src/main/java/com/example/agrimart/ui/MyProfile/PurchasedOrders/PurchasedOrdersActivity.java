@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.example.agrimart.R;
 import com.example.agrimart.adapter.ViewPagerAdapter;
+import com.example.agrimart.data.model.Order;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -34,12 +35,7 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_RATING) {
             if (resultCode == RESULT_OK) {
-                // Lấy giá trị position từ Intent nếu có
-                int position = data.getIntExtra("position", -1); // -1 là giá trị mặc định nếu không có
-                if (position != -1) {
-                    // Load lại Fragment tại vị trí thứ 2 (hoặc bất kỳ vị trí nào bạn muốn)
-                    loadFragmentAtPosition(3); // Thay thế với vị trí bạn muốn
-                }
+                    loadFragmentAtPosition(4);
             }
         }
     }
@@ -47,17 +43,17 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
     private void loadFragmentAtPosition(int position) {
         if (position >= 0 && position < fragments.size()) {
             // Lấy Fragment tại vị trí cần load lại
-            Fragment newFragment = new OrderStatusFragment("delivered"); // Hoặc trạng thái nào bạn muốn
+            Fragment newFragment = new OrderStatusFragment("delivered");
 
             // Thay thế Fragment hiện tại tại vị trí đó
-            fragments.set(position - 1, newFragment);
+            fragments.set(position , newFragment);
 
             // Cập nhật lại adapter với danh sách fragment mới
             ViewPagerAdapter adapter = new ViewPagerAdapter(this, fragments, Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Trả hàng", "Đã giao", "Đã hủy"));
             viewPager.setAdapter(adapter);
 
 
-            viewPager.setCurrentItem(position - 1 , true);
+            viewPager.setCurrentItem(position, true);
         }
     }
 
@@ -93,6 +89,19 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
         }
 
         btn_back.setOnClickListener(v -> onBackPressed());
+    }
+
+    private int location (String status)
+    {
+        switch (status){
+            case "pending": return 0;
+            case "approved": return 1;
+            case "delivery": return 2;
+            case "refund": return 3;
+            case "delivered": return 4;
+            case "canceled" : return 5;
+        }
+        return -1;
     }
 }
 

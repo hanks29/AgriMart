@@ -124,7 +124,7 @@ public class CartFragment extends Fragment {
                         if (checkboxAll.getTag() != null && checkboxAll.getTag().equals("checked")) {
                             if (storeCartAdapter != null) {
                                 storeCartAdapter.clearData(); // Xóa tất cả sản phẩm trong adapter
-                                onTotalPriceChanged(0); // Cập nhật tổng giá trị về 0
+                                storeCartAdapter.notifyTotalPriceChanged();
                                 checkboxAll.setImageResource(R.drawable.checkbox_empty); // Đặt lại trạng thái checkbox
                                 checkboxAll.setTag("unchecked"); // Đặt lại tag cho checkbox
                             }

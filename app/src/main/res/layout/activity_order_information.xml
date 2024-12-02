@@ -90,7 +90,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:text="59,000đ đã được hoàn về tài khoản VNpay của bạn" />
+                    android:text="170.500đ đã được hoàn về tài khoản VNpay của bạn" />
             </LinearLayout>
 
             <ImageView

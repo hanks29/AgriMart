@@ -21,6 +21,7 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
 
     private List<Cart> storeCartList;
     CartFragmentViewModel viewModel;
+    ProductCartAdapter productAdapter;
 
 
     public StoreCartAdapter(List<Cart> storeCartList, CartFragmentViewModel viewModel) {
@@ -56,7 +57,7 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
         holder.tvStoreName.setText(storeCart.getStore_name());
 
         List<Product> products = storeCart.getProducts();
-        ProductCartAdapter productAdapter = new ProductCartAdapter(products, viewModel);
+        productAdapter = new ProductCartAdapter(products, viewModel);
 
         productAdapter.setOnAllProductsCheckedListener(allChecked -> {
             storeCart.setChecked(allChecked);
@@ -116,6 +117,11 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
             notifyCheckAll();
 
         });
+
+        productAdapter.setOnProductCheckedChangeListener(() -> {
+            notifyTotalPriceChanged(); // Cập nhật tổng tiền
+        });
+
     }
 
 
@@ -193,8 +199,11 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
     private double calculateTotalPrice() {
         double total = 0;
         for (Cart cart : storeCartList) {
-            if (cart.isChecked()) {
-                total += cart.getTotalPrice(); // Tính tổng tiền chỉ của các giỏ hàng được chọn
+            for (Product product : cart.getProducts())
+            {
+                if (product.isChecked()) {
+                    total += cart.getTotalPrice(); // Tính tổng tiền chỉ của các giỏ hàng được chọn
+                }
             }
         }
         return total;

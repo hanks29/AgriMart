@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductRatingActivity extends AppCompatActivity {
-
     TextView txtGui;
     Order order;
     RecyclerView recyclerView;
@@ -109,9 +108,8 @@ public class ProductRatingActivity extends AppCompatActivity {
         Toast.makeText(this, "Đánh giá đã được gửi!", Toast.LENGTH_SHORT).show();
 
         Intent resultIntent = new Intent();
-        resultIntent.putExtra("order", order); // Truyền đối tượng Order đã được cập nhật
-        resultIntent.putExtra("position", position);
         setResult(RESULT_OK, resultIntent);
+
         finish();
     }
 

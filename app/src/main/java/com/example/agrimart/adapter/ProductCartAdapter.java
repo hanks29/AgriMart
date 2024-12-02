@@ -105,6 +105,9 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
             if (listener != null) {
                 listener.onAllProductsChecked(areAllProductsChecked());
             }
+            if (onProductCheckedChangeListener != null) {
+                onProductCheckedChangeListener.onProductCheckedChanged();
+            }
 
         });
     }
@@ -125,6 +128,15 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
         void onAllProductsChecked(boolean allChecked);
     }
 
+    public interface OnProductCheckedChangeListener {
+        void onProductCheckedChanged();
+    }
+
+    private OnProductCheckedChangeListener onProductCheckedChangeListener;
+
+    public void setOnProductCheckedChangeListener(OnProductCheckedChangeListener listener) {
+        this.onProductCheckedChangeListener = listener;
+    }
 
 
     private OnAllProductsCheckedListener listener;

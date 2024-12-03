@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chọn lý do"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:paddingBottom="8dp"/>
+
+    <RadioGroup
+        android:id="@+id/reason_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/reason_missing_items"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Thiếu hàng" />
+
+        <RadioButton
+            android:id="@+id/reason_wrong_items"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Người bán gửi hàng sai" />
+
+        <RadioButton
+            android:id="@+id/reason_expired_items"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Hàng hết hạn sử dụng" />
+
+        <RadioButton
+            android:id="@+id/reason_not_as_described"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Khác với mô tả" />
+
+        <RadioButton
+            android:id="@+id/reason_fake_items"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Hàng giả" />
+
+        <RadioButton
+            android:id="@+id/reason_no_longer_needed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Không còn nhu cầu" />
+    </RadioGroup>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_submit_reason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:padding="15dp"
+        android:background="@drawable/rounded_edittext_order"
+        android:text="Xác nhận"
+        android:textAllCaps="false"
+        android:textColor="@color/green"
+        android:textSize="16sp" />
+
+</LinearLayout>

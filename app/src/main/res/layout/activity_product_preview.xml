@@ -16,6 +16,17 @@
         android:layout_height="match_parent"
         tools:context=".ui.PostProduct.ProductPreviewActivity">
 
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="30dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_left"
+            android:scaleType="fitCenter"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_gravity="center_vertical"
+            android:background="@color/white" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/editPro"
             android:layout_width="wrap_content"
@@ -132,6 +143,7 @@
             android:layout_height="20dp"
             android:text="Số lượng "
             android:lineSpacingExtra="3sp"
+            android:layout_marginTop="8dp"
             android:layout_below="@id/tvNameProduct"
             android:layout_toStartOf="@id/tvStockQuantity"
             android:gravity="center_vertical"
@@ -142,21 +154,12 @@
             android:layout_height="20dp"
             android:text="@{viewModel.quantity}"
             android:lineSpacingExtra="3sp"
+            android:layout_marginTop="8dp"
             android:layout_below="@id/tvNameProduct"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="24dp"
             android:gravity="center_vertical"
             />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnHome"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textView10"
-            android:layout_marginTop="30dp"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/bg_view_product"
-            android:text="Trang chủ" />
 
 
     </RelativeLayout>

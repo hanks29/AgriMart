@@ -159,7 +159,6 @@ public class GHNService {
     public void createShippingOrder(GHNRequest requestBody, Callback<JsonNode> callback) {
         Gson gson = new Gson();
         String json = gson.toJson(requestBody);
-        Log.d("REQUEST_BODY", json);
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), json);
         ghnApiService.createShippingOrder(token, shopId, "application/json", body).enqueue(new retrofit2.Callback<JsonNode>() {
             @Override

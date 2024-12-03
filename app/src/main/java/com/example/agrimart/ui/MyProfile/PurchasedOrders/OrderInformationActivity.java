@@ -25,6 +25,7 @@ import com.example.agrimart.data.model.Product;
 import com.example.agrimart.ui.Cart.CheckoutActivity;
 import com.example.agrimart.ui.MyProfile.MyRating.ProductRatingActivity;
 import com.example.agrimart.ui.MyProfile.MyRating.ShopRatingActivity;
+import com.example.agrimart.ui.MyProfile.PurchasedOrders.RequestReturn.RequestReturnActivity;
 import com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;
 import com.google.firebase.Timestamp;
 
@@ -118,7 +119,11 @@ public class OrderInformationActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
         btnBuy.setOnClickListener(v -> {
 
-            if(order.isCheckRating())
+            if(order.getStatus().equals("pending"))
+            {
+
+            }
+            else if(order.isCheckRating())
             {
                 onCheckoutButtonClicked();
             }else {
@@ -131,6 +136,9 @@ public class OrderInformationActivity extends AppCompatActivity {
             {
                 openRatingDetail();
             }
+            else {
+                openRequestReturn();
+            }
         });
     }
 
@@ -139,6 +147,7 @@ public class OrderInformationActivity extends AppCompatActivity {
 
         switch (status) {
             case "pending":
+                btnBuy.setText("Huỷ đơn hàng");
                 return "Chờ xác nhận ";
             case "approved":
                 return "Chờ lấy hàng ";
@@ -223,6 +232,12 @@ public class OrderInformationActivity extends AppCompatActivity {
 
     private void openRatingDetail() {
         Intent intent = new Intent(this, ShopRatingActivity.class);
+        intent.putExtra("order", order);
+        startActivity(intent);
+    }
+
+    private void openRequestReturn() {
+        Intent intent = new Intent(this, RequestReturnActivity.class);
         intent.putExtra("order", order);
         startActivity(intent);
     }

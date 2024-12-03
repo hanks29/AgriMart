@@ -28,6 +28,9 @@
         tools:ignore="ExtraText"
         tools:targetApi="31">
         <activity
+            android:name=".ui.MyProfile.PurchasedOrders.RequestReturn.RequestReturnActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.MyProfile.MyRating.ShopRatingActivity"
             android:exported="false" />
         <activity

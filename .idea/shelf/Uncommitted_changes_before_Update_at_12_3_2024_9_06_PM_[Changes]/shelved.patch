@@ -1,0 +1,656 @@
+Index: app/src/main/java/com/example/agrimart/adapter/NotificationAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.adapter;\r\n\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.data.model.Notification;\r\n\r\nimport java.text.SimpleDateFormat;\r\nimport java.util.Date;\r\nimport java.util.List;\r\nimport java.util.Locale;\r\n\r\npublic class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {\r\n    private List<Notification> notificationList;\r\n\r\n    public NotificationAdapter(List<Notification> notificationList) {\r\n        this.notificationList = notificationList;\r\n    }\r\n\r\n    @NonNull\r\n    @Override\r\n    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {\r\n        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_notification, parent, false);\r\n        return new ViewHolder(view);\r\n    }\r\n\r\n    @Override\r\n    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {\r\n        Notification notification = notificationList.get(position);\r\n        holder.title.setText(notification.getTitle());\r\n        holder.message.setText(notification.getMessage());\r\n\r\n        SimpleDateFormat sdf = new SimpleDateFormat(\"dd/MM/yyyy HH:mm\", Locale.getDefault());\r\n        String formattedDate = sdf.format(new Date(notification.getTimestamp()));\r\n        holder.time.setText(formattedDate);\r\n\r\n        Glide.with(holder.itemView.getContext())\r\n                .load(notification.getImageUrl())\r\n                .placeholder(R.drawable.placeholder_image)\r\n                .error(R.drawable.logo_icon)\r\n                .into(holder.notificationImage);\r\n    }\r\n\r\n    @Override\r\n    public int getItemCount() {\r\n        return notificationList.size();\r\n    }\r\n\r\n    public static class ViewHolder extends RecyclerView.ViewHolder {\r\n        TextView title, message, time;\r\n        ImageView notificationImage;\r\n\r\n        public ViewHolder(@NonNull View itemView) {\r\n            super(itemView);\r\n            title = itemView.findViewById(R.id.notification_title);\r\n            message = itemView.findViewById(R.id.notification_message);\r\n            time = itemView.findViewById(R.id.notification_time);\r\n            notificationImage = itemView.findViewById(R.id.notification_image);\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/adapter/NotificationAdapter.java b/app/src/main/java/com/example/agrimart/adapter/NotificationAdapter.java
+--- a/app/src/main/java/com/example/agrimart/adapter/NotificationAdapter.java	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ b/app/src/main/java/com/example/agrimart/adapter/NotificationAdapter.java	(date 1733232087416)
+@@ -1,5 +1,7 @@
+ package com.example.agrimart.adapter;
+ 
++import android.content.Context;
++import android.content.Intent;
+ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.view.ViewGroup;
+@@ -12,6 +14,7 @@
+ import com.bumptech.glide.Glide;
+ import com.example.agrimart.R;
+ import com.example.agrimart.data.model.Notification;
++import com.example.agrimart.ui.MyProfile.PurchasedOrders.OrderInformationActivity;
+ 
+ import java.text.SimpleDateFormat;
+ import java.util.Date;
+@@ -47,6 +50,30 @@
+                 .placeholder(R.drawable.placeholder_image)
+                 .error(R.drawable.logo_icon)
+                 .into(holder.notificationImage);
++
++        holder.itemView.setOnClickListener(v -> {
++            Context context = v.getContext();
++            Intent intent = new Intent(context, OrderInformationActivity.class);
++
++            String message = notification.getMessage();
++            String status = "";
++            if (message.contains("chờ người bán xác nhận")) {
++                status = "pending";
++            } else if (message.contains("đang được đóng gói")) {
++                status = "approved";
++            } else if (message.contains("trong quá trình vận chuyển")) {
++                status = "delivering";
++            } else if (message.contains("đã được giao thành công")) {
++                status = "delivered";
++            } else if (message.contains("đã bị huỷ")) {
++                status = "canceled";
++            } else if (message.contains("trả hàng")) {
++                status = "return";
++            }
++
++            intent.putExtra("status", status);
++            context.startActivity(intent);
++        });
+     }
+ 
+     @Override
+Index: app/src/main/java/com/example/agrimart/ui/Cart/CheckoutActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.Cart;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.view.Window;\r\nimport android.view.WindowManager;\r\nimport android.widget.Button;\r\nimport android.widget.LinearLayout;\r\nimport android.widget.RadioButton;\r\nimport android.widget.RadioGroup;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.activity.EdgeToEdge;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.appcompat.widget.Toolbar;\r\nimport androidx.core.content.ContextCompat;\r\nimport androidx.core.graphics.Insets;\r\nimport androidx.core.view.ViewCompat;\r\nimport androidx.core.view.WindowInsetsCompat;\r\nimport androidx.lifecycle.ViewModelProvider;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.adapter.CheckoutAdapter;\r\nimport com.example.agrimart.data.model.Product;\r\nimport com.example.agrimart.ui.MyProfile.MyAddress.MyAddressActivity;\r\nimport com.example.agrimart.ui.Payment.VNPaymentActivity;\r\nimport com.example.agrimart.viewmodel.CheckoutViewModel;\r\nimport com.google.firebase.auth.FirebaseAuth;\r\nimport com.google.firebase.auth.FirebaseUser;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\n\r\nimport java.text.NumberFormat;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Locale;\r\nimport java.util.Map;\r\nimport java.util.stream.Collectors;\r\n\r\nimport android.app.AlertDialog;\r\nimport android.widget.Toast;\r\n\r\npublic class CheckoutActivity extends AppCompatActivity {\r\n    private Toolbar toolbar;\r\n    private RecyclerView rvProduct;\r\n    private CheckoutAdapter checkoutAdapter;\r\n    private List<Product> selectedProducts;\r\n    private TextView tvTotalProductPrice, tvTotalShippingPrice, tvFinalTotalPrice, tvTotalPrice;\r\n    private TextView tvUserName, tvPhoneNumber, tvAddress, tvChangeAddress;\r\n    private Button btnPlaceOrder;\r\n    private RadioGroup paymentMethodGroup;\r\n    private RadioButton radVNPay, radCOD;\r\n    private LinearLayout linearLayout;\r\n    private CheckoutViewModel checkoutViewModel;\r\n    private String orderId;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        EdgeToEdge.enable(this);\r\n        setContentView(R.layout.activity_checkout);\r\n\r\n        setupWindowInsets();\r\n        setupToolbar();\r\n        initializeViews();\r\n        setupRecyclerView();\r\n        setupViewModel();\r\n        setupListeners();\r\n        updatePrices();\r\n        calculateShippingFee();\r\n        createOrderWithGHN();\r\n    }\r\n\r\n    private void setupWindowInsets() {\r\n        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main1), (v, insets) -> {\r\n            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());\r\n            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);\r\n            return insets;\r\n        });\r\n\r\n        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {\r\n            Window window = getWindow();\r\n            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);\r\n            window.setStatusBarColor(ContextCompat.getColor(this, R.color.green));\r\n        }\r\n    }\r\n\r\n    private void setupToolbar() {\r\n        toolbar = findViewById(R.id.header);\r\n        toolbar.setNavigationOnClickListener(v -> finish());\r\n    }\r\n\r\n    private void initializeViews() {\r\n        selectedProducts = getIntent().getParcelableArrayListExtra(\"selectedProducts\");\r\n        if (selectedProducts == null) {\r\n            selectedProducts = new ArrayList<>();\r\n        }\r\n\r\n        rvProduct = findViewById(R.id.rv_product);\r\n        tvTotalProductPrice = findViewById(R.id.tvTotalProductPrice);\r\n        tvTotalShippingPrice = findViewById(R.id.tvTotalShippingPrice);\r\n        tvFinalTotalPrice = findViewById(R.id.tvFinalTotalPrice);\r\n        tvTotalPrice = findViewById(R.id.tvTotalPrice);\r\n        tvUserName = findViewById(R.id.tvUserName1);\r\n        tvPhoneNumber = findViewById(R.id.tvPhoneNumber1);\r\n        tvAddress = findViewById(R.id.tvAddress1);\r\n        tvChangeAddress = findViewById(R.id.tvChangeAddress);\r\n        paymentMethodGroup = findViewById(R.id.radGroupPayment);\r\n        radVNPay = findViewById(R.id.radVNPay);\r\n        radCOD = findViewById(R.id.radCOD);\r\n        btnPlaceOrder = findViewById(R.id.btnPlaceOrder);\r\n        linearLayout = findViewById(R.id.lnGHN);\r\n    }\r\n\r\n    private void setupRecyclerView() {\r\n        rvProduct.setLayoutManager(new LinearLayoutManager(this));\r\n        checkoutAdapter = new CheckoutAdapter(selectedProducts);\r\n        rvProduct.setAdapter(checkoutAdapter);\r\n    }\r\n\r\n    private void setupViewModel() {\r\n        checkoutViewModel = new ViewModelProvider(this).get(CheckoutViewModel.class);\r\n        checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);\r\n        orderId = checkoutViewModel.generateOrderId();\r\n    }\r\n\r\n    private void setupListeners() {\r\n        tvChangeAddress.setOnClickListener(v -> {\r\n            Intent intent = new Intent(CheckoutActivity.this, MyAddressActivity.class);\r\n            startActivity(intent);\r\n        });\r\n\r\n        paymentMethodGroup.setOnCheckedChangeListener((group, checkId) -> {\r\n            if (checkId == R.id.radVNPay) {\r\n                radCOD.setChecked(false);\r\n            } else if (checkId == R.id.radCOD) {\r\n                radVNPay.setChecked(false);\r\n            }\r\n        });\r\n\r\n        btnPlaceOrder.setOnClickListener(v -> placeOrder());\r\n    }\r\n\r\n    private void calculateShippingFee() {\r\n        checkoutViewModel.createOrder(tvAddress.getText().toString(), selectedProducts.get(0).getStoreId());\r\n        checkoutViewModel.shippingFee.observe(this, shippingFee -> {\r\n            tvTotalShippingPrice.setText(shippingFee + \" đ\");\r\n\r\n            int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll(\"[^0-9]\", \"\"));\r\n            int totalPrice = price + Integer.parseInt(String.valueOf(shippingFee));\r\n            tvTotalPrice.setText(totalPrice + \" đ\");\r\n            checkoutViewModel.updateStatusOrder(orderId, shippingFee);\r\n        });\r\n    }\r\n\r\n    private void placeOrder() {\r\n        String address = tvAddress.getText().toString();\r\n        String storeId = selectedProducts.get(0).getStoreId();\r\n        String username = tvUserName.getText().toString();\r\n        String phonenumber = tvPhoneNumber.getText().toString();\r\n\r\n        if (radVNPay.isChecked()) {\r\n            handleVNPayPayment(address, storeId, username, phonenumber);\r\n        } else if (radCOD.isChecked()) {\r\n            handleCODPayment(address, storeId, username, phonenumber);\r\n        } else {\r\n            showPaymentMethodDialog();\r\n        }\r\n    }\r\n\r\n    private void handleVNPayPayment(String address, String storeId, String username, String phonenumber) {\r\n        int price = Integer.parseInt(tvTotalPrice.getText().toString().replaceAll(\"[^0-9]\", \"\"));\r\n        String orderInfo = \"Thanh toán đơn hàng \" + orderId;\r\n        List<String> productIds = selectedProducts.stream()\r\n                .map(Product::getProduct_id)\r\n                .collect(Collectors.toList());\r\n        Intent intent = new Intent(CheckoutActivity.this, VNPaymentActivity.class);\r\n        intent.putExtra(\"price\", price);\r\n        intent.putExtra(\"orderInfo\", orderInfo);\r\n        intent.putStringArrayListExtra(\"productIds\", new ArrayList<>(productIds));\r\n        intent.putExtra(\"address\", address);\r\n        intent.putExtra(\"storeId\", storeId);\r\n        intent.putExtra(\"username\", username);\r\n        intent.putExtra(\"phonenumber\", phonenumber);\r\n        intent.putParcelableArrayListExtra(\"products\", new ArrayList<>(selectedProducts));\r\n\r\n        int shippingFee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll(\"[^0-9]\", \"\"));\r\n        checkoutViewModel.updateStatusOrder(orderId, shippingFee);\r\n        startActivity(intent);\r\n    }\r\n\r\n    private void handleCODPayment(String address, String storeId, String username, String phonenumber) {\r\n        new AlertDialog.Builder(this)\r\n                .setTitle(\"Xác nhận đặt hàng\")\r\n                .setMessage(\"Bạn có chắc chắn muốn đặt hàng?\")\r\n                .setPositiveButton(\"Đặt hàng\", (dialog, which) -> {\r\n                    double totalPrice = Double.parseDouble(tvTotalPrice.getText().toString().replaceAll(\"[^0-9]\", \"\"));\r\n                    String expectedDeliveryTime = \"3-5 ngày\";\r\n                    double shippingFee = 0;\r\n                    String paymentMethod = \"COD\";\r\n                    String shippingName = \"Giao hàng nhanh\";\r\n                    List<String> productIds = selectedProducts.stream()\r\n                            .map(Product::getProduct_id)\r\n                            .collect(Collectors.toList());\r\n                    checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, storeId, selectedProducts, username, phonenumber, new CheckoutViewModel.OrderCallback() {\r\n                        @Override\r\n                        public void onSuccess(String orderId) {\r\n                            checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {\r\n                                @Override\r\n                                public void onSuccess(String orderId) {\r\n                                    Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);\r\n                                    intent.putExtra(\"orderId\", orderId);\r\n                                    checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);\r\n\r\n                                    int shippingFee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll(\"[^0-9]\", \"\"));\r\n                                    checkoutViewModel.updateStatusOrder(orderId, shippingFee);\r\n\r\n                                    startActivity(intent);\r\n                                }\r\n\r\n                                @Override\r\n                                public void onFailure(Exception e) {\r\n                                    Toast.makeText(CheckoutActivity.this, \"Đặt hàng thất bại\", Toast.LENGTH_SHORT).show();\r\n                                }\r\n                            }, orderId);\r\n                        }\r\n\r\n                        @Override\r\n                        public void onFailure(Exception e) {\r\n                            Toast.makeText(CheckoutActivity.this, \"Đặt hàng thất bại\", Toast.LENGTH_SHORT).show();\r\n                        }\r\n                    });\r\n                })\r\n                .setNegativeButton(\"Hủy\", (dialog, which) -> {\r\n                })\r\n                .show();\r\n    }\r\n\r\n    private void showPaymentMethodDialog() {\r\n        new AlertDialog.Builder(this)\r\n                .setTitle(\"Chọn phương thức thanh toán\")\r\n                .setMessage(\"Vui lòng chọn phương thức thanh toán\")\r\n                .setPositiveButton(\"OK\", (dialog, which) -> {\r\n                })\r\n                .show();\r\n    }\r\n\r\n    private void showNoAddressDialog() {\r\n        new AlertDialog.Builder(this)\r\n                .setTitle(\"Không có địa chỉ nhận hàng\")\r\n                .setMessage(\"Vui lòng thêm địa chỉ nhận hàng\")\r\n                .setPositiveButton(\"Thêm địa chỉ\", (dialog, which) -> {\r\n                    Intent intent = new Intent(CheckoutActivity.this, MyAddressActivity.class);\r\n                    startActivity(intent);\r\n                })\r\n                .setNegativeButton(\"Thoát\", (dialog, which) -> finish())\r\n                .show();\r\n    }\r\n\r\n    private void updatePrices() {\r\n        double totalProductPrice = 0;\r\n        for (Product product : selectedProducts) {\r\n            totalProductPrice += product.getPrice() * product.getQuantity();\r\n        }\r\n\r\n        double totalShippingPrice = 0;\r\n        double finalTotalPrice = totalProductPrice + totalShippingPrice;\r\n\r\n        NumberFormat format = NumberFormat.getCurrencyInstance(new Locale(\"vi\", \"VN\"));\r\n        tvTotalProductPrice.setText(format.format(totalProductPrice));\r\n        tvTotalShippingPrice.setText(format.format(totalShippingPrice));\r\n        tvFinalTotalPrice.setText(format.format(finalTotalPrice));\r\n        tvTotalPrice.setText(format.format(finalTotalPrice));\r\n    }\r\n\r\n    @Override\r\n    protected void onActivityResult(int requestCode, int resultCode, Intent data) {\r\n        super.onActivityResult(requestCode, resultCode, data);\r\n        if (requestCode == 1 && resultCode == RESULT_OK) {\r\n            checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);\r\n        }\r\n    }\r\n\r\n    @Override\r\n    protected void onResume() {\r\n        super.onResume();\r\n        checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);\r\n        checkoutViewModel.isUserDataAvailable(isAvailable -> {\r\n            if (!isAvailable) {\r\n                showNoAddressDialog();\r\n            }\r\n        });\r\n    }\r\n    private void createOrderWithGHN() {\r\n        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n        db.collection(\"users\").document(user.getUid())\r\n                .get()\r\n                .addOnSuccessListener(documentSnapshot -> {\r\n                    List<Map<String, Object>> addresses = (List<Map<String, Object>>) documentSnapshot.get(\"addresses\");\r\n\r\n                    if (addresses != null && !addresses.isEmpty()) {\r\n                        Map<String, Object> address = addresses.get(0);\r\n\r\n                        String province = (String) address.get(\"province\");\r\n                        String district = (String) address.get(\"district\");\r\n                        String commune = (String) address.get(\"commune\");\r\n                        String street = (String) address.get(\"street\");\r\n\r\n                        String address5 = street + \", \" + commune + \", \" + district + \", \" + province;\r\n                        checkoutViewModel.createOrder(address5, selectedProducts.get(0).getStoreId());\r\n                        checkoutViewModel.shippingFee.observe(CheckoutActivity.this, shippingFee -> {\r\n\r\n\r\n                            int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll(\"[^0-9]\", \"\"));\r\n                            int totalPrice = price + Integer.parseInt(String.valueOf(shippingFee));\r\n\r\n\r\n                            NumberFormat format = NumberFormat.getCurrencyInstance(new Locale(\"vi\", \"VN\"));\r\n\r\n                            tvTotalShippingPrice.setText(format.format(shippingFee));\r\n\r\n                            String totalPriceString = format.format(totalPrice);\r\n                            tvFinalTotalPrice.setText(totalPriceString);\r\n                            tvTotalPrice.setText(totalPriceString);\r\n\r\n                        });\r\n                    }\r\n                });\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/Cart/CheckoutActivity.java b/app/src/main/java/com/example/agrimart/ui/Cart/CheckoutActivity.java
+--- a/app/src/main/java/com/example/agrimart/ui/Cart/CheckoutActivity.java	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ b/app/src/main/java/com/example/agrimart/ui/Cart/CheckoutActivity.java	(date 1733234739848)
+@@ -2,6 +2,7 @@
+ 
+ import android.content.Intent;
+ import android.os.Bundle;
++import android.util.Log;
+ import android.view.Window;
+ import android.view.WindowManager;
+ import android.widget.Button;
+@@ -139,7 +140,9 @@
+             }
+         });
+ 
+-        btnPlaceOrder.setOnClickListener(v -> placeOrder());
++        btnPlaceOrder.setOnClickListener(v -> placeOrder()
++
++        );
+     }
+ 
+     private void calculateShippingFee() {
+@@ -206,9 +209,11 @@
+                     checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, storeId, selectedProducts, username, phonenumber, new CheckoutViewModel.OrderCallback() {
+                         @Override
+                         public void onSuccess(String orderId) {
++                            Log.d("CheckoutActivity", "Order placed successfully: " + orderId);
+                             checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {
+                                 @Override
+                                 public void onSuccess(String orderId) {
++                                    Log.d("CheckoutActivity", "Products removed from cart successfully: " + orderId);
+                                     Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
+                                     intent.putExtra("orderId", orderId);
+                                     checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
+@@ -221,6 +226,7 @@
+ 
+                                 @Override
+                                 public void onFailure(Exception e) {
++                                    Log.e("CheckoutActivity", "Failed to remove products from cart", e);
+                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
+                                 }
+                             }, orderId);
+@@ -228,6 +234,7 @@
+ 
+                         @Override
+                         public void onFailure(Exception e) {
++                            Log.e("CheckoutActivity", "Failed to place order", e);
+                             Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
+                         }
+                     });
+Index: app/src/main/res/layout/fragment_notification.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:id=\"@+id/main1\"\r\n    android:background=\"@color/white\"\r\n    tools:context=\".ui.Notification.NotificationFragment\">\r\n\r\n    <RelativeLayout\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"50dp\"\r\n        android:id=\"@+id/header\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        android:layout_alignParentTop=\"true\"\r\n        android:background=\"@color/green\">\r\n\r\n        <TextView\r\n            android:id=\"@+id/tvTitle\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_centerInParent=\"true\"\r\n            android:text=\"@string/thong_bao\"\r\n            android:textSize=\"20sp\"\r\n            android:textStyle=\"bold\"\r\n            android:textColor=\"@color/black\"/>\r\n    </RelativeLayout>\r\n\r\n    <androidx.recyclerview.widget.RecyclerView\r\n        android:id=\"@+id/recycler_notifications\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"0dp\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/header\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        android:dividerHeight=\"1dp\"\r\n        android:padding=\"8dp\" />\r\n</androidx.constraintlayout.widget.ConstraintLayout>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_notification.xml b/app/src/main/res/layout/fragment_notification.xml
+--- a/app/src/main/res/layout/fragment_notification.xml	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ b/app/src/main/res/layout/fragment_notification.xml	(date 1733233366603)
+@@ -18,14 +18,21 @@
+         android:background="@color/green">
+ 
+         <TextView
+-            android:id="@+id/tvTitle"
+-            android:layout_width="wrap_content"
+-            android:layout_height="wrap_content"
+-            android:layout_centerInParent="true"
+-            android:text="@string/thong_bao"
+-            android:textSize="20sp"
++            android:id="@+id/tv_title"
++            android:layout_width="126dp"
++            android:layout_height="40dp"
++            android:layout_gravity="center"
++            android:layout_marginStart="145dp"
++            android:layout_marginTop="16dp"
++            android:layout_marginEnd="140dp"
++            android:layout_marginBottom="8dp"
++            android:gravity="center"
++            android:text="THÔNG BÁO"
++            android:textSize="18sp"
+             android:textStyle="bold"
+-            android:textColor="@color/black"/>
++            app:layout_constraintEnd_toEndOf="parent"
++            app:layout_constraintStart_toStartOf="parent"
++            app:layout_constraintTop_toTopOf="parent" />
+     </RelativeLayout>
+ 
+     <androidx.recyclerview.widget.RecyclerView
+@@ -38,4 +45,12 @@
+         app:layout_constraintEnd_toEndOf="parent"
+         android:dividerHeight="1dp"
+         android:padding="8dp" />
++
++    <ImageView
++        android:id="@+id/ivEmpty"
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:src="@drawable/noti_empty"
++        app:layout_constraintTop_toBottomOf="@id/header"
++        tools:layout_editor_absoluteX="0dp" />
+ </androidx.constraintlayout.widget.ConstraintLayout>
+Index: app/src/main/java/com/example/agrimart/ui/Notification/NotificationFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.Notification;\r\n\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\nimport androidx.annotation.NonNull;\r\nimport androidx.annotation.Nullable;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.lifecycle.ViewModelProvider;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.adapter.NotificationAdapter;\r\nimport com.example.agrimart.data.model.Notification;\r\nimport com.example.agrimart.viewmodel.NotificationViewModel;\r\nimport java.util.List;\r\n\r\npublic class NotificationFragment extends Fragment {\r\n    private static final String ARG_USER_ID = \"userId\";\r\n    private static final String TAG = \"NotificationFragment\";\r\n    private RecyclerView recyclerView;\r\n    private NotificationAdapter adapter;\r\n    private NotificationViewModel notificationViewModel;\r\n    private String userId;\r\n\r\n    public NotificationFragment() {\r\n    }\r\n\r\n    @Override\r\n    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {\r\n        View view = inflater.inflate(R.layout.fragment_notification, container, false);\r\n\r\n        if (getArguments() != null) {\r\n            userId = getArguments().getString(\"userId\");\r\n        } else {\r\n            Log.e(TAG, \"Không tìm thấy userId\");\r\n        }\r\n\r\n        recyclerView = view.findViewById(R.id.recycler_notifications);\r\n        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));\r\n\r\n        notificationViewModel = new ViewModelProvider(this).get(NotificationViewModel.class);\r\n        notificationViewModel.getNotifications(userId);\r\n        notificationViewModel.getNotificationsLiveData().observe(getViewLifecycleOwner(), notifications -> {\r\n            adapter = new NotificationAdapter(notifications);\r\n            recyclerView.setAdapter(adapter);\r\n        });\r\n\r\n        return view;\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/Notification/NotificationFragment.java b/app/src/main/java/com/example/agrimart/ui/Notification/NotificationFragment.java
+--- a/app/src/main/java/com/example/agrimart/ui/Notification/NotificationFragment.java	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ b/app/src/main/java/com/example/agrimart/ui/Notification/NotificationFragment.java	(date 1733233186474)
+@@ -2,15 +2,16 @@
+ 
+ import android.os.Bundle;
+ import android.util.Log;
++import android.view.LayoutInflater;
++import android.view.View;
++import android.view.ViewGroup;
++import android.widget.ImageView;
+ import androidx.annotation.NonNull;
+ import androidx.annotation.Nullable;
+ import androidx.fragment.app.Fragment;
+ import androidx.lifecycle.ViewModelProvider;
+ import androidx.recyclerview.widget.LinearLayoutManager;
+ import androidx.recyclerview.widget.RecyclerView;
+-import android.view.LayoutInflater;
+-import android.view.View;
+-import android.view.ViewGroup;
+ import com.example.agrimart.R;
+ import com.example.agrimart.adapter.NotificationAdapter;
+ import com.example.agrimart.data.model.Notification;
+@@ -24,6 +25,7 @@
+     private NotificationAdapter adapter;
+     private NotificationViewModel notificationViewModel;
+     private String userId;
++    private ImageView ivEmpty;
+ 
+     public NotificationFragment() {
+     }
+@@ -40,12 +42,20 @@
+ 
+         recyclerView = view.findViewById(R.id.recycler_notifications);
+         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
++        ivEmpty = view.findViewById(R.id.ivEmpty);
+ 
+         notificationViewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
+         notificationViewModel.getNotifications(userId);
+         notificationViewModel.getNotificationsLiveData().observe(getViewLifecycleOwner(), notifications -> {
+-            adapter = new NotificationAdapter(notifications);
+-            recyclerView.setAdapter(adapter);
++            if (notifications == null || notifications.isEmpty()) {
++                ivEmpty.setVisibility(View.VISIBLE);
++                recyclerView.setVisibility(View.GONE);
++            } else {
++                ivEmpty.setVisibility(View.GONE);
++                recyclerView.setVisibility(View.VISIBLE);
++                adapter = new NotificationAdapter(notifications);
++                recyclerView.setAdapter(adapter);
++            }
+         });
+ 
+         return view;
+Index: app/src/main/java/com/example/agrimart/viewmodel/NotificationViewModel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.viewmodel;\r\n\r\nimport android.Manifest;\r\nimport android.app.Application;\r\nimport android.content.pm.PackageManager;\r\nimport android.util.Log;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.core.app.ActivityCompat;\r\nimport androidx.core.app.NotificationCompat;\r\nimport androidx.core.app.NotificationManagerCompat;\r\nimport androidx.lifecycle.AndroidViewModel;\r\nimport androidx.lifecycle.LiveData;\r\nimport androidx.lifecycle.MutableLiveData;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.data.model.Notification;\r\nimport com.google.firebase.auth.FirebaseAuth;\r\nimport com.google.firebase.auth.FirebaseUser;\r\nimport com.google.firebase.firestore.DocumentChange;\r\nimport com.google.firebase.firestore.FieldValue;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\nimport com.google.firebase.firestore.Query;\r\nimport com.google.firebase.firestore.QueryDocumentSnapshot;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class NotificationViewModel extends AndroidViewModel {\r\n    private static final String TAG = \"NotificationViewModel\";\r\n    private final MutableLiveData<List<Notification>> notificationsLiveData = new MutableLiveData<>();\r\n    private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();\r\n    private static final int REQUEST_NOTIFICATION_PERMISSION = 1;\r\n\r\n    public NotificationViewModel(@NonNull Application application) {\r\n        super(application);\r\n    }\r\n\r\n    public void createNotificationsForUser() {\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n\r\n        db.collection(\"orders\")\r\n                .whereEqualTo(\"userId\", FirebaseAuth.getInstance().getCurrentUser().getUid())\r\n                .addSnapshotListener((snapshots, e) -> {\r\n                    if (e != null) {\r\n                        Log.e(\"FirebaseError\", \"Error listening to orders\", e);\r\n                        return;\r\n                    }\r\n\r\n                    if (snapshots != null && !snapshots.isEmpty()) {\r\n                        for (DocumentChange dc : snapshots.getDocumentChanges()) {\r\n                            notificationForUser(dc, db);\r\n                        }\r\n                    }\r\n                });\r\n    }\r\n\r\n    public void createNotificationsForSeller() {\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n        db.collection(\"orders\")\r\n                .whereEqualTo(\"storeId\", FirebaseAuth.getInstance().getCurrentUser().getUid())\r\n                .addSnapshotListener((snapshots, e) -> {\r\n                    if (e != null) {\r\n                        Log.e(\"FirebaseError\", \"Error listening to orders\", e);\r\n                        return;\r\n                    }\r\n\r\n                    if (snapshots != null && !snapshots.isEmpty()) {\r\n                        for (DocumentChange dc : snapshots.getDocumentChanges()) {\r\n                            notificationForSeller(dc, db);\r\n                        }\r\n                    }\r\n                });\r\n    }\r\n\r\n    private void notificationForUser(DocumentChange dc, FirebaseFirestore db) {\r\n        String status = dc.getDocument().getString(\"status\");\r\n        List<String> notifiedStatuses = (List<String>) dc.getDocument().get(\"notifiedStatuses\");\r\n        String imageUrl = \"android.resource://\" + getApplication().getPackageName() + \"/\" + R.drawable.bell;\r\n        long timestamp = System.currentTimeMillis();\r\n\r\n        String title = \"\";\r\n        String message = \"\";\r\n\r\n        if (notifiedStatuses != null && notifiedStatuses.contains(status)) {\r\n            return;\r\n        }\r\n\r\n        switch (status) {\r\n            case \"pending\":\r\n                title = \"Đặt hàng thành công!\";\r\n                message = \"Đơn hàng của bạn đang chờ người bán xác nhận.\";\r\n                break;\r\n            case \"approved\":\r\n                title = \"Người bán đang chuẩn bị hàng\";\r\n                message = \"Đơn hàng của bạn đang được đóng gói và sẽ sớm giao cho đơn vị vận chuyển.\";\r\n                break;\r\n            case \"delivering\":\r\n                title = \"Đơn hàng đang trong quá trình vận chuyển\";\r\n                message = \"Đơn hàng của bạn hiện đang trong quá trình vận chuyển.\";\r\n                break;\r\n            case \"delivered\":\r\n                title = \"Đơn hàng đã được giao thành công\";\r\n                message = \"Bạn có hài lòng với sản phẩm đã nhận?\";\r\n                break;\r\n            case \"canceled\":\r\n                title = \"Đơn hàng đã bị huỷ\";\r\n                message = \"Đơn hàng của bạn đã bị huỷ. Nếu bạn đã thanh toán bằng VNPAY số tiền đã thanh toán sẽ sớm được hoàn lại vào tài khoản của bạn.\";\r\n                break;\r\n            case \"return\":\r\n                title = \"Yêu cầu trả hàng đã được chấp nhận\";\r\n                message = \"Yêu cầu trả hàng của bạn đã được chấp nhận. Vui lòng chờ trong thời gian sớm nhất.\";\r\n                break;\r\n        }\r\n\r\n        if (!title.isEmpty() && !message.isEmpty()) {\r\n            Notification notification = new Notification(title, message, timestamp, imageUrl);\r\n            sendNotification(title, message);\r\n            saveNotificationToFirestore(notification);\r\n\r\n            db.collection(\"orders\").document(dc.getDocument().getId())\r\n                    .update(\"notifiedStatuses\", FieldValue.arrayUnion(status))\r\n                    .addOnSuccessListener(aVoid -> Log.d(\"Firestore\", \"Updated notifiedStatuses\"))\r\n                    .addOnFailureListener(e -> Log.e(\"FirestoreError\", \"Error updating notifiedStatuses\", e));\r\n        }\r\n    }\r\n\r\n    private void notificationForSeller(DocumentChange dc, FirebaseFirestore db) {\r\n        String status = dc.getDocument().getString(\"status\");\r\n        List<String> notifiedStatuses = (List<String>) dc.getDocument().get(\"notifiedStatuses\");\r\n        String imageUrl = \"android.resource://\" + getApplication().getPackageName() + \"/\" + R.drawable.bell;\r\n        long timestamp = System.currentTimeMillis();\r\n\r\n        String title = \"\";\r\n        String message = \"\";\r\n\r\n        if (notifiedStatuses != null && notifiedStatuses.contains(status)) {\r\n            return;\r\n        }\r\n\r\n        switch (status) {\r\n            case \"pending\":\r\n                title = \"Có đơn hàng mới\";\r\n                message = \"Hãy xác nhận đơn hàng mới vừa được đặt\";\r\n                break;\r\n            case \"approved\":\r\n                title = \"Chuẩn bị hàng\";\r\n                message = \"Chuẩn bị đơn hàng để giao cho đơn vị vận chuyển\";\r\n                break;\r\n            case \"delivering\":\r\n                title = \"Đơn bán đang trong quá trình vận chuyển\";\r\n                message = \"Đơn bán hiện đang trong quá trình vận chuyển.\";\r\n                break;\r\n            case \"delivered\":\r\n                title = \"Đơn bán đã được giao thành công\";\r\n                message = \"Đơn bán đã được giao thành công cho khách hàng.\";\r\n                break;\r\n            case \"canceled\":\r\n                title = \"Đơn hàng đã bị huỷ\";\r\n                message = \"Đơn hàng đã bị huỷ.\";\r\n                break;\r\n            case \"return\":\r\n                title = \"Trả hàng\";\r\n                message = \"Khách hàng yêu cầu trả hàng.\";\r\n                break;\r\n        }\r\n\r\n        if (!title.isEmpty() && !message.isEmpty()) {\r\n            Notification notification = new Notification(title, message, timestamp, imageUrl);\r\n            sendNotification(title, message);\r\n            saveNotificationToFirestore(notification);\r\n\r\n            db.collection(\"orders\").document(dc.getDocument().getId())\r\n                    .update(\"notifiedStatuses\", FieldValue.arrayUnion(status))\r\n                    .addOnSuccessListener(aVoid -> Log.d(\"Firestore\", \"Updated notifiedStatuses\"))\r\n                    .addOnFailureListener(e -> Log.e(\"FirestoreError\", \"Error updating notifiedStatuses\", e));\r\n        }\r\n    }\r\n\r\n    public void sendNotification(String title, String message) {\r\n        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplication(), \"default_channel\")\r\n                .setSmallIcon(R.drawable.logo_icon)\r\n                .setContentTitle(title)\r\n                .setContentText(message)\r\n                .setPriority(NotificationCompat.PRIORITY_DEFAULT)\r\n                .setAutoCancel(true);\r\n\r\n        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplication());\r\n        if (ActivityCompat.checkSelfPermission(getApplication(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {\r\n            Log.e(\"NotificationViewModel\", \"Notification permission not granted\");\r\n            return;\r\n        }\r\n        notificationManager.notify((int) System.currentTimeMillis(), builder.build());\r\n    }\r\n\r\n    public void saveNotificationToFirestore(Notification notification) {\r\n        FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();\r\n\r\n        if (currentUser != null) {\r\n            notification.setUserId(currentUser.getUid());\r\n            db.collection(\"notifications\").add(notification)\r\n                    .addOnSuccessListener(documentReference -> {\r\n                        Log.d(\"Firestore\", \"Notification saved successfully\");\r\n                    })\r\n                    .addOnFailureListener(e -> {\r\n                        Log.e(\"FirestoreError\", \"Error saving notification\", e);\r\n                    });\r\n        }\r\n    }\r\n\r\n    public void getNotifications(String userId) {\r\n        Log.d(TAG, \"Fetching notifications for user ID: \" + userId);\r\n        firestore.collection(\"notifications\")\r\n                .whereEqualTo(\"userId\", userId)\r\n                .orderBy(\"timestamp\", Query.Direction.DESCENDING)\r\n                .get()\r\n                .addOnCompleteListener(task -> {\r\n                    if (task.isSuccessful() && task.getResult() != null) {\r\n                        List<Notification> notifications = new ArrayList<>();\r\n                        for (QueryDocumentSnapshot doc : task.getResult()) {\r\n                            Notification notification = doc.toObject(Notification.class);\r\n                            notifications.add(notification);\r\n                        }\r\n                        Log.d(TAG, \"Fetched \" + notifications.size() + \" notifications\");\r\n                        notificationsLiveData.setValue(notifications);\r\n                    } else {\r\n                        Log.e(TAG, \"Error fetching notifications\", task.getException());\r\n                    }\r\n                });\r\n    }\r\n\r\n    public LiveData<List<Notification>> getNotificationsLiveData() {\r\n        return notificationsLiveData;\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/viewmodel/NotificationViewModel.java b/app/src/main/java/com/example/agrimart/viewmodel/NotificationViewModel.java
+--- a/app/src/main/java/com/example/agrimart/viewmodel/NotificationViewModel.java	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ b/app/src/main/java/com/example/agrimart/viewmodel/NotificationViewModel.java	(date 1733233936496)
+@@ -78,6 +78,7 @@
+         List<String> notifiedStatuses = (List<String>) dc.getDocument().get("notifiedStatuses");
+         String imageUrl = "android.resource://" + getApplication().getPackageName() + "/" + R.drawable.bell;
+         long timestamp = System.currentTimeMillis();
++        String orderId = dc.getDocument().getId();
+ 
+         String title = "";
+         String message = "";
+@@ -89,32 +90,32 @@
+         switch (status) {
+             case "pending":
+                 title = "Đặt hàng thành công!";
+-                message = "Đơn hàng của bạn đang chờ người bán xác nhận.";
++                message = "Đơn hàng " + orderId + " đang chờ người bán xác nhận.";
+                 break;
+             case "approved":
+                 title = "Người bán đang chuẩn bị hàng";
+-                message = "Đơn hàng của bạn đang được đóng gói và sẽ sớm giao cho đơn vị vận chuyển.";
++                message = "Đơn hàng " + orderId + " đang được đóng gói và sẽ sớm giao cho đơn vị vận chuyển.";
+                 break;
+             case "delivering":
+                 title = "Đơn hàng đang trong quá trình vận chuyển";
+-                message = "Đơn hàng của bạn hiện đang trong quá trình vận chuyển.";
++                message = "Đơn hàng " + orderId + " hiện đang trong quá trình vận chuyển.";
+                 break;
+             case "delivered":
+                 title = "Đơn hàng đã được giao thành công";
+-                message = "Bạn có hài lòng với sản phẩm đã nhận?";
++                message = "Đơn hàng " + orderId + " đã được giao thành công. Bạn có hài lòng với sản phẩm đã nhận?";
+                 break;
+             case "canceled":
+                 title = "Đơn hàng đã bị huỷ";
+-                message = "Đơn hàng của bạn đã bị huỷ. Nếu bạn đã thanh toán bằng VNPAY số tiền đã thanh toán sẽ sớm được hoàn lại vào tài khoản của bạn.";
++                message = "Đơn hàng " + orderId + " đã bị huỷ. Nếu bạn đã thanh toán bằng VNPAY số tiền đã thanh toán sẽ sớm được hoàn lại vào tài khoản của bạn.";
+                 break;
+             case "return":
+                 title = "Yêu cầu trả hàng đã được chấp nhận";
+-                message = "Yêu cầu trả hàng của bạn đã được chấp nhận. Vui lòng chờ trong thời gian sớm nhất.";
++                message = "Yêu cầu trả hàng của đơn hàng " + orderId + " đã được chấp nhận. Vui lòng chờ trong thời gian sớm nhất.";
+                 break;
+         }
+ 
+         if (!title.isEmpty() && !message.isEmpty()) {
+-            Notification notification = new Notification(title, message, timestamp, imageUrl);
++            Notification notification = new Notification(title, message, timestamp, imageUrl,"");
+             sendNotification(title, message);
+             saveNotificationToFirestore(notification);
+ 
+@@ -130,6 +131,7 @@
+         List<String> notifiedStatuses = (List<String>) dc.getDocument().get("notifiedStatuses");
+         String imageUrl = "android.resource://" + getApplication().getPackageName() + "/" + R.drawable.bell;
+         long timestamp = System.currentTimeMillis();
++        String orderId = dc.getDocument().getId();
+ 
+         String title = "";
+         String message = "";
+@@ -141,32 +143,32 @@
+         switch (status) {
+             case "pending":
+                 title = "Có đơn hàng mới";
+-                message = "Hãy xác nhận đơn hàng mới vừa được đặt";
++                message = "Đơn hàng " + orderId + " mới vừa được đặt. Hãy xác nhận đơn hàng.";
+                 break;
+             case "approved":
+                 title = "Chuẩn bị hàng";
+-                message = "Chuẩn bị đơn hàng để giao cho đơn vị vận chuyển";
++                message = "Chuẩn bị đơn hàng " + orderId + " để giao cho đơn vị vận chuyển.";
+                 break;
+             case "delivering":
+                 title = "Đơn bán đang trong quá trình vận chuyển";
+-                message = "Đơn bán hiện đang trong quá trình vận chuyển.";
++                message = "Đơn bán " + orderId + " hiện đang trong quá trình vận chuyển.";
+                 break;
+             case "delivered":
+                 title = "Đơn bán đã được giao thành công";
+-                message = "Đơn bán đã được giao thành công cho khách hàng.";
++                message = "Đơn bán " + orderId + " đã được giao thành công cho khách hàng.";
+                 break;
+             case "canceled":
+                 title = "Đơn hàng đã bị huỷ";
+-                message = "Đơn hàng đã bị huỷ.";
++                message = "Đơn hàng " + orderId + " đã bị huỷ.";
+                 break;
+             case "return":
+                 title = "Trả hàng";
+-                message = "Khách hàng yêu cầu trả hàng.";
++                message = "Khách hàng yêu cầu trả hàng cho đơn hàng " + orderId + ".";
+                 break;
+         }
+ 
+         if (!title.isEmpty() && !message.isEmpty()) {
+-            Notification notification = new Notification(title, message, timestamp, imageUrl);
++            Notification notification = new Notification(title, message, timestamp, imageUrl, "");
+             sendNotification(title, message);
+             saveNotificationToFirestore(notification);
+ 
+Index: app/src/main/res/layout/activity_place_order.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:id=\"@+id/main\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".ui.Cart.PlaceOrderActivity\">\r\n\r\n    <androidx.appcompat.widget.Toolbar\r\n        android:id=\"@+id/toolbar\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:background=\"@color/transparent\"\r\n        app:titleTextColor=\"@color/black\"\r\n        app:titleTextAppearance=\"@style/TextAppearance.AppCompat.Large\"\r\n        app:navigationIcon=\"@drawable/ic_arrow_left\"\r\n        android:elevation=\"4dp\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/tvOrderStatus\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"180dp\"\r\n        android:gravity=\"center\"\r\n        android:text=\"Đặt hàng thành công\"\r\n        android:textColor=\"@android:color/black\"\r\n        android:textSize=\"24sp\"\r\n        android:textStyle=\"bold\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/toolbar\" />\r\n\r\n    <LinearLayout\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"240dp\"\r\n        android:gravity=\"center\"\r\n        android:orientation=\"horizontal\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintHorizontal_bias=\"0.0\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/tvOrderStatus\">\r\n\r\n        <Button\r\n            android:id=\"@+id/btnReturnToHome\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginStart=\"40dp\"\r\n            android:layout_marginTop=\"16dp\"\r\n            android:layout_marginEnd=\"16dp\"\r\n            android:layout_weight=\"1\"\r\n            android:backgroundTint=\"@color/green\"\r\n            app:cornerRadius=\"8dp\"\r\n            android:elevation=\"6dp\"\r\n            android:fontFamily=\"sans-serif-medium\"\r\n            android:shadowColor=\"#55000000\"\r\n            android:text=\"Trang chủ\"\r\n            android:textColor=\"@android:color/white\"\r\n            android:textSize=\"16sp\" />\r\n\r\n        <Button\r\n            android:id=\"@+id/btnViewOrders\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginStart=\"16dp\"\r\n            android:layout_marginTop=\"16dp\"\r\n            android:layout_marginEnd=\"40dp\"\r\n            android:layout_weight=\"1\"\r\n            android:backgroundTint=\"@color/green\"\r\n            app:cornerRadius=\"8dp\"\r\n            android:elevation=\"6dp\"\r\n            android:fontFamily=\"sans-serif-medium\"\r\n            android:shadowColor=\"#55000000\"\r\n            android:text=\"Đơn mua\"\r\n            android:textColor=\"@android:color/white\"\r\n            android:textSize=\"16sp\" />\r\n    </LinearLayout>\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_place_order.xml b/app/src/main/res/layout/activity_place_order.xml
+--- a/app/src/main/res/layout/activity_place_order.xml	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ b/app/src/main/res/layout/activity_place_order.xml	(date 1733234675679)
+@@ -24,7 +24,7 @@
+         android:id="@+id/tvOrderStatus"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+-        android:layout_marginTop="180dp"
++        android:layout_marginTop="140dp"
+         android:gravity="center"
+         android:text="Đặt hàng thành công"
+         android:textColor="@android:color/black"
+@@ -34,6 +34,16 @@
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toBottomOf="@id/toolbar" />
+ 
++    <ImageView
++        android:id="@+id/ivOrderStatus"
++        android:layout_width="wrap_content"
++        android:layout_height="100dp"
++        android:layout_marginTop="16dp"
++        android:src="@drawable/success"
++        app:layout_constraintEnd_toEndOf="parent"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintTop_toBottomOf="@id/tvOrderStatus" />
++
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+@@ -52,6 +62,7 @@
+             android:layout_marginStart="40dp"
+             android:layout_marginTop="16dp"
+             android:layout_marginEnd="16dp"
++            android:layout_marginBottom="10dp"
+             android:layout_weight="1"
+             android:backgroundTint="@color/green"
+             app:cornerRadius="8dp"
+@@ -69,6 +80,7 @@
+             android:layout_marginStart="16dp"
+             android:layout_marginTop="16dp"
+             android:layout_marginEnd="40dp"
++            android:layout_marginBottom="10dp"
+             android:layout_weight="1"
+             android:backgroundTint="@color/green"
+             app:cornerRadius="8dp"
+Index: .idea/deploymentTargetSelector.xml
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+deleted file mode 100644
+--- a/.idea/deploymentTargetSelector.xml	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ /dev/null	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
+@@ -1,10 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="deploymentTargetSelector">
+-    <selectionStates>
+-      <SelectionState runConfigName="app">
+-        <option name="selectionMode" value="DROPDOWN" />
+-      </SelectionState>
+-    </selectionStates>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: app/src/main/java/com/example/agrimart/data/model/Order.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.data.model;\r\n\r\nimport com.google.firebase.Timestamp;\r\nimport com.google.firebase.firestore.PropertyName;\r\n\r\nimport java.io.Serializable;\r\nimport java.text.SimpleDateFormat;\r\nimport java.util.Date;\r\nimport java.util.List;\r\nimport java.util.Locale;\r\n\r\npublic class Order implements Serializable {\r\n\r\n    @PropertyName(\"orderId\")\r\n    private String orderId;\r\n\r\n    @PropertyName(\"products\")\r\n    private List<Product> products;\r\n\r\n    @PropertyName(\"status\")\r\n    private String status;\r\n\r\n    @PropertyName(\"total_price\")\r\n    private int totalPrice;\r\n\r\n    @PropertyName(\"userId\")\r\n    private String userId;\r\n\r\n    @PropertyName(\"storeId\")\r\n    private String sellerId;\r\n\r\n    @PropertyName(\"order_code\")\r\n    private String orderCode;\r\n\r\n    @PropertyName(\"address\")\r\n    private String address;\r\n\r\n    @PropertyName(\"shipping_name\")\r\n    private String shippingName;\r\n\r\n    @PropertyName(\"shipping_fee\")\r\n    private Double shippingFee;\r\n\r\n    private String statusDelivery;\r\n\r\n    private String storeName;\r\n\r\n    private String paymentMethod;\r\n\r\n    private boolean checkRating;\r\n\r\n    private String username;\r\n\r\n    private String phonenumber;\r\n\r\n    @PropertyName(\"created_at\")\r\n    private Timestamp createdAt;\r\n\r\n    private String transactionId;\r\n\r\n    private Timestamp transactionDate;\r\n\r\n    @PropertyName(\"vnp_TxnRef\")\r\n    private String vnpTxnRef;\r\n\r\n    public Order() {\r\n    }\r\n\r\n    public Order(String orderId, String status, int totalPrice) {\r\n        this.orderId = orderId;\r\n        this.status = status;\r\n        this.totalPrice = totalPrice;\r\n    }\r\n\r\n    @PropertyName(\"orderId\")\r\n    public String getOrderId() {\r\n        return orderId;\r\n    }\r\n\r\n    @PropertyName(\"orderId\")\r\n    public void setOrderId(String orderId) {\r\n        this.orderId = orderId;\r\n    }\r\n\r\n    @PropertyName(\"status\")\r\n    public String getStatus() {\r\n        return status;\r\n    }\r\n\r\n    @PropertyName(\"status\")\r\n    public void setStatus(String status) {\r\n        this.status = status;\r\n    }\r\n\r\n    @PropertyName(\"total_price\")\r\n    public int getTotalPrice() {\r\n        return totalPrice;\r\n    }\r\n\r\n    @PropertyName(\"total_price\")\r\n    public void setTotalPrice(int totalPrice) {\r\n        this.totalPrice = totalPrice;\r\n    }\r\n\r\n    @PropertyName(\"userId\")\r\n    public String getUserId() {\r\n        return userId;\r\n    }\r\n\r\n    @PropertyName(\"userId\")\r\n    public void setUserId(String userId) {\r\n        this.userId = userId;\r\n    }\r\n\r\n    @PropertyName(\"order_code\")\r\n    public String getOrderCode() {\r\n        return orderCode;\r\n    }\r\n\r\n    @PropertyName(\"order_code\")\r\n    public void setOrderCode(String orderCode) {\r\n        this.orderCode = orderCode;\r\n    }\r\n\r\n    public String getStatusDelivery() {\r\n        return statusDelivery;\r\n    }\r\n\r\n    public void setStatusDelivery(String statusDelivery) {\r\n        this.statusDelivery = statusDelivery;\r\n    }\r\n\r\n    @PropertyName(\"address\")\r\n    public String getAddress() {\r\n        return address;\r\n    }\r\n\r\n    @PropertyName(\"address\")\r\n    public void setAddress(String address) {\r\n        this.address = address;\r\n    }\r\n\r\n    @PropertyName(\"storeId\")\r\n    public String getSellerId() {\r\n        return sellerId;\r\n    }\r\n\r\n    @PropertyName(\"storeId\")\r\n    public void setSellerId(String sellerId) {\r\n        this.sellerId = sellerId;\r\n    }\r\n\r\n    @PropertyName(\"products\")\r\n    public List<Product> getProducts() {\r\n        return products;\r\n    }\r\n\r\n    @PropertyName(\"products\")\r\n    public void setProducts(List<Product> products) {\r\n        this.products = products;\r\n    }\r\n\r\n    public String getStoreName() {\r\n        return storeName;\r\n    }\r\n\r\n    public void setStoreName(String storeName) {\r\n        this.storeName = storeName;\r\n    }\r\n\r\n    public String getPaymentMethod() {\r\n        return paymentMethod;\r\n    }\r\n\r\n    public void setPaymentMethod(String paymentMethod) {\r\n        this.paymentMethod = paymentMethod;\r\n    }\r\n\r\n    public boolean isCheckRating() {\r\n        return checkRating;\r\n    }\r\n\r\n    public void setCheckRating(boolean checkRating) {\r\n        this.checkRating = checkRating;\r\n    }\r\n\r\n    public String getUsername() {\r\n        return username;\r\n    }\r\n\r\n    public void setUsername(String username) {\r\n        this.username = username;\r\n    }\r\n\r\n    public String getPhonenumber() {\r\n        return phonenumber;\r\n    }\r\n\r\n    public void setPhonenumber(String phonenumber) {\r\n        this.phonenumber = phonenumber;\r\n    }\r\n\r\n    @PropertyName(\"shipping_name\")\r\n    public String getShippingName() {\r\n        return shippingName;\r\n    }\r\n\r\n    @PropertyName(\"shipping_name\")\r\n    public void setShippingName(String shippingName) {\r\n        this.shippingName = shippingName;\r\n    }\r\n\r\n    @PropertyName(\"shipping_fee\")\r\n    public Double getShippingFee() {\r\n        return shippingFee;\r\n    }\r\n\r\n    @PropertyName(\"shipping_fee\")\r\n    public void setShippingFee(Double shippingFee) {\r\n        this.shippingFee = shippingFee;\r\n    }\r\n\r\n    private long createdAtMillis;  // Chúng ta sẽ sử dụng long thay vì Timestamp để truyền qua Intent\r\n    // Getter và setter cho createdAtMillis\r\n    public long getCreatedAtMillis() {\r\n        return createdAtMillis;\r\n    }\r\n\r\n    @PropertyName(\"created_at\")\r\n    public void setCreatedAt(Timestamp createdAt) {\r\n        this.createdAtMillis = createdAt.toDate().getTime(); // Chuyển Timestamp thành long\r\n    }\r\n\r\n    @PropertyName(\"created_at\")\r\n    public Timestamp getCreatedAt() {\r\n        return createdAt;\r\n    }\r\n\r\n    private long transactionDateMillis;\r\n\r\n    public String getTransactionId() {\r\n        return transactionId;\r\n    }\r\n\r\n    public void setTransactionId(String transactionId) {\r\n        this.transactionId = transactionId;\r\n    }\r\n\r\n    public Timestamp getTransactionDate() {\r\n        return transactionDate;\r\n    }\r\n\r\n    public void setTransactionDate(Timestamp transactionDate) {\r\n        this.transactionDateMillis = transactionDate.toDate().getTime();\r\n    }\r\n\r\n    @PropertyName(\"vnp_TxnRef\")\r\n    public String getVnpTxnRef() {\r\n        return vnpTxnRef;\r\n    }\r\n\r\n    @PropertyName(\"vnp_TxnRef\")\r\n    public void setVnpTxnRef(String vnpTxnRef) {\r\n        this.vnpTxnRef = vnpTxnRef;\r\n    }\r\n\r\n    public String getFormattedCreatedAtDate() {\r\n        SimpleDateFormat dateFormat = new SimpleDateFormat(\"dd-MM-yyyy HH:mm\", Locale.getDefault());\r\n        Date date = new Date(createdAtMillis);\r\n        return dateFormat.format(date);\r\n    }\r\n\r\n    public long getTransactionDateMillis() {\r\n        return transactionDateMillis;\r\n    }\r\n\r\n    public void setTransactionDateMillis(long transactionDateMillis) {\r\n        this.transactionDateMillis = transactionDateMillis;\r\n        this.createdAtMillis = createdAt.toDate().getTime();\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/data/model/Order.java b/app/src/main/java/com/example/agrimart/data/model/Order.java
+--- a/app/src/main/java/com/example/agrimart/data/model/Order.java	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ b/app/src/main/java/com/example/agrimart/data/model/Order.java	(date 1733228100269)
+@@ -150,12 +150,10 @@
+         this.sellerId = sellerId;
+     }
+ 
+-    @PropertyName("products")
+     public List<Product> getProducts() {
+         return products;
+     }
+ 
+-    @PropertyName("products")
+     public void setProducts(List<Product> products) {
+         this.products = products;
+     }
+@@ -220,23 +218,15 @@
+         this.shippingFee = shippingFee;
+     }
+ 
+-    private long createdAtMillis;  // Chúng ta sẽ sử dụng long thay vì Timestamp để truyền qua Intent
+-    // Getter và setter cho createdAtMillis
+-    public long getCreatedAtMillis() {
+-        return createdAtMillis;
+-    }
+-
+-    @PropertyName("created_at")
+-    public void setCreatedAt(Timestamp createdAt) {
+-        this.createdAtMillis = createdAt.toDate().getTime(); // Chuyển Timestamp thành long
+-    }
+-
+     @PropertyName("created_at")
+     public Timestamp getCreatedAt() {
+         return createdAt;
+     }
+ 
+-    private long transactionDateMillis;
++    @PropertyName("created_at")
++    public void setCreatedAt(Timestamp createdAt) {
++        this.createdAt = createdAt;
++    }
+ 
+     public String getTransactionId() {
+         return transactionId;
+@@ -251,7 +241,7 @@
+     }
+ 
+     public void setTransactionDate(Timestamp transactionDate) {
+-        this.transactionDateMillis = transactionDate.toDate().getTime();
++        this.transactionDate = transactionDate;
+     }
+ 
+     @PropertyName("vnp_TxnRef")
+@@ -266,16 +256,7 @@
+ 
+     public String getFormattedCreatedAtDate() {
+         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault());
+-        Date date = new Date(createdAtMillis);
++        Date date = new Date(createdAt.toDate().getTime());
+         return dateFormat.format(date);
+     }
+-
+-    public long getTransactionDateMillis() {
+-        return transactionDateMillis;
+-    }
+-
+-    public void setTransactionDateMillis(long transactionDateMillis) {
+-        this.transactionDateMillis = transactionDateMillis;
+-        this.createdAtMillis = createdAt.toDate().getTime();
+-    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/example/agrimart/ui/Payment/VnpayRefund.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.ui.Payment;\r\n\r\nimport com.example.agrimart.data.API.Config_VNPAY;\r\nimport java.net.HttpURLConnection;\r\nimport java.net.InetAddress;\r\nimport java.net.URL;\r\nimport java.io.OutputStream;\r\nimport java.text.SimpleDateFormat;\r\nimport java.util.*;\r\nimport javax.crypto.Mac;\r\nimport javax.crypto.spec.SecretKeySpec;\r\nimport android.util.Log;\r\nimport org.json.JSONObject;\r\n\r\npublic class VnpayRefund {\r\n\r\n    public static String createRefundRequest(String txnRef, String transactionNo, int amount, String transactionDate, String orderInfo, String createBy) throws Exception {\r\n        String vnp_RequestId = UUID.randomUUID().toString();\r\n        String vnp_Version = Config_VNPAY.VNP_VERSION;\r\n        String vnp_Command = Config_VNPAY.VNP_COMMAND_REFUND;\r\n        String vnp_TmnCode = Config_VNPAY.VNP_TMNCODE;\r\n        String vnp_TransactionType = \"02\";\r\n        String vnp_CreateDate = new SimpleDateFormat(\"yyyyMMddHHmmss\").format(new Date());\r\n        String vnp_IpAddr = InetAddress.getLocalHost().getHostAddress();\r\n        String vnp_HashSecret = Config_VNPAY.VNP_HASH_SECRET;\r\n        String formattedAmount = String.valueOf(amount * 100);\r\n\r\n        //checksum\r\n        String data = vnp_RequestId + \"|\" + vnp_Version + \"|\" + vnp_Command + \"|\" + vnp_TmnCode + \"|\" + vnp_TransactionType + \"|\" + txnRef + \"|\" + formattedAmount + \"|\" + transactionNo + \"|\" + transactionDate + \"|\" + createBy + \"|\" + vnp_CreateDate + \"|\" + vnp_IpAddr + \"|\" + orderInfo;\r\n\r\n        //vnp_SecureHash\r\n        String vnp_SecureHash = hmacSHA512(vnp_HashSecret, data);\r\n\r\n        // tạo parameters map\r\n        Map<String, String> vnp_Params = new HashMap<>();\r\n        vnp_Params.put(\"vnp_RequestId\", vnp_RequestId);\r\n        vnp_Params.put(\"vnp_Version\", vnp_Version);\r\n        vnp_Params.put(\"vnp_Command\", vnp_Command);\r\n        vnp_Params.put(\"vnp_TmnCode\", vnp_TmnCode);\r\n        vnp_Params.put(\"vnp_TransactionType\", vnp_TransactionType);\r\n        vnp_Params.put(\"vnp_TxnRef\", txnRef);\r\n        vnp_Params.put(\"vnp_Amount\", formattedAmount);\r\n        vnp_Params.put(\"vnp_TransactionNo\", transactionNo);\r\n        vnp_Params.put(\"vnp_TransactionDate\", transactionDate);\r\n        vnp_Params.put(\"vnp_OrderInfo\", orderInfo);\r\n        vnp_Params.put(\"vnp_CreateBy\", createBy);\r\n        vnp_Params.put(\"vnp_CreateDate\", vnp_CreateDate);\r\n        vnp_Params.put(\"vnp_IpAddr\", vnp_IpAddr);\r\n        vnp_Params.put(\"vnp_SecureHash\", vnp_SecureHash);\r\n\r\n        // Create JSON body from vnp_Params\r\n        JSONObject jsonBody = new JSONObject(vnp_Params);\r\n\r\n        Log.d(\"VnpayRefund\", \"Refund Request: \" + jsonBody.toString());\r\n\r\n        // gủi request đến VNPAY\r\n        URL url = new URL(Config_VNPAY.VNPAY_SANDBOX_REFUND_URL);\r\n        HttpURLConnection connection = (HttpURLConnection) url.openConnection();\r\n        connection.setRequestMethod(\"POST\");\r\n        connection.setDoOutput(true);\r\n        connection.setRequestProperty(\"Content-Type\", \"application/json\");\r\n        connection.setRequestProperty(\"Accept\", \"application/json\");\r\n\r\n        OutputStream os = connection.getOutputStream();\r\n        os.write(jsonBody.toString().getBytes(\"UTF-8\"));\r\n        os.close();\r\n\r\n        //Nhận response từ VNPAY\r\n        int responseCode = connection.getResponseCode();\r\n        if (responseCode == HttpURLConnection.HTTP_OK) {\r\n            Scanner scanner = new Scanner(connection.getInputStream());\r\n            StringBuilder response = new StringBuilder();\r\n            while (scanner.hasNext()) {\r\n                response.append(scanner.nextLine());\r\n            }\r\n            scanner.close();\r\n            return response.toString();\r\n        } else {\r\n            return \"Lỗi: \" + responseCode;\r\n        }\r\n    }\r\n\r\n    public static String hmacSHA512(String key, String data) throws Exception {\r\n        Mac hmacSha512 = Mac.getInstance(\"HmacSHA512\");\r\n        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(\"UTF-8\"), \"HmacSHA512\");\r\n        hmacSha512.init(secretKeySpec);\r\n        byte[] hashBytes = hmacSha512.doFinal(data.getBytes(\"UTF-8\"));\r\n        StringBuilder result = new StringBuilder();\r\n        for (byte b : hashBytes) {\r\n            result.append(String.format(\"%02x\", b));\r\n        }\r\n        return result.toString();\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/ui/Payment/VnpayRefund.java b/app/src/main/java/com/example/agrimart/ui/Payment/VnpayRefund.java
+--- a/app/src/main/java/com/example/agrimart/ui/Payment/VnpayRefund.java	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ b/app/src/main/java/com/example/agrimart/ui/Payment/VnpayRefund.java	(date 1733228600749)
+@@ -76,6 +76,7 @@
+             scanner.close();
+             return response.toString();
+         } else {
++            Log.e("VnpayRefund", "Lỗi: " + responseCode);
+             return "Lỗi: " + responseCode;
+         }
+     }
+Index: app/src/main/java/com/example/agrimart/data/model/Notification.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.data.model;\r\n\r\npublic class Notification {\r\n    private String title;\r\n    private String message;\r\n    private long timestamp;\r\n    private String img;\r\n    private String userId;\r\n\r\n    public Notification(String title, String message, long timestamp, String imageUrl) {\r\n        this.title = title;\r\n        this.message = message;\r\n        this.timestamp = timestamp;\r\n        this.img = imageUrl;\r\n    }\r\n\r\n    public Notification() {\r\n    }\r\n\r\n    public String getTitle() {\r\n        return title;\r\n    }\r\n\r\n    public String getMessage() {\r\n        return message;\r\n    }\r\n\r\n    public long getTimestamp() {\r\n        return timestamp;\r\n    }\r\n\r\n    public String getImageUrl() {\r\n        return img;\r\n    }\r\n\r\n    public String getUserId() {\r\n        return userId;\r\n    }\r\n\r\n    public void setUserId(String userId) {\r\n        this.userId = userId;\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/data/model/Notification.java b/app/src/main/java/com/example/agrimart/data/model/Notification.java
+--- a/app/src/main/java/com/example/agrimart/data/model/Notification.java	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ b/app/src/main/java/com/example/agrimart/data/model/Notification.java	(date 1733230584013)
+@@ -7,11 +7,12 @@
+     private String img;
+     private String userId;
+ 
+-    public Notification(String title, String message, long timestamp, String imageUrl) {
++    public Notification(String title, String message, long timestamp, String imageUrl, String userId) {
+         this.title = title;
+         this.message = message;
+         this.timestamp = timestamp;
+         this.img = imageUrl;
++        this.userId = userId;
+     }
+ 
+     public Notification() {
+Index: app/src/main/java/com/example/agrimart/adapter/OrderStoreAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.agrimart.adapter;\r\n\r\nimport static androidx.core.content.ContextCompat.startActivity;\r\n\r\nimport android.annotation.SuppressLint;\r\nimport android.app.Activity;\r\nimport android.content.Intent;\r\nimport android.os.Looper;\r\nimport android.util.Log;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.ImageView;\r\nimport android.widget.LinearLayout;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.appcompat.widget.AppCompatButton;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.example.agrimart.R;\r\nimport com.example.agrimart.data.model.Order;\r\nimport com.example.agrimart.data.model.Product;\r\nimport com.example.agrimart.ui.Cart.CheckoutActivity;\r\nimport com.example.agrimart.ui.MyProfile.MyRating.ProductRatingActivity;\r\nimport com.example.agrimart.ui.MyProfile.MyRating.ShopRatingActivity;\r\nimport com.example.agrimart.ui.MyProfile.PurchasedOrders.OrderInformationActivity;\r\nimport com.example.agrimart.ui.Payment.VnpayRefund;\r\nimport com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;\r\nimport com.google.firebase.Timestamp;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\n\r\nimport java.text.SimpleDateFormat;\r\nimport java.util.ArrayList;\r\nimport java.util.Date;\r\nimport java.util.List;\r\nimport java.util.Locale;\r\n\r\npublic class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.OrderStoreViewHolder> {\r\n    private final List<Order> orderStoreList = new ArrayList<>();\r\n    private OrderStatusFragmentViewModel viewModel;\r\n    private final int REQUEST_CODE_RATING = 1001;\r\n\r\n\r\n    // Constructor\r\n    public OrderStoreAdapter(List<Order> orderStoreList, OrderStatusFragmentViewModel viewModel) {\r\n        this.orderStoreList.addAll(orderStoreList);\r\n        this.viewModel = viewModel;\r\n    }\r\n\r\n    // Update orders when data changes\r\n    public void updateOrders(List<Order> newOrders) {\r\n        orderStoreList.clear();\r\n        orderStoreList.addAll(newOrders);\r\n        notifyDataSetChanged();\r\n    }\r\n\r\n\r\n    @NonNull\r\n    @Override\r\n    public OrderStoreViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {\r\n        // Inflate the layout for each item\r\n        View view = LayoutInflater.from(parent.getContext())\r\n                .inflate(R.layout.item_order_store, parent, false);\r\n        return new OrderStoreViewHolder(view);\r\n    }\r\n\r\n    @SuppressLint(\"SetTextI18n\")\r\n    @Override\r\n    public void onBindViewHolder(@NonNull OrderStoreViewHolder holder, int position) {\r\n        // Get the current OrderStore\r\n        Order orderStore = orderStoreList.get(position);\r\n\r\n        List<Product> products = orderStore.getProducts();\r\n        ProductOrderAdapter productOrderAdapter = new ProductOrderAdapter(products);\r\n        productOrderAdapter.setOnProductClickListener(product -> {\r\n            openDetail(holder, orderStore);\r\n        });\r\n\r\n        holder.recyclerViewItemOrder.setAdapter(productOrderAdapter);\r\n        holder.recyclerViewItemOrder.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));\r\n\r\n        // Set text data\r\n        holder.tvStoreName.setText(orderStore.getStoreName());\r\n\r\n        String translatedStatus;\r\n        switch (orderStore.getStatus()) {\r\n            case \"pending\":\r\n                translatedStatus = \"Chờ xác nhận\";\r\n                holder.btnBuy.setText(\"Hủy đơn hàng\");\r\n                break;\r\n            case \"approved\":\r\n                translatedStatus = \"Chờ lấy hàng\";\r\n                break;\r\n            case \"delivering\":\r\n                translatedStatus = \"Chờ giao hàng\";\r\n                holder.btnBuy.setText(\"Đã nhận hàng\");\r\n                holder.btnDetail.setVisibility(View.VISIBLE);\r\n                holder.btnDetail.setText(\"Trả hàng/Hoàn tiền\");\r\n                break;\r\n            case \"return\":\r\n                translatedStatus = \"Chờ giao hàng\";\r\n                holder.btnBuy.setText(\"Đã nhận hàng\");\r\n                break;\r\n            case \"delivered\":\r\n                translatedStatus = \"Hoàn thành\";\r\n                if (!orderStore.isCheckRating()) {\r\n                    holder.btnBuy.setText(\"Đánh giá\");\r\n                    holder.btnDetail.setVisibility(View.VISIBLE);\r\n                    holder.btnDetail.setText(\"Trả hàng/Hoàn tiền\");\r\n                } else {\r\n                    holder.btnDetail.setVisibility(View.VISIBLE);\r\n                }\r\n\r\n                break;\r\n            case \"canceled\":\r\n                translatedStatus = \"Đã hủy\";\r\n                holder.btnDetail.setText(\"Xem Thông tin Hoàn tiền\");\r\n                break;\r\n            default:\r\n                translatedStatus = \"Không xác định\";\r\n                break;\r\n        }\r\n        holder.tvStatus.setText(translatedStatus);\r\n\r\n        // Thêm listener cho btnBuy\r\n        holder.btnBuy.setOnClickListener(v -> cancelOrder(holder, orderStore));  // Truyền đúng item vào đây\r\n\r\n        holder.tvTotalPrice.setText(\"Tổng số tiền: \" + orderStore.getTotalPrice() + \" VND\");\r\n\r\n        holder.main.setOnClickListener(v -> openDetail(holder, orderStore));\r\n\r\n        holder.btnDetail.setOnClickListener(v -> openRating(holder, orderStore));\r\n\r\n    }\r\n\r\n\r\n    @Override\r\n    public int getItemCount() {\r\n        return orderStoreList.size();\r\n    }\r\n\r\n    // ViewHolder class\r\n    static class OrderStoreViewHolder extends RecyclerView.ViewHolder {\r\n\r\n        TextView tvStoreName, tvStatus, tvTotalPrice;\r\n        ImageView imageView;\r\n        RecyclerView recyclerViewItemOrder;\r\n        AppCompatButton btnBuy, btnDetail;\r\n        LinearLayout main;\r\n\r\n        public OrderStoreViewHolder(@NonNull View itemView) {\r\n            super(itemView);\r\n            main = itemView.findViewById(R.id.main);\r\n            tvStoreName = itemView.findViewById(R.id.tv_store_name);\r\n            tvStatus = itemView.findViewById(R.id.status);\r\n            tvTotalPrice = itemView.findViewById(R.id.total_price);\r\n            imageView = itemView.findViewById(R.id.imageView9);\r\n            recyclerViewItemOrder = itemView.findViewById(R.id.recyclerViewItemOrder);\r\n            btnBuy = itemView.findViewById(R.id.btn_buy);\r\n            btnDetail = itemView.findViewById(R.id.btn_detail);\r\n        }\r\n    }\r\n\r\n    private void cancelOrder(OrderStoreViewHolder holder, Order order) {\r\n        int position = holder.getAdapterPosition(); // Lấy đúng vị trí của item\r\n        if (position == RecyclerView.NO_POSITION) {\r\n            return; // Nếu vị trí không hợp lệ, thoát khỏi phương thức\r\n        }\r\n\r\n        if (order.getStatus().equals(\"pending\") && order.getPaymentMethod().equals(\"COD\")) {\r\n            viewModel.updateOrderStatus(order.getOrderId(), \"canceled\", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {\r\n                @Override\r\n                public void onSuccess(String message) {\r\n                    // Cập nhật trạng thái của item trong adapter\r\n                    order.setStatus(\"pending\");\r\n                    notifyItemChanged(position); // Chỉ cập nhật item tại vị trí hiện tại\r\n                    Toast.makeText(holder.itemView.getContext(), \"Đơn hàng đã hủy!\", Toast.LENGTH_SHORT).show();\r\n                }\r\n\r\n                @Override\r\n                public void onError(String errorMessage) {\r\n                    Toast.makeText(holder.itemView.getContext(), \"Không thể hủy đơn hàng: \" + errorMessage, Toast.LENGTH_SHORT).show();\r\n                }\r\n            });\r\n        } else if (order.getStatus().equals(\"pending\") && order.getPaymentMethod().equals(\"VNPay\")) {\r\n            // Khi trả hàng gọi api hoàn tiền\r\n            FirebaseFirestore db = FirebaseFirestore.getInstance();\r\n            db.collection(\"orders\").document(order.getOrderId()).get().addOnSuccessListener(documentSnapshot -> {\r\n                if (documentSnapshot.exists()) {\r\n                    String vnpTxnRef = documentSnapshot.getString(\"vnpTxnRef\");\r\n                    order.setVnpTxnRef(vnpTxnRef);\r\n\r\n                    new Thread(() -> {\r\n                        try {\r\n                            String vnp_TxnRef = order.getVnpTxnRef();\r\n                            String transactionId = order.getTransactionId();\r\n                            int totalPrice = order.getTotalPrice();\r\n                            String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDateMillis());\r\n\r\n                            // Gửi yêu cầu hoàn tiền\r\n                            String response = VnpayRefund.createRefundRequest(\r\n                                    vnp_TxnRef,          // Mã giao dịch của merchant (txnRef)\r\n                                    transactionId,       // Mã giao dịch từ VNPAY\r\n                                    totalPrice,          // Số tiền hoàn\r\n                                    formattedTransactionDate, // Ngày giao dịch gốc\r\n                                    \"Hoàn tiền cho đơn hàng \" + order.getOrderId(), // Lý do hoàn tiền\r\n                                    \"admin\"              // Người thực hiện\r\n                            );\r\n\r\n                            //nếu hoàn tiền thành công\r\n                            if (response.contains(\"\\\"vnp_ResponseCode\\\":\\\"00\\\"\")) { //ResponseCode là 00 (Hoàn tiền thành công)\r\n                                new android.os.Handler(Looper.getMainLooper()).post(() -> {\r\n                                    Toast.makeText(holder.itemView.getContext(), \"Huỷ đơn hàng thành công\", Toast.LENGTH_SHORT).show();\r\n                                });\r\n\r\n                                // Cập nhật trạng thái đơn hàng\r\n                                viewModel.updateOrderStatusRefund(order.getOrderId(), \"canceled\", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {\r\n                                    @Override\r\n                                    public void onSuccess(String message) {\r\n                                        order.setStatus(\"canceled\");\r\n                                        notifyItemChanged(position);\r\n                                    }\r\n\r\n                                    @Override\r\n                                    public void onError(String errorMessage) {\r\n                                        new android.os.Handler(Looper.getMainLooper()).post(() -> {\r\n                                            Toast.makeText(holder.itemView.getContext(), \"Không thể hủy đơn hàng: \" + errorMessage, Toast.LENGTH_SHORT).show();\r\n                                        });\r\n                                    }\r\n                                });\r\n\r\n                            } else {\r\n                                //nếu hoàn tiền không thành công\r\n                                new android.os.Handler(Looper.getMainLooper()).post(() -> {\r\n                                    Toast.makeText(holder.itemView.getContext(), \"Không thể hoàn tiền: \" + response, Toast.LENGTH_SHORT).show();\r\n                                });\r\n                                Log.println(Log.ERROR, \"Vnpayreturn\", response);\r\n                            }\r\n                        } catch (Exception e) {\r\n                            new android.os.Handler(Looper.getMainLooper()).post(() -> {\r\n                                Toast.makeText(holder.itemView.getContext(), \"Lỗi: \" + e.getMessage(), Toast.LENGTH_SHORT).show();\r\n                            });\r\n                        }\r\n                    }).start();\r\n                } else {\r\n                    Toast.makeText(holder.itemView.getContext(), \"Đơn hàng không tồn tại\", Toast.LENGTH_SHORT).show();\r\n                }\r\n            }).addOnFailureListener(e -> {\r\n                Toast.makeText(holder.itemView.getContext(), \"Lỗi khi lấy thông tin đơn hàng: \" + e.getMessage(), Toast.LENGTH_SHORT).show();\r\n            });\r\n        } else if (order.getStatus().equals(\"delivering\")) {\r\n            viewModel.updateOrderStatus(order.getOrderId(), \"delivered\", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {\r\n                @Override\r\n                public void onSuccess(String message) {\r\n                    // Cập nhật trạng thái của item trong adapter\r\n                    viewModel.getData(\"delivering\");\r\n                    order.setStatus(\"delivering\");\r\n                    notifyItemChanged(position);\r\n\r\n                    Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);\r\n\r\n                    intent.putExtra(\"order\", order);\r\n                    holder.itemView.getContext().startActivity(intent);\r\n                }\r\n\r\n                @Override\r\n                public void onError(String errorMessage) {\r\n                    Toast.makeText(holder.itemView.getContext(), \"Không thể cập nhật trạng thái: \" + errorMessage, Toast.LENGTH_SHORT).show();\r\n                }\r\n            });\r\n        } else if (order.getStatus().equals(\"delivered\") && !order.isCheckRating()) {\r\n\r\n            // Cập nhật trạng thái của item trong adapter\r\n            order.setStatus(\"delivered\");\r\n            notifyItemChanged(position);\r\n\r\n            Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);\r\n            intent.putExtra(\"order\", order);\r\n            intent.putExtra(\"position\", 2);\r\n            ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);\r\n        } else {\r\n            onCheckoutButtonClicked(holder, order);\r\n        }\r\n    }\r\n\r\n    private void openDetail(OrderStoreViewHolder holder, Order order) {\r\n        int position = holder.getAdapterPosition(); // Lấy đúng vị trí của item\r\n        if (position == RecyclerView.NO_POSITION) {\r\n            return; // Nếu vị trí không hợp lệ, thoát khỏi phương thức\r\n        }\r\n\r\n        Intent intent = new Intent(holder.itemView.getContext(), OrderInformationActivity.class);\r\n        intent.putExtra(\"order\", order);\r\n        holder.itemView.getContext().startActivity(intent);\r\n    }\r\n\r\n    private void onCheckoutButtonClicked(OrderStoreViewHolder holder, Order order) {\r\n        List<Product> selectedProducts = new ArrayList<>();\r\n        List<String> productIds = new ArrayList<>();\r\n\r\n        selectedProducts = order.getProducts();\r\n\r\n        for (Product p : selectedProducts) {\r\n            productIds.add(p.getProduct_id());\r\n        }\r\n\r\n        Intent intent = new Intent(holder.itemView.getContext(), CheckoutActivity.class);\r\n        intent.putParcelableArrayListExtra(\"selectedProducts\", new ArrayList<>(selectedProducts));\r\n        intent.putStringArrayListExtra(\"productIds\", new ArrayList<>(productIds));\r\n        intent.putExtra(\"storeName\", order.getStoreName());\r\n        holder.itemView.getContext().startActivity(intent);\r\n\r\n    }\r\n\r\n    private void openRating(OrderStoreViewHolder holder, Order order) {\r\n        Intent intent = new Intent(holder.itemView.getContext(), ShopRatingActivity.class);\r\n        intent.putExtra(\"order\", order);\r\n        holder.itemView.getContext().startActivity(intent);\r\n    }\r\n\r\n    public static String formatTimestampToVnpayDate(Long timestamp) {\r\n        SimpleDateFormat formatter = new SimpleDateFormat(\"yyyyMMddHHmmss\", Locale.getDefault());\r\n        Date date = new Date(timestamp);\r\n        return formatter.format(date);\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/agrimart/adapter/OrderStoreAdapter.java b/app/src/main/java/com/example/agrimart/adapter/OrderStoreAdapter.java
+--- a/app/src/main/java/com/example/agrimart/adapter/OrderStoreAdapter.java	(revision d45ca09de0bf312d44c2d875b91462249100cc0f)
++++ b/app/src/main/java/com/example/agrimart/adapter/OrderStoreAdapter.java	(date 1733228060637)
+@@ -94,13 +94,13 @@
+             case "approved":
+                 translatedStatus = "Chờ lấy hàng";
+                 break;
+-            case "delivering":
++            case "delivery":
+                 translatedStatus = "Chờ giao hàng";
+                 holder.btnBuy.setText("Đã nhận hàng");
+                 holder.btnDetail.setVisibility(View.VISIBLE);
+                 holder.btnDetail.setText("Trả hàng/Hoàn tiền");
+                 break;
+-            case "return":
++            case "refund" :
+                 translatedStatus = "Chờ giao hàng";
+                 holder.btnBuy.setText("Đã nhận hàng");
+                 break;
+@@ -110,7 +110,7 @@
+                     holder.btnBuy.setText("Đánh giá");
+                     holder.btnDetail.setVisibility(View.VISIBLE);
+                     holder.btnDetail.setText("Trả hàng/Hoàn tiền");
+-                } else {
++                }else {
+                     holder.btnDetail.setVisibility(View.VISIBLE);
+                 }
+ 
+@@ -137,6 +137,8 @@
+     }
+ 
+ 
++
++
+     @Override
+     public int getItemCount() {
+         return orderStoreList.size();
+@@ -198,7 +200,7 @@
+                             String vnp_TxnRef = order.getVnpTxnRef();
+                             String transactionId = order.getTransactionId();
+                             int totalPrice = order.getTotalPrice();
+-                            String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDateMillis());
++                            String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDate());
+ 
+                             // Gửi yêu cầu hoàn tiền
+                             String response = VnpayRefund.createRefundRequest(
+@@ -217,7 +219,7 @@
+                                 });
+ 
+                                 // Cập nhật trạng thái đơn hàng
+-                                viewModel.updateOrderStatusRefund(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
++                                viewModel.updateOrderStatus(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+                                     @Override
+                                     public void onSuccess(String message) {
+                                         order.setStatus("canceled");
+@@ -237,7 +239,7 @@
+                                 new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                     Toast.makeText(holder.itemView.getContext(), "Không thể hoàn tiền: " + response, Toast.LENGTH_SHORT).show();
+                                 });
+-                                Log.println(Log.ERROR, "Vnpayreturn", response);
++                                Log.println(Log.ERROR, "VnpayRefund", response);
+                             }
+                         } catch (Exception e) {
+                             new android.os.Handler(Looper.getMainLooper()).post(() -> {
+@@ -251,17 +253,15 @@
+             }).addOnFailureListener(e -> {
+                 Toast.makeText(holder.itemView.getContext(), "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+             });
+-        } else if (order.getStatus().equals("delivering")) {
++        } else if (order.getStatus().equals("delivery")) {
+             viewModel.updateOrderStatus(order.getOrderId(), "delivered", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+                 @Override
+                 public void onSuccess(String message) {
+                     // Cập nhật trạng thái của item trong adapter
+-                    viewModel.getData("delivering");
+-                    order.setStatus("delivering");
++                    order.setStatus("delivery");
+                     notifyItemChanged(position);
+ 
+                     Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
+-
+                     intent.putExtra("order", order);
+                     holder.itemView.getContext().startActivity(intent);
+                 }
+@@ -272,14 +272,13 @@
+                 }
+             });
+         } else if (order.getStatus().equals("delivered") && !order.isCheckRating()) {
+-
+             // Cập nhật trạng thái của item trong adapter
+             order.setStatus("delivered");
+             notifyItemChanged(position);
+ 
+             Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
+             intent.putExtra("order", order);
+-            intent.putExtra("position", 2);
++            intent.putExtra("position", position);
+             ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);
+         } else {
+             onCheckoutButtonClicked(holder, order);
+@@ -303,7 +302,8 @@
+ 
+         selectedProducts = order.getProducts();
+ 
+-        for (Product p : selectedProducts) {
++        for (Product p : selectedProducts)
++        {
+             productIds.add(p.getProduct_id());
+         }
+ 
+@@ -321,10 +321,10 @@
+         holder.itemView.getContext().startActivity(intent);
+     }
+ 
+-    public static String formatTimestampToVnpayDate(Long timestamp) {
++    public static String formatTimestampToVnpayDate(Timestamp timestamp) {
+         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
+-        Date date = new Date(timestamp);
++        Date date = new Date(timestamp.toDate().getTime());
+         return formatter.format(date);
+     }
+ 
+-}
++}
+\ No newline at end of file

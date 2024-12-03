@@ -95,13 +95,13 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             case "approved":
                 translatedStatus = "Chờ lấy hàng";
                 break;
-            case "delivering":
+            case "delivery":
                 translatedStatus = "Chờ giao hàng";
                 holder.btnBuy.setText("Đã nhận hàng");
                 holder.btnDetail.setVisibility(View.VISIBLE);
                 holder.btnDetail.setText("Trả hàng/Hoàn tiền");
                 break;
-            case "return":
+            case "refund" :
                 translatedStatus = "Chờ giao hàng";
                 holder.btnBuy.setText("Đã nhận hàng");
                 break;
@@ -111,7 +111,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                     holder.btnBuy.setText("Đánh giá");
                     holder.btnDetail.setVisibility(View.VISIBLE);
                     holder.btnDetail.setText("Trả hàng/Hoàn tiền");
-                } else {
+                }else {
                     holder.btnDetail.setVisibility(View.VISIBLE);
                 }
 
@@ -145,6 +145,8 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         });
 
     }
+
+
 
 
     @Override
@@ -208,7 +210,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                             String vnp_TxnRef = order.getVnpTxnRef();
                             String transactionId = order.getTransactionId();
                             int totalPrice = order.getTotalPrice();
-                            String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDateMillis());
+                            String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDate());
 
                             // Gửi yêu cầu hoàn tiền
                             String response = VnpayRefund.createRefundRequest(
@@ -227,7 +229,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                                 });
 
                                 // Cập nhật trạng thái đơn hàng
-                                viewModel.updateOrderStatusRefund(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+                                viewModel.updateOrderStatus(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
                                     @Override
                                     public void onSuccess(String message) {
                                         order.setStatus("canceled");
@@ -247,7 +249,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                                 new android.os.Handler(Looper.getMainLooper()).post(() -> {
                                     Toast.makeText(holder.itemView.getContext(), "Không thể hoàn tiền: " + response, Toast.LENGTH_SHORT).show();
                                 });
-                                Log.println(Log.ERROR, "Vnpayreturn", response);
+                                Log.println(Log.ERROR, "VnpayRefund", response);
                             }
                         } catch (Exception e) {
                             new android.os.Handler(Looper.getMainLooper()).post(() -> {
@@ -261,17 +263,15 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             }).addOnFailureListener(e -> {
                 Toast.makeText(holder.itemView.getContext(), "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
-        } else if (order.getStatus().equals("delivering")) {
+        } else if (order.getStatus().equals("delivery")) {
             viewModel.updateOrderStatus(order.getOrderId(), "delivered", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
                 @Override
                 public void onSuccess(String message) {
                     // Cập nhật trạng thái của item trong adapter
-                    viewModel.getData("delivering");
-                    order.setStatus("delivering");
+                    order.setStatus("delivery");
                     notifyItemChanged(position);
 
                     Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
-
                     intent.putExtra("order", order);
                     holder.itemView.getContext().startActivity(intent);
                 }
@@ -282,14 +282,13 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 }
             });
         } else if (order.getStatus().equals("delivered") && !order.isCheckRating()) {
-
             // Cập nhật trạng thái của item trong adapter
             order.setStatus("delivered");
             notifyItemChanged(position);
 
             Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
             intent.putExtra("order", order);
-            intent.putExtra("position", 2);
+            intent.putExtra("position", position);
             ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);
         } else {
             onCheckoutButtonClicked(holder, order);
@@ -313,7 +312,8 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
 
         selectedProducts = order.getProducts();
 
-        for (Product p : selectedProducts) {
+        for (Product p : selectedProducts)
+        {
             productIds.add(p.getProduct_id());
         }
 
@@ -337,9 +337,9 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         holder.itemView.getContext().startActivity(intent);
     }
 
-    public static String formatTimestampToVnpayDate(Long timestamp) {
+    public static String formatTimestampToVnpayDate(Timestamp timestamp) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
-        Date date = new Date(timestamp);
+        Date date = new Date(timestamp.toDate().getTime());
         return formatter.format(date);
     }
 

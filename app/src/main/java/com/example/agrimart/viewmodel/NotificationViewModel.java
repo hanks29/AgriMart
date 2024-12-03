@@ -78,6 +78,7 @@ public class NotificationViewModel extends AndroidViewModel {
         List<String> notifiedStatuses = (List<String>) dc.getDocument().get("notifiedStatuses");
         String imageUrl = "android.resource://" + getApplication().getPackageName() + "/" + R.drawable.bell;
         long timestamp = System.currentTimeMillis();
+        String orderId = dc.getDocument().getId();
 
         String title = "";
         String message = "";
@@ -89,32 +90,36 @@ public class NotificationViewModel extends AndroidViewModel {
         switch (status) {
             case "pending":
                 title = "Đặt hàng thành công!";
-                message = "Đơn hàng của bạn đang chờ người bán xác nhận.";
+                message = "Đơn hàng " + orderId + " đang chờ người bán xác nhận.";
                 break;
             case "approved":
                 title = "Người bán đang chuẩn bị hàng";
-                message = "Đơn hàng của bạn đang được đóng gói và sẽ sớm giao cho đơn vị vận chuyển.";
+                message = "Đơn hàng " + orderId + " đang được đóng gói và sẽ sớm giao cho đơn vị vận chuyển.";
                 break;
             case "delivering":
                 title = "Đơn hàng đang trong quá trình vận chuyển";
-                message = "Đơn hàng của bạn hiện đang trong quá trình vận chuyển.";
+                message = "Đơn hàng " + orderId + " hiện đang trong quá trình vận chuyển.";
                 break;
             case "delivered":
                 title = "Đơn hàng đã được giao thành công";
-                message = "Bạn có hài lòng với sản phẩm đã nhận?";
+                message = "Đơn hàng " + orderId + " đã được giao thành công. Bạn có hài lòng với sản phẩm đã nhận?";
                 break;
             case "canceled":
                 title = "Đơn hàng đã bị huỷ";
-                message = "Đơn hàng của bạn đã bị huỷ. Nếu bạn đã thanh toán bằng VNPAY số tiền đã thanh toán sẽ sớm được hoàn lại vào tài khoản của bạn.";
+                message = "Đơn hàng " + orderId + " đã bị huỷ. Nếu bạn đã thanh toán bằng VNPAY số tiền đã thanh toán sẽ sớm được hoàn lại vào tài khoản của bạn.";
+                break;
+            case "waiting":
+                title = "Yêu cầu trả hàng";
+                message = "Yêu cầu trả hàng của đơn hàng " + orderId + " đã được gửi. Vui lòng chờ yêu cầu được phê duyệt.";
                 break;
             case "return":
                 title = "Yêu cầu trả hàng đã được chấp nhận";
-                message = "Yêu cầu trả hàng của bạn đã được chấp nhận. Vui lòng chờ trong thời gian sớm nhất.";
+                message = "Yêu cầu trả hàng của đơn hàng " + orderId + " đã được chấp nhận. Vui lòng chờ trong thời gian sớm nhất.";
                 break;
         }
 
         if (!title.isEmpty() && !message.isEmpty()) {
-            Notification notification = new Notification(title, message, timestamp, imageUrl);
+            Notification notification = new Notification(title, message, timestamp, imageUrl, "");
             sendNotification(title, message);
             saveNotificationToFirestore(notification);
 
@@ -130,6 +135,7 @@ public class NotificationViewModel extends AndroidViewModel {
         List<String> notifiedStatuses = (List<String>) dc.getDocument().get("notifiedStatuses");
         String imageUrl = "android.resource://" + getApplication().getPackageName() + "/" + R.drawable.bell;
         long timestamp = System.currentTimeMillis();
+        String orderId = dc.getDocument().getId();
 
         String title = "";
         String message = "";
@@ -141,32 +147,32 @@ public class NotificationViewModel extends AndroidViewModel {
         switch (status) {
             case "pending":
                 title = "Có đơn hàng mới";
-                message = "Hãy xác nhận đơn hàng mới vừa được đặt";
+                message = "Đơn hàng " + orderId + " mới vừa được đặt. Hãy xác nhận đơn hàng.";
                 break;
             case "approved":
                 title = "Chuẩn bị hàng";
-                message = "Chuẩn bị đơn hàng để giao cho đơn vị vận chuyển";
+                message = "Chuẩn bị đơn hàng " + orderId + " để giao cho đơn vị vận chuyển.";
                 break;
             case "delivering":
                 title = "Đơn bán đang trong quá trình vận chuyển";
-                message = "Đơn bán hiện đang trong quá trình vận chuyển.";
+                message = "Đơn bán " + orderId + " hiện đang trong quá trình vận chuyển.";
                 break;
             case "delivered":
                 title = "Đơn bán đã được giao thành công";
-                message = "Đơn bán đã được giao thành công cho khách hàng.";
+                message = "Đơn bán " + orderId + " đã được giao thành công cho khách hàng.";
                 break;
             case "canceled":
                 title = "Đơn hàng đã bị huỷ";
-                message = "Đơn hàng đã bị huỷ.";
+                message = "Đơn hàng " + orderId + " đã bị huỷ.";
                 break;
             case "return":
                 title = "Trả hàng";
-                message = "Khách hàng yêu cầu trả hàng.";
+                message = "Khách hàng yêu cầu trả hàng cho đơn hàng " + orderId + ".";
                 break;
         }
 
         if (!title.isEmpty() && !message.isEmpty()) {
-            Notification notification = new Notification(title, message, timestamp, imageUrl);
+            Notification notification = new Notification(title, message, timestamp, imageUrl, "");
             sendNotification(title, message);
             saveNotificationToFirestore(notification);
 
@@ -199,12 +205,27 @@ public class NotificationViewModel extends AndroidViewModel {
 
         if (currentUser != null) {
             notification.setUserId(currentUser.getUid());
-            db.collection("notifications").add(notification)
-                    .addOnSuccessListener(documentReference -> {
-                        Log.d("Firestore", "Notification saved successfully");
+            db.collection("notifications")
+                    .whereEqualTo("userId", currentUser.getUid())
+                    .whereEqualTo("title", notification.getTitle())
+                    .whereEqualTo("message", notification.getMessage())
+                    .whereEqualTo("timestamp", notification.getTimestamp())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null && task.getResult().isEmpty()) {
+                            db.collection("notifications").add(notification)
+                                    .addOnSuccessListener(documentReference -> {
+                                        Log.d("Firestore", "Notification saved successfully");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("FirestoreError", "Error saving notification", e);
+                                    });
+                        } else {
+                            Log.d("Firestore", "Notification already exists, not saving again");
+                        }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e("FirestoreError", "Error saving notification", e);
+                        Log.e("FirestoreError", "Error checking for existing notification", e);
                     });
         }
     }

@@ -150,12 +150,10 @@ public class Order implements Serializable {
         this.sellerId = sellerId;
     }
 
-    @PropertyName("products")
     public List<Product> getProducts() {
         return products;
     }
 
-    @PropertyName("products")
     public void setProducts(List<Product> products) {
         this.products = products;
     }
@@ -220,23 +218,15 @@ public class Order implements Serializable {
         this.shippingFee = shippingFee;
     }
 
-    private long createdAtMillis;  // Chúng ta sẽ sử dụng long thay vì Timestamp để truyền qua Intent
-    // Getter và setter cho createdAtMillis
-    public long getCreatedAtMillis() {
-        return createdAtMillis;
-    }
-
-    @PropertyName("created_at")
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAtMillis = createdAt.toDate().getTime(); // Chuyển Timestamp thành long
-    }
-
     @PropertyName("created_at")
     public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    private long transactionDateMillis;
+    @PropertyName("created_at")
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public String getTransactionId() {
         return transactionId;
@@ -251,7 +241,7 @@ public class Order implements Serializable {
     }
 
     public void setTransactionDate(Timestamp transactionDate) {
-        this.transactionDateMillis = transactionDate.toDate().getTime();
+        this.transactionDate = transactionDate;
     }
 
     @PropertyName("vnp_TxnRef")
@@ -266,16 +256,7 @@ public class Order implements Serializable {
 
     public String getFormattedCreatedAtDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault());
-        Date date = new Date(createdAtMillis);
+        Date date = new Date(createdAt.toDate().getTime());
         return dateFormat.format(date);
-    }
-
-    public long getTransactionDateMillis() {
-        return transactionDateMillis;
-    }
-
-    public void setTransactionDateMillis(long transactionDateMillis) {
-        this.transactionDateMillis = transactionDateMillis;
-        this.createdAtMillis = createdAt.toDate().getTime();
     }
 }

@@ -76,6 +76,7 @@ public class VnpayRefund {
             scanner.close();
             return response.toString();
         } else {
+            Log.e("VnpayRefund", "Lỗi: " + responseCode);
             return "Lỗi: " + responseCode;
         }
     }

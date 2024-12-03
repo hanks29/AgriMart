@@ -78,81 +78,81 @@ public class RequestReturnActivity extends AppCompatActivity {
 
     private void addEvent() {
         btnBack.setOnClickListener(v -> finish());
-        btnGui.setOnClickListener(v-> requestReturn());
+        //btnGui.setOnClickListener(v-> requestReturn());
     }
 
-    private void requestReturn() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("orders").document(order.getOrderId()).get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                String vnpTxnRef = documentSnapshot.getString("vnpTxnRef");
-                order.setVnpTxnRef(vnpTxnRef);
-
-                new Thread(() -> {
-                    try {
-                        String vnp_TxnRef = order.getVnpTxnRef();
-                        String transactionId = order.getTransactionId();
-                        int totalPrice = order.getTotalPrice();
-                        String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDateMillis());
-
-                        // Gửi yêu cầu hoàn tiền
-                        String response = VnpayRefund.createRefundRequest(
-                                vnp_TxnRef,          // Mã giao dịch của merchant (txnRef)
-                                transactionId,       // Mã giao dịch từ VNPAY
-                                totalPrice,          // Số tiền hoàn
-                                formattedTransactionDate, // Ngày giao dịch gốc
-                                "Hoàn tiền cho đơn hàng " + order.getOrderId(), // Lý do hoàn tiền
-                                "admin"              // Người thực hiện
-                        );
-
-                        //nếu hoàn tiền thành công
-                        if (response.contains("\"vnp_ResponseCode\":\"00\"")) { //ResponseCode là 00 (Hoàn tiền thành công)
-                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                                Toast.makeText(this, "Huỷ đơn hàng thành công", Toast.LENGTH_SHORT).show();
-                            });
-
-                            // Cập nhật trạng thái đơn hàng
-                            viewModel.updateOrderStatusRefund(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
-                                @Override
-                                public void onSuccess(String message) {
-                                    order.setStatus("canceled");
-                                }
-
-                                @Override
-                                public void onError(String errorMessage) {
-                                    new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                                        Toast.makeText(RequestReturnActivity.this, "Không thể hủy đơn hàng: " , Toast.LENGTH_SHORT).show();
-                                    });
-                                }
-                            });
-
-                        } else {
-                            //nếu hoàn tiền không thành công
-                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                                Toast.makeText(this, "Không thể hoàn tiền: " + response, Toast.LENGTH_SHORT).show();
-                            });
-                            Log.println(Log.ERROR, "Vnpayreturn", response);
-                        }
-                    } catch (Exception e) {
-                        new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                            Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                }).start();
-            } else {
-                Toast.makeText(this, "Đơn hàng không tồn tại", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        });
-    }
+//    private void requestReturn() {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("orders").document(order.getOrderId()).get().addOnSuccessListener(documentSnapshot -> {
+//            if (documentSnapshot.exists()) {
+//                String vnpTxnRef = documentSnapshot.getString("vnpTxnRef");
+//                order.setVnpTxnRef(vnpTxnRef);
+//
+//                new Thread(() -> {
+//                    try {
+//                        String vnp_TxnRef = order.getVnpTxnRef();
+//                        String transactionId = order.getTransactionId();
+//                        int totalPrice = order.getTotalPrice();
+//                        String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDateMillis());
+//
+//                        // Gửi yêu cầu hoàn tiền
+//                        String response = VnpayRefund.createRefundRequest(
+//                                vnp_TxnRef,          // Mã giao dịch của merchant (txnRef)
+//                                transactionId,       // Mã giao dịch từ VNPAY
+//                                totalPrice,          // Số tiền hoàn
+//                                formattedTransactionDate, // Ngày giao dịch gốc
+//                                "Hoàn tiền cho đơn hàng " + order.getOrderId(), // Lý do hoàn tiền
+//                                "admin"              // Người thực hiện
+//                        );
+//
+//                        //nếu hoàn tiền thành công
+//                        if (response.contains("\"vnp_ResponseCode\":\"00\"")) { //ResponseCode là 00 (Hoàn tiền thành công)
+//                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
+//                                Toast.makeText(this, "Huỷ đơn hàng thành công", Toast.LENGTH_SHORT).show();
+//                            });
+//
+//                            // Cập nhật trạng thái đơn hàng
+//                            viewModel.updateOrderStatusRefund(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+//                                @Override
+//                                public void onSuccess(String message) {
+//                                    order.setStatus("canceled");
+//                                }
+//
+//                                @Override
+//                                public void onError(String errorMessage) {
+//                                    new android.os.Handler(Looper.getMainLooper()).post(() -> {
+//                                        Toast.makeText(RequestReturnActivity.this, "Không thể hủy đơn hàng: " , Toast.LENGTH_SHORT).show();
+//                                    });
+//                                }
+//                            });
+//
+//                        } else {
+//                            //nếu hoàn tiền không thành công
+//                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
+//                                Toast.makeText(this, "Không thể hoàn tiền: " + response, Toast.LENGTH_SHORT).show();
+//                            });
+//                            Log.println(Log.ERROR, "Vnpayreturn", response);
+//                        }
+//                    } catch (Exception e) {
+//                        new android.os.Handler(Looper.getMainLooper()).post(() -> {
+//                            Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//                        });
+//                    }
+//                }).start();
+//            } else {
+//                Toast.makeText(this, "Đơn hàng không tồn tại", Toast.LENGTH_SHORT).show();
+//            }
+//        }).addOnFailureListener(e -> {
+//            Toast.makeText(this, "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//        });
+//    }
 
     public static String formatTimestampToVnpayDate(Long timestamp) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
         Date date = new Date(timestamp);
         return formatter.format(date);
     }
-    
+
     private String formatCurrency(double amount) {
         return NumberFormat.getInstance(Locale.getDefault()).format(amount);
     }

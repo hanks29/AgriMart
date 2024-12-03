@@ -2,6 +2,7 @@ package com.example.agrimart.ui.Cart;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -139,7 +140,9 @@ public class CheckoutActivity extends AppCompatActivity {
             }
         });
 
-        btnPlaceOrder.setOnClickListener(v -> placeOrder());
+        btnPlaceOrder.setOnClickListener(v -> placeOrder()
+
+        );
     }
 
     private void calculateShippingFee() {
@@ -206,9 +209,11 @@ public class CheckoutActivity extends AppCompatActivity {
                     checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, storeId, selectedProducts, username, phonenumber, new CheckoutViewModel.OrderCallback() {
                         @Override
                         public void onSuccess(String orderId) {
+                            Log.d("CheckoutActivity", "Order placed successfully: " + orderId);
                             checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {
                                 @Override
                                 public void onSuccess(String orderId) {
+                                    Log.d("CheckoutActivity", "Products removed from cart successfully: " + orderId);
                                     Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
                                     intent.putExtra("orderId", orderId);
                                     checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
@@ -221,6 +226,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure(Exception e) {
+                                    Log.e("CheckoutActivity", "Failed to remove products from cart", e);
                                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
                                 }
                             }, orderId);
@@ -228,6 +234,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Exception e) {
+                            Log.e("CheckoutActivity", "Failed to place order", e);
                             Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
                         }
                     });

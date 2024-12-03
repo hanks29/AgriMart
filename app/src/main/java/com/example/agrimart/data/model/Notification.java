@@ -7,11 +7,12 @@ public class Notification {
     private String img;
     private String userId;
 
-    public Notification(String title, String message, long timestamp, String imageUrl) {
+    public Notification(String title, String message, long timestamp, String imageUrl, String userId) {
         this.title = title;
         this.message = message;
         this.timestamp = timestamp;
         this.img = imageUrl;
+        this.userId = userId;
     }
 
     public Notification() {

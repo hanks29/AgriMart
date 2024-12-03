@@ -18,14 +18,21 @@
         android:background="@color/green">
 
         <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/thong_bao"
-            android:textSize="20sp"
+            android:id="@+id/tv_title"
+            android:layout_width="126dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="145dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="140dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="THÔNG BÁO"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/black"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -38,4 +45,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:dividerHeight="1dp"
         android:padding="8dp" />
+
+    <ImageView
+        android:id="@+id/ivEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/noti_empty"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        tools:layout_editor_absoluteX="0dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

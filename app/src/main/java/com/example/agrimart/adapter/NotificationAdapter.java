@@ -1,5 +1,7 @@
 package com.example.agrimart.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.agrimart.R;
 import com.example.agrimart.data.model.Notification;
+import com.example.agrimart.ui.MyProfile.PurchasedOrders.OrderInformationActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,6 +50,30 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 .placeholder(R.drawable.placeholder_image)
                 .error(R.drawable.logo_icon)
                 .into(holder.notificationImage);
+
+        holder.itemView.setOnClickListener(v -> {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, OrderInformationActivity.class);
+
+            String message = notification.getMessage();
+            String status = "";
+            if (message.contains("chờ người bán xác nhận")) {
+                status = "pending";
+            } else if (message.contains("đang được đóng gói")) {
+                status = "approved";
+            } else if (message.contains("trong quá trình vận chuyển")) {
+                status = "delivering";
+            } else if (message.contains("đã được giao thành công")) {
+                status = "delivered";
+            } else if (message.contains("đã bị huỷ")) {
+                status = "canceled";
+            } else if (message.contains("trả hàng")) {
+                status = "return";
+            }
+
+            intent.putExtra("status", status);
+            context.startActivity(intent);
+        });
     }
 
     @Override

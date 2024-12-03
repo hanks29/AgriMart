@@ -1,5 +1,6 @@
 package com.example.agrimart.ui.Explore;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import com.example.agrimart.adapter.ViewPagerAdapter;
 import com.example.agrimart.databinding.FragmentExploreBinding;
 import com.example.agrimart.ui.Cart.CartFragment;
 import com.example.agrimart.ui.Homepage.HomeFragment;
+import com.example.agrimart.ui.Homepage.SearchActivity;
 import com.example.agrimart.ui.MyProfile.MyProfileFragment;
 import com.example.agrimart.ui.Notification.NotificationFragment;
 import com.example.agrimart.viewmodel.CategoryViewModel;
@@ -98,6 +100,21 @@ public class ExploreFragment extends Fragment {
             new TabLayoutMediator(tabLayout, viewPager, (tab, pos) -> tab.setText(titles.get(pos))).attach();
 
             filterIcon.setOnClickListener(this::showFilterMenu);
+        });
+
+        binding.searchInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), SearchActivity.class);
+                startActivity(intent);
+            }
+        });
+        binding.searchIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), SearchActivity.class);
+                startActivity(intent);
+            }
         });
 
         return view;

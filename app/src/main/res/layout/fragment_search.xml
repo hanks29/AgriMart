@@ -45,10 +45,11 @@
        app:tabRippleColor="@null" />
 
    <androidx.recyclerview.widget.RecyclerView
+       android:id="@+id/rvResult"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
-       android:id="@+id/rvResult"
-       android:layout_marginTop="10dp"/>
+       android:layout_marginTop="10dp"
+       android:paddingHorizontal="8dp" />
 
    <TextView
        android:layout_width="wrap_content"

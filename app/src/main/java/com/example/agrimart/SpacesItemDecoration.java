@@ -23,13 +23,23 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
         if (position >= spanCount) {
             outRect.top = space;
         }
-        if(position%spanCount==0){
+        else{
+            outRect.top = 0;
+        }
+
+        int column = position % spanCount;
+
+        if(column==0){
             outRect.left = space;
             outRect.right = space / 2;
         }
-        else {
+        else if(column==spanCount-1){
             outRect.left = space / 2;
             outRect.right = space;
+        }
+        else {
+            outRect.left = space / 2;
+            outRect.right = space/2;
         }
 
     }

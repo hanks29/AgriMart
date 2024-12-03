@@ -142,7 +142,7 @@ public class OrderInformationActivity extends AppCompatActivity {
                 return "Chờ xác nhận ";
             case "approved":
                 return "Chờ lấy hàng ";
-            case "delivery":
+            case "delivering":
                 btnDetail.setVisibility(View.VISIBLE);
                 btnDetail.setText("Trả hàng/Hoàn tiền");
                 if(!order.isCheckRating())
@@ -193,13 +193,13 @@ public class OrderInformationActivity extends AppCompatActivity {
     }
 
     private void openRating() {
-        if (order.getStatus().equals("delivery")) {
+        if (order.getStatus().equals("delivering")) {
             viewModel.updateOrderStatus(order.getOrderId(), "delivered", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
                 @Override
                 public void onSuccess(String message) {
                     // Cập nhật trạng thái của item trong adapter
-                    viewModel.getData("delivery");
-                    order.setStatus("delivery");
+                    viewModel.getData("delivering");
+                    order.setStatus("delivering");
 
                     Intent intent = new Intent(OrderInformationActivity.this, ProductRatingActivity.class);
                     intent.putExtra("order", order);

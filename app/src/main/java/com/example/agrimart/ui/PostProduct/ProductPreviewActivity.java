@@ -67,17 +67,18 @@ public class ProductPreviewActivity extends AppCompatActivity {
             if (product == null) {
                 product = new ProductResponse();
             }
-            quantity=product.getQuantity();
             viewModel.setProduct(product);
             Glide.with(this).load(product.getImageUrls()).into(binding.imgPro);
             getCategoryFromFirebase(product.getCategory());
 
 
         }
-        binding.btnHome.setOnClickListener(view -> {
+        binding.btnBack.setOnClickListener(view -> {
             Intent intent1 = new Intent(ProductPreviewActivity.this, MyStoreActivity.class);
             startActivity(intent1);
         });
+
+
 
         binding.editPro.setOnClickListener(view -> {
 
@@ -100,7 +101,7 @@ public class ProductPreviewActivity extends AppCompatActivity {
             edtDes.setText(product.getDescription());
 
             EditText edtQuantity = view2.findViewById(R.id.edtQuantity);
-            edtQuantity.setText(String.valueOf(quantity));
+            edtQuantity.setText(String.valueOf(product.getQuantity()));
 
             bottomSheetDialog.show();
             btnUpdate.setOnClickListener(view1 -> {
@@ -117,12 +118,17 @@ public class ProductPreviewActivity extends AppCompatActivity {
                                         "quantity", Integer.parseInt(edtQuantity.getText().toString()),
                                         "description", product.getDescription())
                                         .addOnSuccessListener(aVoid -> {
-                                            quantity=Integer.parseInt(edtQuantity.getText().toString());
                                             binding.tvStockQuantity.setText(String.valueOf(Integer.parseInt(edtQuantity.getText().toString())));
                                             NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
                                             binding.tvPrice.setText(format.format(Integer.parseInt(edtPrice.getText().toString())));
                                             binding.textView10.setText(edtDes.getText().toString());
                                             binding.tvNameProduct.setText(edtName.getText().toString());
+
+                                            product.setDescription(edtDes.getText().toString());
+                                            product.setName(edtName.getText().toString());
+                                            product.setQuantity(Integer.parseInt(edtQuantity.getText().toString()));
+                                            product.setPrice(Integer.parseInt(edtPrice.getText().toString()));
+                                            viewModel.setProduct(product);
                                             Toast.makeText(ProductPreviewActivity.this, "Update product successful", Toast.LENGTH_SHORT).show();
                                         })
                                         .addOnFailureListener(e -> {

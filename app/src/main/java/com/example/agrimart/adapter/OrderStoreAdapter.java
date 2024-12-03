@@ -27,6 +27,7 @@ import com.example.agrimart.ui.Cart.CheckoutActivity;
 import com.example.agrimart.ui.MyProfile.MyRating.ProductRatingActivity;
 import com.example.agrimart.ui.MyProfile.MyRating.ShopRatingActivity;
 import com.example.agrimart.ui.MyProfile.PurchasedOrders.OrderInformationActivity;
+import com.example.agrimart.ui.MyProfile.PurchasedOrders.RequestReturn.RequestReturnActivity;
 import com.example.agrimart.ui.Payment.VnpayRefund;
 import com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;
 import com.google.firebase.Timestamp;
@@ -132,7 +133,16 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
 
         holder.main.setOnClickListener(v -> openDetail(holder, orderStore));
 
-        holder.btnDetail.setOnClickListener(v -> openRating(holder, orderStore));
+        holder.btnDetail.setOnClickListener(v -> {
+            if (!orderStore.isCheckRating()
+                    && (orderStore.getStatus().equals("delivering")
+                    || orderStore.getStatus().equals("delivered"))) {
+                openRequestReturn(holder, orderStore);
+            } else {
+                openRating(holder, orderStore);
+            }
+
+        });
 
     }
 
@@ -317,6 +327,12 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
 
     private void openRating(OrderStoreViewHolder holder, Order order) {
         Intent intent = new Intent(holder.itemView.getContext(), ShopRatingActivity.class);
+        intent.putExtra("order", order);
+        holder.itemView.getContext().startActivity(intent);
+    }
+
+    private void openRequestReturn(OrderStoreViewHolder holder, Order order) {
+        Intent intent = new Intent(holder.itemView.getContext(), RequestReturnActivity.class);
         intent.putExtra("order", order);
         holder.itemView.getContext().startActivity(intent);
     }

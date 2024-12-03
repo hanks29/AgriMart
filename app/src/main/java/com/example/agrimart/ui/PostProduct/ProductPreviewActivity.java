@@ -85,9 +85,6 @@ public class ProductPreviewActivity extends AppCompatActivity {
             View view2 = getLayoutInflater().inflate(R.layout.dialog_edit_product, null);
             BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(ProductPreviewActivity.this);
             bottomSheetDialog.setContentView(view2);
-//            Dialog dialog = new Dialog(ProductPreviewActivity.this);
-//            dialog.setContentView(R.layout.dialog_edit_product);
-//            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             Button btnUpdate = view2.findViewById(R.id.btnUpdate);
             Button btnCancel = view2.findViewById(R.id.btnCancel);
             EditText edtName = view2.findViewById(R.id.edtName);

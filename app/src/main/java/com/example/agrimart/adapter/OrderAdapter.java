@@ -85,13 +85,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
                                                                         GHNRequest request = new GHNRequest();
                                                                         request.setFromName(shop.getFullName());
                                                                         request.setFromPhone(shop.getPhoneNumber());
-                                                                        request.setFromAddress(shop.getStoreAddress().getStreet());
+                                                                        request.setFromAddress(shop.getStoreAddress().getStreet()+", "+shop.getStoreAddress().getWard()+", "+shop.getStoreAddress().getDistrict()+", "+shop.getStoreAddress().getCity());
                                                                         request.setFromWardName(shop.getStoreAddress().getWard());
                                                                         request.setFromDistrictName(shop.getStoreAddress().getDistrict());
                                                                         request.setFromProvinceName(shop.getStoreAddress().getCity());
                                                                         request.setToName(user.getFullName());
                                                                         request.setToPhone(user.getAddresses().get(0).getPhone());
-                                                                        request.setToAddress(street);
+                                                                        request.setToAddress(street+", "+ward+", "+district+", "+province);
                                                                         request.setToWardCode(result);
                                                                         request.setToDistrictId(districtId);
                                                                         request.setServiceTypeId(2);
@@ -102,11 +102,15 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
                                                                         request.setPaymentTypeId(1);
                                                                         request.setRequiredNote("KHONGCHOXEMHANG");
                                                                         request.setCodAmount(orderList.get(holder.getAdapterPosition()).getTotalPrice());
-                                                                        Item item = new Item();
-                                                                        item.setWeight(100);
-                                                                        item.setQuantity(1);
-                                                                        item.setName("Product Name");
-                                                                        request.setItems(List.of(item));
+                                                                        List<Item> item=new ArrayList<>();
+                                                                        for (int i=0;i<orderList.get(holder.getAdapterPosition()).getProducts().size();i++){
+                                                                            Item it = new Item();
+                                                                            it.setWeight(100);
+                                                                            it.setQuantity(orderList.get(holder.getAdapterPosition()).getProducts().get(i).getQuantity());
+                                                                            it.setName(orderList.get(holder.getAdapterPosition()).getProducts().get(i).getName());
+                                                                            item.add(it);
+                                                                        }
+                                                                        request.setItems(item);
                                                                         ghnService.createShippingOrder(request, new GHNService.Callback<JsonNode>() {
                                                                             @Override
                                                                             public void onResponse(JsonNode result) {

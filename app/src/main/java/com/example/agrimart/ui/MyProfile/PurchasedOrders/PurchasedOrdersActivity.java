@@ -70,7 +70,7 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
         // Tạo danh sách Fragment và trạng thái
         fragments = new ArrayList<>();
         List<String> titles = Arrays.asList("Chờ xác nhận", "Chờ lấy hàng", "Chờ giao hàng", "Trả hàng" ,"Đã giao", "Đã hủy");
-        List<String> statuses = Arrays.asList("pending", "approved", "delivery", "refund" ,"delivered", "canceled");
+        List<String> statuses = Arrays.asList("pending", "approved", "delivering", "return" ,"delivered", "canceled");
 
         for (String status : statuses) {
             fragments.add(new OrderStatusFragment(status)); // Thêm các fragment vào danh sách

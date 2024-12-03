@@ -220,15 +220,23 @@ public class Order implements Serializable {
         this.shippingFee = shippingFee;
     }
 
+    private long createdAtMillis;  // Chúng ta sẽ sử dụng long thay vì Timestamp để truyền qua Intent
+    // Getter và setter cho createdAtMillis
+    public long getCreatedAtMillis() {
+        return createdAtMillis;
+    }
+
+    @PropertyName("created_at")
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAtMillis = createdAt.toDate().getTime(); // Chuyển Timestamp thành long
+    }
+
     @PropertyName("created_at")
     public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    @PropertyName("created_at")
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
+    private long transactionDateMillis;
 
     public String getTransactionId() {
         return transactionId;
@@ -243,7 +251,7 @@ public class Order implements Serializable {
     }
 
     public void setTransactionDate(Timestamp transactionDate) {
-        this.transactionDate = transactionDate;
+        this.transactionDateMillis = transactionDate.toDate().getTime();
     }
 
     @PropertyName("vnp_TxnRef")
@@ -258,7 +266,16 @@ public class Order implements Serializable {
 
     public String getFormattedCreatedAtDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault());
-        Date date = new Date(createdAt.toDate().getTime());
+        Date date = new Date(createdAtMillis);
         return dateFormat.format(date);
+    }
+
+    public long getTransactionDateMillis() {
+        return transactionDateMillis;
+    }
+
+    public void setTransactionDateMillis(long transactionDateMillis) {
+        this.transactionDateMillis = transactionDateMillis;
+        this.createdAtMillis = createdAt.toDate().getTime();
     }
 }

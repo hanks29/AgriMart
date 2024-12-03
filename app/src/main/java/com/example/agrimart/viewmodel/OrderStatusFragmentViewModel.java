@@ -143,6 +143,21 @@ public class OrderStatusFragmentViewModel extends ViewModel {
     }
 
 
+    public void updateOrderStatusRefund(String orderId, String newStatus, OnStatusUpdateListener listener) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", newStatus);
+        updates.put("created_at", FieldValue.serverTimestamp()); // Thêm thời gian hiện hành
+        updates.put("refund", true); // Thêm trường refund với giá trị true
+
+        firestore.collection("orders")
+                .document(orderId)
+                .update(updates)
+                .addOnSuccessListener(unused -> listener.onSuccess("Order status updated successfully"))
+                .addOnFailureListener(e -> listener.onError("Failed to update order status: " + e.getMessage()));
+    }
+
+
+
     public interface OnStatusUpdateListener {
         void onSuccess(String message);
         void onError(String errorMessage);

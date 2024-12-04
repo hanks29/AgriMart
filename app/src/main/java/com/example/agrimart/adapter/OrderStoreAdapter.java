@@ -1,7 +1,5 @@
 package com.example.agrimart.adapter;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -43,6 +41,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
     private final List<Order> orderStoreList = new ArrayList<>();
     private OrderStatusFragmentViewModel viewModel;
     private final int REQUEST_CODE_RATING = 1001;
+    String translatedStatus;
 
 
     // Constructor
@@ -72,74 +71,54 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
     @Override
     public void onBindViewHolder(@NonNull OrderStoreViewHolder holder, int position) {
         // Get the current OrderStore
-        Order orderStore = orderStoreList.get(position);
+        Order order = orderStoreList.get(position);
 
-        List<Product> products = orderStore.getProducts();
+        List<Product> products = order.getProducts();
         ProductOrderAdapter productOrderAdapter = new ProductOrderAdapter(products);
         productOrderAdapter.setOnProductClickListener(product -> {
-            openDetail(holder, orderStore);
+            openDetail(holder, order);
         });
 
         holder.recyclerViewItemOrder.setAdapter(productOrderAdapter);
         holder.recyclerViewItemOrder.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
 
         // Set text data
-        holder.tvStoreName.setText(orderStore.getStoreName());
+        holder.tvStoreName.setText(order.getStoreName());
 
-        String translatedStatus;
-        switch (orderStore.getStatus()) {
-            case "pending":
-                translatedStatus = "Chờ xác nhận";
-                holder.btnBuy.setText("Hủy đơn hàng");
-                break;
-            case "approved":
-                translatedStatus = "Chờ lấy hàng";
-                break;
-            case "delivering":
-                translatedStatus = "Chờ giao hàng";
-                holder.btnBuy.setText("Đã nhận hàng");
-                holder.btnDetail.setVisibility(View.VISIBLE);
-                holder.btnDetail.setText("Trả hàng/Hoàn tiền");
-                break;
-            case "return":
-                translatedStatus = "Chờ giao hàng";
-                holder.btnBuy.setText("Đã nhận hàng");
-                break;
-            case "delivered":
-                translatedStatus = "Hoàn thành";
-                if (!orderStore.isCheckRating()) {
-                    holder.btnBuy.setText("Đánh giá");
-                    holder.btnDetail.setVisibility(View.VISIBLE);
-                    holder.btnDetail.setText("Trả hàng/Hoàn tiền");
-                } else {
-                    holder.btnDetail.setVisibility(View.VISIBLE);
-                }
+        setStatusButton(holder, order);
 
-                break;
-            case "canceled":
-                translatedStatus = "Đã hủy";
-                holder.btnDetail.setText("Xem Thông tin Hoàn tiền");
-                break;
-            default:
-                translatedStatus = "Không xác định";
-                break;
-        }
         holder.tvStatus.setText(translatedStatus);
 
-        // Thêm listener cho btnBuy
-        holder.btnBuy.setOnClickListener(v -> cancelOrder(holder, orderStore));  // Truyền đúng item vào đây
 
-        holder.tvTotalPrice.setText("Tổng số tiền: " + orderStore.getTotalPrice() + " VND");
+        holder.tvTotalPrice.setText("Tổng số tiền: " + order.getTotalPrice() + " VND");
 
-        holder.main.setOnClickListener(v -> openDetail(holder, orderStore));
+        holder.main.setOnClickListener(v -> openDetail(holder, order));
+
+        holder.btnBuy.setOnClickListener(v -> {
+
+            if (order.getStatus().equals("pending")
+                    && order.getPaymentMethod().equals("COD")) {
+                cancelOrderCOD(holder, order, position);
+            } else if (order.getStatus().equals("pending")
+                    && order.getPaymentMethod().equals("VNPay")) {
+                cancelOrderVNPay(holder, order, position);
+            } else if (order.getStatus().equals("delivering")) {
+                openRatingDelivering(holder, order, position);
+            } else if (order.getStatus().equals("delivered") && !order.isCheckRating()){
+                openRatingDelivered(holder, order, position);
+            } else {
+                onCheckoutButtonClicked(holder, order);
+            }
+
+        });
 
         holder.btnDetail.setOnClickListener(v -> {
-            if (!orderStore.isCheckRating()
-                    && (orderStore.getStatus().equals("delivering")
-                    || orderStore.getStatus().equals("delivered"))) {
-                openRequestReturn(holder, orderStore);
+            if (!order.isCheckRating()
+                    && (order.getStatus().equals("delivering")
+                    || order.getStatus().equals("delivered"))) {
+                openRequestReturn(holder, order);
             } else {
-                openRating(holder, orderStore);
+                openRatingList(holder, order);
             }
 
         });
@@ -174,126 +153,161 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         }
     }
 
-    private void cancelOrder(OrderStoreViewHolder holder, Order order) {
-        int position = holder.getAdapterPosition(); // Lấy đúng vị trí của item
-        if (position == RecyclerView.NO_POSITION) {
-            return; // Nếu vị trí không hợp lệ, thoát khỏi phương thức
-        }
-
-        if (order.getStatus().equals("pending") && order.getPaymentMethod().equals("COD")) {
-            viewModel.updateOrderStatus(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
-                @Override
-                public void onSuccess(String message) {
-                    // Cập nhật trạng thái của item trong adapter
-                    order.setStatus("pending");
-                    notifyItemChanged(position); // Chỉ cập nhật item tại vị trí hiện tại
-                    Toast.makeText(holder.itemView.getContext(), "Đơn hàng đã hủy!", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(String errorMessage) {
-                    Toast.makeText(holder.itemView.getContext(), "Không thể hủy đơn hàng: " + errorMessage, Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else if (order.getStatus().equals("pending") && order.getPaymentMethod().equals("VNPay")) {
-            // Khi trả hàng gọi api hoàn tiền
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("orders").document(order.getOrderId()).get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    String vnpTxnRef = documentSnapshot.getString("vnpTxnRef");
-                    order.setVnpTxnRef(vnpTxnRef);
-
-                    new Thread(() -> {
-                        try {
-                            String vnp_TxnRef = order.getVnpTxnRef();
-                            String transactionId = order.getTransactionId();
-                            int totalPrice = order.getTotalPrice();
-                            String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDateMillis());
-
-                            // Gửi yêu cầu hoàn tiền
-                            String response = VnpayRefund.createRefundRequest(
-                                    vnp_TxnRef,          // Mã giao dịch của merchant (txnRef)
-                                    transactionId,       // Mã giao dịch từ VNPAY
-                                    totalPrice,          // Số tiền hoàn
-                                    formattedTransactionDate, // Ngày giao dịch gốc
-                                    "Hoàn tiền cho đơn hàng " + order.getOrderId(), // Lý do hoàn tiền
-                                    "admin"              // Người thực hiện
-                            );
-
-                            //nếu hoàn tiền thành công
-                            if (response.contains("\"vnp_ResponseCode\":\"00\"")) { //ResponseCode là 00 (Hoàn tiền thành công)
-                                new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                                    Toast.makeText(holder.itemView.getContext(), "Huỷ đơn hàng thành công", Toast.LENGTH_SHORT).show();
-                                });
-
-                                // Cập nhật trạng thái đơn hàng
-                                viewModel.updateOrderStatusRefund(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
-                                    @Override
-                                    public void onSuccess(String message) {
-                                        order.setStatus("canceled");
-                                        notifyItemChanged(position);
-                                    }
-
-                                    @Override
-                                    public void onError(String errorMessage) {
-                                        new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                                            Toast.makeText(holder.itemView.getContext(), "Không thể hủy đơn hàng: " + errorMessage, Toast.LENGTH_SHORT).show();
-                                        });
-                                    }
-                                });
-
-                            } else {
-                                //nếu hoàn tiền không thành công
-                                new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                                    Toast.makeText(holder.itemView.getContext(), "Không thể hoàn tiền: " + response, Toast.LENGTH_SHORT).show();
-                                });
-                                Log.println(Log.ERROR, "Vnpayreturn", response);
-                            }
-                        } catch (Exception e) {
-                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                                Toast.makeText(holder.itemView.getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            });
-                        }
-                    }).start();
+    private void setStatusButton(OrderStoreViewHolder holder, Order order)
+    {
+        switch (order.getStatus()) {
+            case "pending":
+                translatedStatus = "Chờ xác nhận";
+                holder.btnBuy.setText("Hủy đơn hàng");
+                break;
+            case "approved":
+                translatedStatus = "Shop đang chuẩn bị hàng";
+                holder.btnBuy.setVisibility(View.GONE);
+                break;
+            case "delivering":
+                translatedStatus = "Chờ giao hàng";
+                holder.btnBuy.setText("Đã nhận hàng");
+                holder.btnDetail.setVisibility(View.VISIBLE);
+                holder.btnDetail.setText("Trả hàng/Hoàn tiền");
+                break;
+            case "return":
+                translatedStatus = "Chờ giao hàng";
+                holder.btnBuy.setText("Đã nhận hàng");
+                break;
+            case "delivered":
+                translatedStatus = "Hoàn thành";
+                if (!order.isCheckRating()) {
+                    holder.btnBuy.setText("Đánh giá");
+                    holder.btnDetail.setVisibility(View.VISIBLE);
+                    holder.btnDetail.setText("Trả hàng/Hoàn tiền");
                 } else {
-                    Toast.makeText(holder.itemView.getContext(), "Đơn hàng không tồn tại", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnFailureListener(e -> {
-                Toast.makeText(holder.itemView.getContext(), "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            });
-        } else if (order.getStatus().equals("delivering")) {
-            viewModel.updateOrderStatus(order.getOrderId(), "delivered", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
-                @Override
-                public void onSuccess(String message) {
-                    // Cập nhật trạng thái của item trong adapter
-                    viewModel.getData("delivering");
-                    order.setStatus("delivering");
-                    notifyItemChanged(position);
-
-                    Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
-
-                    intent.putExtra("order", order);
-                    holder.itemView.getContext().startActivity(intent);
+                    holder.btnDetail.setVisibility(View.VISIBLE);
                 }
 
-                @Override
-                public void onError(String errorMessage) {
-                    Toast.makeText(holder.itemView.getContext(), "Không thể cập nhật trạng thái: " + errorMessage, Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else if (order.getStatus().equals("delivered") && !order.isCheckRating()) {
-
-            // Cập nhật trạng thái của item trong adapter
-            order.setStatus("delivered");
-            notifyItemChanged(position);
-
-            Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
-            intent.putExtra("order", order);
-            intent.putExtra("position", 2);
-            ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);
-        } else {
-            onCheckoutButtonClicked(holder, order);
+                break;
+            case "canceled":
+                translatedStatus = "Đã hủy";
+                holder.btnDetail.setText("Xem Thông tin Hoàn tiền");
+                break;
+            default:
+                translatedStatus = "Không xác định";
+                break;
         }
+    }
+
+    private void cancelOrderCOD(OrderStoreViewHolder holder, Order order, int position) {
+        viewModel.updateOrderStatus(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+            @Override
+            public void onSuccess(String message) {
+                // Cập nhật trạng thái của item trong adapter
+                order.setStatus("pending");
+                notifyItemChanged(position); // Chỉ cập nhật item tại vị trí hiện tại
+                Toast.makeText(holder.itemView.getContext(), "Đơn hàng đã hủy!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(holder.itemView.getContext(), "Không thể hủy đơn hàng: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void cancelOrderVNPay(OrderStoreViewHolder holder, Order order, int position) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("orders").document(order.getOrderId()).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String vnpTxnRef = documentSnapshot.getString("vnpTxnRef");
+                order.setVnpTxnRef(vnpTxnRef);
+
+                new Thread(() -> {
+                    try {
+                        String vnp_TxnRef = order.getVnpTxnRef();
+                        String transactionId = order.getTransactionId();
+                        int totalPrice = order.getTotalPrice();
+                        String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDateMillis());
+
+                        // Gửi yêu cầu hoàn tiền
+                        String response = VnpayRefund.createRefundRequest(
+                                vnp_TxnRef,          // Mã giao dịch của merchant (txnRef)
+                                transactionId,       // Mã giao dịch từ VNPAY
+                                totalPrice,          // Số tiền hoàn
+                                formattedTransactionDate, // Ngày giao dịch gốc
+                                "Hoàn tiền cho đơn hàng " + order.getOrderId(), // Lý do hoàn tiền
+                                "admin"              // Người thực hiện
+                        );
+
+                        //nếu hoàn tiền thành công
+                        if (response.contains("\"vnp_ResponseCode\":\"00\"")) { //ResponseCode là 00 (Hoàn tiền thành công)
+                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                Toast.makeText(holder.itemView.getContext(), "Huỷ đơn hàng thành công", Toast.LENGTH_SHORT).show();
+                            });
+
+                            // Cập nhật trạng thái đơn hàng
+                            viewModel.updateOrderStatusRefund(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+                                @Override
+                                public void onSuccess(String message) {
+                                    order.setStatus("canceled");
+                                    notifyItemChanged(position);
+                                }
+
+                                @Override
+                                public void onError(String errorMessage) {
+                                    new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                        Toast.makeText(holder.itemView.getContext(), "Không thể hủy đơn hàng: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            });
+
+                        } else {
+                            //nếu hoàn tiền không thành công
+                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                Toast.makeText(holder.itemView.getContext(), "Không thể hoàn tiền: " + response, Toast.LENGTH_SHORT).show();
+                            });
+                            Log.println(Log.ERROR, "Vnpayreturn", response);
+                        }
+                    } catch (Exception e) {
+                        new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                            Toast.makeText(holder.itemView.getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }).start();
+            } else {
+                Toast.makeText(holder.itemView.getContext(), "Đơn hàng không tồn tại", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(holder.itemView.getContext(), "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void openRatingDelivering(OrderStoreViewHolder holder, Order order, int position) {
+        viewModel.updateOrderStatus(order.getOrderId(), "delivered", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+            @Override
+            public void onSuccess(String message) {
+                // Cập nhật trạng thái của item trong adapter
+                viewModel.getData("delivering");
+                order.setStatus("delivering");
+                notifyItemChanged(position);
+
+                Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
+
+                intent.putExtra("order", order);
+                holder.itemView.getContext().startActivity(intent);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(holder.itemView.getContext(), "Không thể cập nhật trạng thái: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void openRatingDelivered(OrderStoreViewHolder holder, Order order, int position) {
+        order.setStatus("delivered");
+        notifyItemChanged(position);
+
+        Intent intent = new Intent(holder.itemView.getContext(), ProductRatingActivity.class);
+        intent.putExtra("order", order);
+        ((Activity) holder.itemView.getContext()).startActivityForResult(intent, REQUEST_CODE_RATING);
     }
 
     private void openDetail(OrderStoreViewHolder holder, Order order) {
@@ -325,7 +339,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
 
     }
 
-    private void openRating(OrderStoreViewHolder holder, Order order) {
+    private void openRatingList(OrderStoreViewHolder holder, Order order) {
         Intent intent = new Intent(holder.itemView.getContext(), ShopRatingActivity.class);
         intent.putExtra("order", order);
         holder.itemView.getContext().startActivity(intent);

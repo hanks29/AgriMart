@@ -109,7 +109,7 @@ public class GetAddressActivity extends AppCompatActivity {
         }, error -> Log.e("API Error", error));
     }
 
-    private void prepopulateAddress(String provinceId, String districtId, String communeId) {
+        private void prepopulateAddress(String provinceId, String districtId, String communeId) {
         getAPIAddressModel.loadProvinces(provinceApiResponses -> {
             List<String> provinceNames = new ArrayList<>();
             int provincePosition = -1;

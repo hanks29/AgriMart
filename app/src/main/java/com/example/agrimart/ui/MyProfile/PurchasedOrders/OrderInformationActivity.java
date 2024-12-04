@@ -46,6 +46,7 @@ public class OrderInformationActivity extends AppCompatActivity {
     private final int REQUEST_CODE_RATING = 1001;
     private OrderStatusFragmentViewModel viewModel;
     int position;
+    LinearLayout footer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,7 @@ public class OrderInformationActivity extends AppCompatActivity {
         recyclerViewDetail = findViewById(R.id.recyclerViewDetail);
         llRefund = findViewById(R.id.ll_refund);
         tvRefund = findViewById(R.id.tv_refund);
+        footer = findViewById(R.id.footer);
     }
 
     @SuppressLint("SetTextI18n")
@@ -119,24 +121,20 @@ public class OrderInformationActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
         btnBuy.setOnClickListener(v -> {
 
-            if(order.getStatus().equals("pending"))
-            {
-
-            }
-            else if(order.isCheckRating())
-            {
+            if (order.getStatus().equals("pending")
+                    && order.getPaymentMethod().equals("COD")) {
+                cancelOrderCOD();
+            } else if (order.isCheckRating()) {
                 onCheckoutButtonClicked();
-            }else {
+            } else {
                 openRating();
             }
 
         });
         btnDetail.setOnClickListener(v -> {
-            if(order.isCheckRating())
-            {
+            if (order.isCheckRating()) {
                 openRatingDetail();
-            }
-            else {
+            } else {
                 openRequestReturn();
             }
         });
@@ -150,12 +148,12 @@ public class OrderInformationActivity extends AppCompatActivity {
                 btnBuy.setText("Huỷ đơn hàng");
                 return "Chờ xác nhận ";
             case "approved":
-                return "Chờ lấy hàng ";
+                footer.setVisibility(View.GONE);
+                return "Shop đang chuẩn bị hàng ";
             case "delivering":
                 btnDetail.setVisibility(View.VISIBLE);
                 btnDetail.setText("Trả hàng/Hoàn tiền");
-                if(!order.isCheckRating())
-                {
+                if (!order.isCheckRating()) {
                     btnDetail.setText("Trả hàng/Hoàn tiền");
                     btnBuy.setText("Đã nhận hàng");
                 }
@@ -163,8 +161,7 @@ public class OrderInformationActivity extends AppCompatActivity {
 
             case "delivered":
                 btnDetail.setVisibility(View.VISIBLE);
-                if(!order.isCheckRating())
-                {
+                if (!order.isCheckRating()) {
                     btnDetail.setText("Trả hàng/Hoàn tiền");
                     btnBuy.setText("Đánh giá");
                 }
@@ -189,8 +186,7 @@ public class OrderInformationActivity extends AppCompatActivity {
 
         selectedProducts = order.getProducts();
 
-        for (Product p : selectedProducts)
-        {
+        for (Product p : selectedProducts) {
             productIds.add(p.getProduct_id());
         }
 
@@ -217,11 +213,10 @@ public class OrderInformationActivity extends AppCompatActivity {
 
                 @Override
                 public void onError(String errorMessage) {
-
+                    Toast.makeText(OrderInformationActivity.this, "Không thể đánh giá: " + errorMessage, Toast.LENGTH_SHORT).show();
                 }
             });
-        }
-        else {
+        } else {
             order.setStatus("delivered");
             Intent intent = new Intent(this, ProductRatingActivity.class);
             intent.putExtra("order", order);
@@ -240,6 +235,27 @@ public class OrderInformationActivity extends AppCompatActivity {
         Intent intent = new Intent(this, RequestReturnActivity.class);
         intent.putExtra("order", order);
         startActivity(intent);
+    }
+
+    private void cancelOrderCOD() {
+        viewModel.updateOrderStatus(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+            @Override
+            public void onSuccess(String message) {
+                // Cập nhật trạng thái của item trong adapter
+                order.setStatus("pending");
+                viewModel.getData("pending");
+                Toast.makeText(OrderInformationActivity.this, "Đơn hàng đã hủy!", Toast.LENGTH_SHORT).show();
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("order_status", "pending");
+                setResult(RESULT_OK, resultIntent);
+                finish();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(OrderInformationActivity.this, "Không thể hủy đơn hàng: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

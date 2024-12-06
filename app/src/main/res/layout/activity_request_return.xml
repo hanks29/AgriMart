@@ -138,7 +138,7 @@
             android:layout_height="8dp"/>
 
         <EditText
-            android:id="@+id/editTextText"
+            android:id="@+id/edtDescribe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Nhập mô tả"
@@ -155,6 +155,56 @@
 
 
     </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/ll_imageButtonCamera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="5dp"
+        android:background="@drawable/dashed_border"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPhotos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:listitem="@layout/item_image_product" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/imageButtonCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/white"
+                android:contentDescription="@string/todo"
+                android:paddingTop="10dp"
+                android:src="@drawable/camera" />
+
+            <TextView
+                android:id="@+id/textViewBelowButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="@string/th_m_nh"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/footer"

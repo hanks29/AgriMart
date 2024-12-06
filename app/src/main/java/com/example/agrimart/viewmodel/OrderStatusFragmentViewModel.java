@@ -1,4 +1,6 @@
 package com.example.agrimart.viewmodel;
+import android.net.Uri;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -9,6 +11,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -140,6 +144,74 @@ public class OrderStatusFragmentViewModel extends ViewModel {
                 .update(updates)
                 .addOnSuccessListener(unused -> listener.onSuccess("Order status updated successfully"))
                 .addOnFailureListener(e -> listener.onError("Failed to update order status: " + e.getMessage()));
+    }
+
+    public void updateOrderStatusReturn(String orderId, String newStatus, String reason, String describe, List<Uri> imageUris, OnStatusUpdateListener listener) {
+        // Initialize Firebase references
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference().child("orders").child(orderId);
+
+        // Initialize list to store image URLs
+        List<String> uploadedImageUrls = new ArrayList<>();
+
+        // Counter to track upload progress
+        final int[] uploadCount = {0};
+
+        if (imageUris == null || imageUris.isEmpty()) {
+            // If no images are provided, update Firestore immediately
+            updateFirestoreWithDetails(orderId, newStatus, reason, describe, uploadedImageUrls, listener);
+            return;
+        }
+
+        for (Uri imageUri : imageUris) {
+            // Create a unique name for each image
+            String fileName = System.currentTimeMillis() + ".jpg";
+            StorageReference imageRef = storageRef.child(fileName);
+
+            // Upload the image
+            imageRef.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        // Get the URL of the uploaded image
+                        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            uploadedImageUrls.add(uri.toString());
+
+                            // Increment the counter
+                            uploadCount[0]++;
+
+                            // Check if all images are uploaded
+                            if (uploadCount[0] == imageUris.size()) {
+                                // Update Firestore after all images are uploaded
+                                updateFirestoreWithDetails(orderId, newStatus, reason, describe, uploadedImageUrls, listener);
+                            }
+                        }).addOnFailureListener(e -> {
+                            listener.onError("Failed to get image URL: " + e.getMessage());
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        listener.onError("Failed to upload image: " + e.getMessage());
+                    });
+        }
+    }
+
+    // Helper method to update Firestore with all details
+    private void updateFirestoreWithDetails(String orderId, String newStatus, String reason, String describe, List<String> uploadedImageUrls, OnStatusUpdateListener listener) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Create a map with the fields to update
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", newStatus);
+        updates.put("reason", reason); // Add reason field
+        updates.put("describe", describe); // Add describe field
+        updates.put("created_at", FieldValue.serverTimestamp());
+        updates.put("imageUrls", uploadedImageUrls); // Add image URLs to Firestore
+
+        // Update the document in Firestore
+        firestore.collection("orders")
+                .document(orderId)
+                .update(updates)
+                .addOnSuccessListener(unused -> listener.onSuccess("Order status, reason, describe, and images updated successfully"))
+                .addOnFailureListener(e -> listener.onError("Failed to update order: " + e.getMessage()));
     }
 
 

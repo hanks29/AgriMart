@@ -236,6 +236,19 @@ public class Order implements Serializable {
         return createdAt;
     }
 
+    public boolean checkTime() {
+        // Lấy thời gian hiện tại
+        long currentTimeMillis = System.currentTimeMillis();
+
+        // Tính khoảng cách thời gian giữa `createdAtMillis` và thời gian hiện tại
+        long differenceInMillis = currentTimeMillis - createdAtMillis;
+
+        // Kiểm tra nếu khoảng cách thời gian lớn hơn 6 tiếng (6 * 60 * 60 * 1000 milliseconds)
+        return differenceInMillis <= 6 * 60 * 60 * 1000; // Nếu trên 6 tiếng
+
+    }
+
+
     private long transactionDateMillis;
 
     public String getTransactionId() {
@@ -249,6 +262,8 @@ public class Order implements Serializable {
     public Timestamp getTransactionDate() {
         return transactionDate;
     }
+
+    private boolean refund;
 
     public void setTransactionDate(Timestamp transactionDate) {
         this.transactionDateMillis = transactionDate.toDate().getTime();
@@ -277,5 +292,13 @@ public class Order implements Serializable {
     public void setTransactionDateMillis(long transactionDateMillis) {
         this.transactionDateMillis = transactionDateMillis;
         this.createdAtMillis = createdAt.toDate().getTime();
+    }
+
+    public boolean isRefund() {
+        return refund;
+    }
+
+    public void setRefund(boolean refund) {
+        this.refund = refund;
     }
 }

@@ -1,9 +1,12 @@
 package com.example.agrimart.ui.MyProfile.PurchasedOrders.RequestReturn;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -12,6 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.graphics.Insets;
@@ -21,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.agrimart.R;
+import com.example.agrimart.adapter.ImageProductAdapter;
 import com.example.agrimart.adapter.ProductOrderAdapter;
 import com.example.agrimart.data.model.Order;
 import com.example.agrimart.data.model.Product;
@@ -28,21 +35,30 @@ import com.example.agrimart.ui.Payment.VnpayRefund;
 import com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class RequestReturnActivity extends AppCompatActivity {
-    RecyclerView recyclerViewDetail;
+    RecyclerView recyclerViewDetail, rvPhotos;
+    EditText edtDescribe;
     Order order;
     TextView totalPrice, reasonText;
-    ImageButton btnBack;
+    ImageButton btnBack, imageCamera;
     AppCompatButton btnGui;
     private OrderStatusFragmentViewModel viewModel;
-    LinearLayout myReason;
+    LinearLayout myReason, imageButtonCamera;
+    private List<Uri> imageUris = new ArrayList<>();
+    private ImageProductAdapter imageProductAdapter;
+    ActivityResultLauncher<PickVisualMediaRequest> pickMultipleMedia;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,22 +71,31 @@ public class RequestReturnActivity extends AppCompatActivity {
         });
 
         order = (Order) getIntent().getSerializableExtra("order");
+
         addControl();
         loadDetail();
+
+
         addEvent();
     }
 
 
-    void addControl()
-    {
+    void addControl() {
         recyclerViewDetail = findViewById(R.id.recyclerViewDetail);
         totalPrice = findViewById(R.id.total_price);
         btnBack = findViewById(R.id.btn_back);
         btnGui = findViewById(R.id.btn_gui);
         myReason = findViewById(R.id.my_reason);
         reasonText = findViewById(R.id.reason_text);
+        imageButtonCamera = findViewById(R.id.ll_imageButtonCamera);
+        rvPhotos = findViewById(R.id.rvPhotos);
+        imageCamera = findViewById(R.id.imageButtonCamera);
+        edtDescribe = findViewById(R.id.edtDescribe);
 
         viewModel = new OrderStatusFragmentViewModel();
+        imageProductAdapter = new ImageProductAdapter(imageUris);
+        rvPhotos.setAdapter(imageProductAdapter);
+        rvPhotos.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
     }
 
     @SuppressLint("SetTextI18n")
@@ -81,24 +106,52 @@ public class RequestReturnActivity extends AppCompatActivity {
         recyclerViewDetail.setLayoutManager(new LinearLayoutManager(this));
 
         totalPrice.setText(formatCurrency(order.getTotalPrice()) + " đ");
+
+        pickMultipleMedia =
+                registerForActivityResult(new ActivityResultContracts.PickMultipleVisualMedia(2), uris -> {
+                    if (!uris.isEmpty()) {
+                        imageUris.addAll(uris);
+                        rvPhotos.setVisibility(View.VISIBLE);
+                        imageProductAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.d("PhotoPicker", "No media selected");
+                    }
+                });
     }
 
     private void addEvent() {
         btnBack.setOnClickListener(v -> finish());
-        btnGui.setOnClickListener(v-> requestReturn());
+        btnGui.setOnClickListener(v -> {
+            requestReturn();
+        });
         myReason.setOnClickListener(v -> showReasonDialog((String) reasonText.getText()));
+
+
+        imageCamera.setOnClickListener(v -> {
+            openImageCamera();
+        });
+        imageButtonCamera.setOnClickListener(v -> {
+            openImageCamera();
+        });
+    }
+
+    void openImageCamera() {
+        if (imageUris.size() < 4 || Objects.isNull(imageProductAdapter.imageUris) || imageProductAdapter.imageUris.isEmpty()) {
+            pickMultipleMedia.launch(new PickVisualMediaRequest.Builder()
+                    .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                    .build());
+        } else {
+            Toast.makeText(this, "Vui long xóa ảnh đã chọn để thêm ảnh mới", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showReasonDialog(String s) {
-        // Tạo BottomSheetDialog
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         bottomSheetDialog.setContentView(R.layout.bottom_sheet_reason);
 
-        // Tham chiếu đến các view trong dialog
         RadioGroup radioGroup = bottomSheetDialog.findViewById(R.id.reason_radio_group);
         AppCompatButton btnSubmit = bottomSheetDialog.findViewById(R.id.btn_submit_reason);
 
-        // Tự động chọn lý do nếu chuỗi `s` được truyền vào
         if (s != null && !s.isEmpty()) {
             for (int i = 0; i < radioGroup.getChildCount(); i++) {
                 RadioButton radioButton = (RadioButton) radioGroup.getChildAt(i);
@@ -128,80 +181,45 @@ public class RequestReturnActivity extends AppCompatActivity {
     }
 
 
-
     private void requestReturn() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("orders").document(order.getOrderId()).get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                String vnpTxnRef = documentSnapshot.getString("vnpTxnRef");
-                order.setVnpTxnRef(vnpTxnRef);
 
-                new Thread(() -> {
-                    try {
-                        String vnp_TxnRef = order.getVnpTxnRef();
-                        String transactionId = order.getTransactionId();
-                        int totalPrice = order.getTotalPrice();
-                        String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDateMillis());
+        if (imageUris.isEmpty()) {
+            Toast.makeText(this, "Không có ảnh nào để tải lên.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                        // Gửi yêu cầu hoàn tiền
-                        String response = VnpayRefund.createRefundRequest(
-                                vnp_TxnRef,          // Mã giao dịch của merchant (txnRef)
-                                transactionId,       // Mã giao dịch từ VNPAY
-                                totalPrice,          // Số tiền hoàn
-                                formattedTransactionDate, // Ngày giao dịch gốc
-                                "Hoàn tiền cho đơn hàng " + order.getOrderId(), // Lý do hoàn tiền
-                                "admin"              // Người thực hiện
-                        );
+        String reason = (String) reasonText.getText();
+        String describe = String.valueOf(edtDescribe.getText());
 
-                        //nếu hoàn tiền thành công
-                        if (response.contains("\"vnp_ResponseCode\":\"00\"")) { //ResponseCode là 00 (Hoàn tiền thành công)
-                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                                Toast.makeText(this, "Gửi yêu cầu thành công", Toast.LENGTH_SHORT).show();
-                            });
+        if (reason.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập lý do trả hàng.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                            // Cập nhật trạng thái đơn hàng
-                            viewModel.updateOrderStatusRefund(order.getOrderId(), order.getStatus(), new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
-                                @Override
-                                public void onSuccess(String message) {
-                                    order.setStatus(order.getStatus());
-                                }
+        if (describe.isEmpty()) {
+            Toast.makeText(this, "Vui lòng mô tả chi tiết lý do trả hàng.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                                @Override
-                                public void onError(String errorMessage) {
-                                    new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                                        Toast.makeText(RequestReturnActivity.this, "Không thể hủy đơn hàng: " , Toast.LENGTH_SHORT).show();
-                                    });
-                                }
-                            });
-
-                        } else {
-                            //nếu hoàn tiền không thành công
-                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                                Toast.makeText(this, "Không thể hoàn tiền: " + response, Toast.LENGTH_SHORT).show();
-                            });
-                            Log.println(Log.ERROR, "Vnpayreturn", response);
-                        }
-                    } catch (Exception e) {
-                        new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                            Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                }).start();
-            } else {
-                Toast.makeText(this, "Đơn hàng không tồn tại", Toast.LENGTH_SHORT).show();
+        viewModel.updateOrderStatusReturn(order.getOrderId(), "return",  reason, describe,imageUris, new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+            @Override
+            public void onSuccess(String message) {
+                order.setStatus(order.getStatus());
             }
-        }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+            @Override
+            public void onError(String errorMessage) {
+                new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                    Toast.makeText(RequestReturnActivity.this, "Không thể hủy đơn hàng: ", Toast.LENGTH_SHORT).show();
+                });
+            }
         });
     }
 
-    public static String formatTimestampToVnpayDate(Long timestamp) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
-        Date date = new Date(timestamp);
-        return formatter.format(date);
-    }
-    
+
     private String formatCurrency(double amount) {
         return NumberFormat.getInstance(Locale.getDefault()).format(amount);
     }
+
+
 }

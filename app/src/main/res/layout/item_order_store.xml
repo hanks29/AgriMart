@@ -1,9 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/main"
     android:orientation="vertical">
 
     <View
@@ -41,10 +41,10 @@
             android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="end"
             android:layout_weight="1"
-            android:textColor="@color/green"
+            android:gravity="end"
             android:text="Đã hủy"
+            android:textColor="@color/green"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -76,17 +76,30 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="end"
-            android:textSize="16sp"
+            android:text="Tổng số tiền: 100000"
             android:textColor="@color/black"
-            android:text="Tổng số tiền: 100000" />
+            android:textSize="16sp" />
 
+        <TextView
+            android:id="@+id/txt_ThongBao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:background="#1453B175"
+            android:gravity="end"
+            android:visibility="gone"
+            android:layout_marginStart="10dp"
+            android:text="Hàng chỉ được hoàn trả trong vòng 6 tiếng"
+            android:textColor="@color/green"
+            android:textSize="16sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:gravity="end"
-            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatButton
@@ -96,13 +109,13 @@
                 android:layout_gravity="end"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
+                android:background="@drawable/rounded_edittext"
                 android:paddingStart="15dp"
                 android:paddingEnd="15dp"
-                android:visibility="gone"
-                android:background="@drawable/rounded_edittext"
                 android:text="Xem đánh giá"
                 android:textAllCaps="false"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_buy"
@@ -111,9 +124,9 @@
                 android:layout_gravity="end"
                 android:layout_marginTop="10dp"
 
+                android:background="@drawable/rounded_edittext_order"
                 android:paddingStart="15dp"
                 android:paddingEnd="15dp"
-                android:background="@drawable/rounded_edittext_order"
                 android:text="Mua lại"
                 android:textAllCaps="false"
                 android:textColor="@color/green"

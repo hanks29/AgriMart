@@ -2,6 +2,7 @@ package com.example.agrimart.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Looper;
 import android.util.Log;
@@ -104,7 +105,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 cancelOrderVNPay(holder, order, position);
             } else if (order.getStatus().equals("delivering")) {
                 openRatingDelivering(holder, order, position);
-            } else if (order.getStatus().equals("delivered") && !order.isCheckRating()){
+            } else if (order.getStatus().equals("delivered") && !order.isCheckRating()) {
                 openRatingDelivered(holder, order, position);
             } else {
                 onCheckoutButtonClicked(holder, order);
@@ -115,13 +116,28 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
         holder.btnDetail.setOnClickListener(v -> {
             if (!order.isCheckRating()
                     && (order.getStatus().equals("delivering")
-                    || order.getStatus().equals("delivered"))) {
-                openRequestReturn(holder, order);
+                    || order.getStatus().equals("delivered"))
+                    && order.getPaymentMethod().equals("VNPay")) {
+                if (!order.checkTime()) {
+                    // Hiển thị dialog thông báo
+                    AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
+                    builder.setTitle("Thông báo")
+                            .setMessage("Đã quá 6 tiếng! Không thể thực hiện yêu cầu.")
+                            .setPositiveButton("Đồng ý", (dialog, which) -> {
+                                // Ẩn các thành phần
+                                holder.btnDetail.setVisibility(View.GONE);
+                                holder.txtThongBao.setVisibility(View.GONE);
+                                dialog.dismiss();
+                            })
+                            .show();
+                } else {
+                    openRequestReturn(holder, order);
+                }
             } else {
                 openRatingList(holder, order);
             }
-
         });
+
 
     }
 
@@ -134,7 +150,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
     // ViewHolder class
     static class OrderStoreViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvStoreName, tvStatus, tvTotalPrice;
+        TextView tvStoreName, tvStatus, tvTotalPrice, txtThongBao;
         ImageView imageView;
         RecyclerView recyclerViewItemOrder;
         AppCompatButton btnBuy, btnDetail;
@@ -150,11 +166,11 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             recyclerViewItemOrder = itemView.findViewById(R.id.recyclerViewItemOrder);
             btnBuy = itemView.findViewById(R.id.btn_buy);
             btnDetail = itemView.findViewById(R.id.btn_detail);
+            txtThongBao = itemView.findViewById(R.id.txt_ThongBao);
         }
     }
 
-    private void setStatusButton(OrderStoreViewHolder holder, Order order)
-    {
+    private void setStatusButton(OrderStoreViewHolder holder, Order order) {
         switch (order.getStatus()) {
             case "pending":
                 translatedStatus = "Chờ xác nhận";
@@ -167,8 +183,13 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             case "delivering":
                 translatedStatus = "Chờ giao hàng";
                 holder.btnBuy.setText("Đã nhận hàng");
-                holder.btnDetail.setVisibility(View.VISIBLE);
-                holder.btnDetail.setText("Trả hàng/Hoàn tiền");
+                if (order.checkTime())
+                {
+                    holder.txtThongBao.setVisibility(View.VISIBLE);
+                    holder.btnDetail.setVisibility(View.VISIBLE);
+                    holder.btnDetail.setText("Trả hàng/Hoàn tiền");
+                }
+
                 break;
             case "return":
                 translatedStatus = "Chờ giao hàng";
@@ -176,18 +197,28 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 break;
             case "delivered":
                 translatedStatus = "Hoàn thành";
-                if (!order.isCheckRating()) {
-                    holder.btnBuy.setText("Đánh giá");
+                if (order.isCheckRating()) {
                     holder.btnDetail.setVisibility(View.VISIBLE);
-                    holder.btnDetail.setText("Trả hàng/Hoàn tiền");
                 } else {
-                    holder.btnDetail.setVisibility(View.VISIBLE);
+                    if (!order.isCheckRating() && order.getPaymentMethod().equals("VNPay")) {
+                        holder.btnBuy.setText("Đánh giá");
+                        if (order.checkTime())
+                        {
+                            holder.txtThongBao.setVisibility(View.VISIBLE);
+                            holder.btnDetail.setVisibility(View.VISIBLE);
+                            holder.btnDetail.setText("Trả hàng/Hoàn tiền");
+                        }
+                    } else {
+                        holder.btnBuy.setText("Đánh giá");
+                    }
                 }
-
                 break;
             case "canceled":
-                translatedStatus = "Đã hủy";
-                holder.btnDetail.setText("Xem Thông tin Hoàn tiền");
+                if (order.isRefund()) {
+                    translatedStatus = "Đã hủy và Hoàn tiền";
+                } else {
+                    translatedStatus = "Đã hủy";
+                }
                 break;
             default:
                 translatedStatus = "Không xác định";

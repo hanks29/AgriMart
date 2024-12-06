@@ -45,8 +45,8 @@ public class OrderInformationActivity extends AppCompatActivity {
     LinearLayout llRefund;
     private final int REQUEST_CODE_RATING = 1001;
     private OrderStatusFragmentViewModel viewModel;
-    int position;
     LinearLayout footer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +91,7 @@ public class OrderInformationActivity extends AppCompatActivity {
         llRefund = findViewById(R.id.ll_refund);
         tvRefund = findViewById(R.id.tv_refund);
         footer = findViewById(R.id.footer);
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -158,7 +159,12 @@ public class OrderInformationActivity extends AppCompatActivity {
                     btnBuy.setText("Đã nhận hàng");
                 }
                 return "Chờ giao hàng ";
-
+            case  "return":
+                if (!order.isRefund()){
+                    return "Chờ hoàn tiền ";
+                }
+                btnBuy.setVisibility(View.GONE);
+                return "Đã trả hoàn tiền ";
             case "delivered":
                 btnDetail.setVisibility(View.VISIBLE);
                 if (!order.isCheckRating()) {
@@ -167,7 +173,12 @@ public class OrderInformationActivity extends AppCompatActivity {
                 }
                 return "Đã giao vào ";
             case "canceled":
-                llRefund.setVisibility(View.VISIBLE);
+                if (order.isRefund())
+                {
+                    tvRefund.setText(formatCurrency(order.getTotalPrice())+" đã được hoàn về tài khoản VNpay của bạn");
+                    llRefund.setVisibility(View.VISIBLE);
+                }
+
                 return "Đã hủy vào ";
         }
 

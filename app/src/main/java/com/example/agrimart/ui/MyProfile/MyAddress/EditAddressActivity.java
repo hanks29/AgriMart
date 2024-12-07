@@ -125,7 +125,6 @@ public class EditAddressActivity extends AppCompatActivity {
     private void loadAddressDetails() {
         String userId = auth.getCurrentUser().getUid();
 
-        // Lấy thông tin địa chỉ bằng AddressId
         firestore.collection("users").document(userId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists() && documentSnapshot.contains("addresses")) {

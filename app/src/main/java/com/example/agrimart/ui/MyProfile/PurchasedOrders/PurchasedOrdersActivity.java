@@ -35,15 +35,17 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_RATING) {
             if (resultCode == RESULT_OK) {
-                    loadFragmentAtPosition(4);
+                String orderStatus = data.getStringExtra("order_status");
+                assert orderStatus != null;
+                loadFragmentAtPosition(location(orderStatus), orderStatus);
             }
         }
     }
 
-    private void loadFragmentAtPosition(int position) {
+    private void loadFragmentAtPosition(int position, String orderStatus) {
         if (position >= 0 && position < fragments.size()) {
             // Lấy Fragment tại vị trí cần load lại
-            Fragment newFragment = new OrderStatusFragment("delivered");
+            Fragment newFragment = new OrderStatusFragment(orderStatus);
 
             // Thay thế Fragment hiện tại tại vị trí đó
             fragments.set(position , newFragment);

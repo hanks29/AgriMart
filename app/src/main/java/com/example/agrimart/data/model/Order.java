@@ -150,10 +150,12 @@ public class Order implements Serializable {
         this.sellerId = sellerId;
     }
 
+    @PropertyName("products")
     public List<Product> getProducts() {
         return products;
     }
 
+    @PropertyName("products")
     public void setProducts(List<Product> products) {
         this.products = products;
     }
@@ -218,15 +220,36 @@ public class Order implements Serializable {
         this.shippingFee = shippingFee;
     }
 
+    private long createdAtMillis;  // Chúng ta sẽ sử dụng long thay vì Timestamp để truyền qua Intent
+    // Getter và setter cho createdAtMillis
+    public long getCreatedAtMillis() {
+        return createdAtMillis;
+    }
+
+    @PropertyName("created_at")
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAtMillis = createdAt.toDate().getTime(); // Chuyển Timestamp thành long
+    }
+
     @PropertyName("created_at")
     public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    @PropertyName("created_at")
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+    public boolean checkTime() {
+        // Lấy thời gian hiện tại
+        long currentTimeMillis = System.currentTimeMillis();
+
+        // Tính khoảng cách thời gian giữa `createdAtMillis` và thời gian hiện tại
+        long differenceInMillis = currentTimeMillis - createdAtMillis;
+
+        // Kiểm tra nếu khoảng cách thời gian lớn hơn 6 tiếng (6 * 60 * 60 * 1000 milliseconds)
+        return differenceInMillis <= 6 * 60 * 60 * 1000; // Nếu trên 6 tiếng
+
     }
+
+
+    private long transactionDateMillis;
 
     public String getTransactionId() {
         return transactionId;
@@ -240,8 +263,10 @@ public class Order implements Serializable {
         return transactionDate;
     }
 
+    private boolean refund;
+
     public void setTransactionDate(Timestamp transactionDate) {
-        this.transactionDate = transactionDate;
+        this.transactionDateMillis = transactionDate.toDate().getTime();
     }
 
     @PropertyName("vnp_TxnRef")
@@ -256,7 +281,24 @@ public class Order implements Serializable {
 
     public String getFormattedCreatedAtDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault());
-        Date date = new Date(createdAt.toDate().getTime());
+        Date date = new Date(createdAtMillis);
         return dateFormat.format(date);
+    }
+
+    public long getTransactionDateMillis() {
+        return transactionDateMillis;
+    }
+
+    public void setTransactionDateMillis(long transactionDateMillis) {
+        this.transactionDateMillis = transactionDateMillis;
+        this.createdAtMillis = createdAt.toDate().getTime();
+    }
+
+    public boolean isRefund() {
+        return refund;
+    }
+
+    public void setRefund(boolean refund) {
+        this.refund = refund;
     }
 }

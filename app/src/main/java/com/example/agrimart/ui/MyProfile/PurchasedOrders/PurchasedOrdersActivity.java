@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -40,7 +43,10 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
                 loadFragmentAtPosition(location(orderStatus), orderStatus);
             }
         }
+
     }
+
+
 
     private void loadFragmentAtPosition(int position, String orderStatus) {
         if (position >= 0 && position < fragments.size()) {
@@ -51,7 +57,7 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
             fragments.set(position , newFragment);
 
             // Cập nhật lại adapter với danh sách fragment mới
-            ViewPagerAdapter adapter = new ViewPagerAdapter(this, fragments, Arrays.asList("Chờ xác nhận", "Chờ giao hàng", "Trả hàng", "Đã giao", "Đã hủy"));
+            ViewPagerAdapter adapter = new ViewPagerAdapter(this, fragments, Arrays.asList("Chờ xác nhận","Chờ lấy hàng", "Chờ giao hàng", "Trả hàng", "Đã giao", "Đã hủy"));
             viewPager.setAdapter(adapter);
 
 

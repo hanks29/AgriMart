@@ -1,6 +1,7 @@
 package com.example.agrimart.ui.MyProfile.PurchasedOrders.RequestReturn;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
@@ -74,8 +75,6 @@ public class RequestReturnActivity extends AppCompatActivity {
 
         addControl();
         loadDetail();
-
-
         addEvent();
     }
 
@@ -204,7 +203,14 @@ public class RequestReturnActivity extends AppCompatActivity {
         viewModel.updateOrderStatusReturn(order.getOrderId(), "return",  reason, describe,imageUris, new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
             @Override
             public void onSuccess(String message) {
-                order.setStatus(order.getStatus());
+                order.setStatus("return");
+                if(order.getStatus().equals("delivering"))
+                {
+                    viewModel.getData("delivering");
+                }
+                else {
+                    viewModel.getData("delivered");
+                }
             }
 
             @Override
@@ -214,6 +220,10 @@ public class RequestReturnActivity extends AppCompatActivity {
                 });
             }
         });
+        Intent resultIntent = new Intent();
+        setResult(RESULT_OK, resultIntent);
+
+        finish();
     }
 
 

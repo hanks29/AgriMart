@@ -108,9 +108,7 @@ public class ProductRatingActivity extends AppCompatActivity {
         Toast.makeText(this, "Đánh giá đã được gửi!", Toast.LENGTH_SHORT).show();
 
         Intent resultIntent = new Intent();
-        resultIntent.putExtra("order_status", "pending");
         setResult(RESULT_OK, resultIntent);
-
         finish();
     }
 

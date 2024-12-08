@@ -2,8 +2,11 @@ package com.example.agrimart.ui.MyProfile.PurchasedOrders;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -26,8 +29,10 @@ import com.example.agrimart.ui.Cart.CheckoutActivity;
 import com.example.agrimart.ui.MyProfile.MyRating.ProductRatingActivity;
 import com.example.agrimart.ui.MyProfile.MyRating.ShopRatingActivity;
 import com.example.agrimart.ui.MyProfile.PurchasedOrders.RequestReturn.RequestReturnActivity;
+import com.example.agrimart.ui.Payment.VnpayRefund;
 import com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -108,6 +113,8 @@ public class OrderInformationActivity extends AppCompatActivity {
         double priceProduct = order.getTotalPrice() - order.getShippingFee();
         totalPriceProduct.setText(formatCurrency(priceProduct) + " đ");
 
+        tvRefund.setText(formatCurrency(order.getTotalPrice()) + " đã được hoàn về tài khoản VNpay của bạn");
+
         // Format the createdAt date
         status.setText(getStatus(order.getStatus()) + order.getFormattedCreatedAtDate());
 
@@ -119,12 +126,22 @@ public class OrderInformationActivity extends AppCompatActivity {
     }
 
     void addEvent() {
-        btnBack.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("order_status", order.getStatus());
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        });
         btnBuy.setOnClickListener(v -> {
 
-            if (order.getStatus().equals("pending")
-                    && order.getPaymentMethod().equals("COD")) {
-                cancelOrderCOD();
+            if (order.getStatus().equals("pending")) {
+                if(order.getPaymentMethod().equals("COD"))
+                {
+                    cancelOrderCOD();
+                } else {
+                    cancelOrderVNPay();
+                }
+                
             } else if (order.isCheckRating()) {
                 onCheckoutButtonClicked();
             } else {
@@ -136,7 +153,20 @@ public class OrderInformationActivity extends AppCompatActivity {
             if (order.isCheckRating()) {
                 openRatingDetail();
             } else {
-                openRequestReturn();
+                if (!order.checkTime()) {
+                    // Hiển thị dialog thông báo
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Thông báo")
+                            .setMessage("Đã quá 6 tiếng! Không thể thực hiện yêu cầu.")
+                            .setPositiveButton("Đồng ý", (dialog, which) -> {
+                                btnDetail.setVisibility(View.GONE);
+                                dialog.dismiss();
+                            })
+                            .show();
+                } else {
+                    openRequestReturn();
+                }
+
             }
         });
     }
@@ -152,30 +182,36 @@ public class OrderInformationActivity extends AppCompatActivity {
                 footer.setVisibility(View.GONE);
                 return "Shop đang chuẩn bị hàng ";
             case "delivering":
-                btnDetail.setVisibility(View.VISIBLE);
-                btnDetail.setText("Trả hàng/Hoàn tiền");
-                if (!order.isCheckRating()) {
+                btnBuy.setText("Đã nhận hàng");
+                if (order.checkTime() && order.getPaymentMethod().equals("VNPay")) {
+                    btnDetail.setVisibility(View.VISIBLE);
                     btnDetail.setText("Trả hàng/Hoàn tiền");
-                    btnBuy.setText("Đã nhận hàng");
                 }
                 return "Chờ giao hàng ";
-            case  "return":
-                if (!order.isRefund()){
+            case "return":
+                footer.setVisibility(View.GONE);
+                if (!order.isRefund()) {
                     return "Chờ hoàn tiền ";
+                } else {
+                    llRefund.setVisibility(View.VISIBLE);
                 }
-                btnBuy.setVisibility(View.GONE);
                 return "Đã trả hoàn tiền ";
             case "delivered":
-                btnDetail.setVisibility(View.VISIBLE);
                 if (!order.isCheckRating()) {
-                    btnDetail.setText("Trả hàng/Hoàn tiền");
                     btnBuy.setText("Đánh giá");
+                    if (order.getPaymentMethod().equals("VNPay") && order.checkTime()) {
+                        btnDetail.setVisibility(View.VISIBLE);
+                        btnDetail.setText("Trả hàng/Hoàn tiền");
+                    }
+                } else {
+                    btnDetail.setVisibility(View.VISIBLE);
+                    btnBuy.setText("Mua lại");
                 }
+
                 return "Đã giao vào ";
             case "canceled":
-                if (order.isRefund())
-                {
-                    tvRefund.setText(formatCurrency(order.getTotalPrice())+" đã được hoàn về tài khoản VNpay của bạn");
+                if (order.isRefund()) {
+
                     llRefund.setVisibility(View.VISIBLE);
                 }
 
@@ -215,6 +251,7 @@ public class OrderInformationActivity extends AppCompatActivity {
                 public void onSuccess(String message) {
                     // Cập nhật trạng thái của item trong adapter
                     viewModel.getData("delivering");
+
                     order.setStatus("delivering");
 
                     Intent intent = new Intent(OrderInformationActivity.this, ProductRatingActivity.class);
@@ -229,6 +266,7 @@ public class OrderInformationActivity extends AppCompatActivity {
             });
         } else {
             order.setStatus("delivered");
+            viewModel.getData("delivered");
             Intent intent = new Intent(this, ProductRatingActivity.class);
             intent.putExtra("order", order);
             startActivityForResult(intent, REQUEST_CODE_RATING);
@@ -245,7 +283,12 @@ public class OrderInformationActivity extends AppCompatActivity {
     private void openRequestReturn() {
         Intent intent = new Intent(this, RequestReturnActivity.class);
         intent.putExtra("order", order);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_CODE_RATING);
+        if (order.getStatus().equals("delivered")) {
+            viewModel.getData("delivered");
+        } else {
+            viewModel.getData("delivering");
+        }
     }
 
     private void cancelOrderCOD() {
@@ -269,4 +312,77 @@ public class OrderInformationActivity extends AppCompatActivity {
         });
     }
 
+    private void cancelOrderVNPay() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("orders").document(order.getOrderId()).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String vnpTxnRef = documentSnapshot.getString("vnpTxnRef");
+                order.setVnpTxnRef(vnpTxnRef);
+
+                new Thread(() -> {
+                    try {
+                        String vnp_TxnRef = order.getVnpTxnRef();
+                        String transactionId = order.getTransactionId();
+                        int totalPrice = order.getTotalPrice();
+                        String formattedTransactionDate = formatTimestampToVnpayDate(order.getTransactionDateMillis());
+
+                        // Gửi yêu cầu hoàn tiền
+                        String response = VnpayRefund.createRefundRequest(
+                                vnp_TxnRef,          // Mã giao dịch của merchant (txnRef)
+                                transactionId,       // Mã giao dịch từ VNPAY
+                                totalPrice,          // Số tiền hoàn
+                                formattedTransactionDate, // Ngày giao dịch gốc
+                                "Hoàn tiền cho đơn hàng " + order.getOrderId(), // Lý do hoàn tiền
+                                "admin"              // Người thực hiện
+                        );
+
+                        //nếu hoàn tiền thành công
+                        if (response.contains("\"vnp_ResponseCode\":\"00\"")) { //ResponseCode là 00 (Hoàn tiền thành công)
+                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                Toast.makeText(this, "Huỷ đơn hàng thành công", Toast.LENGTH_SHORT).show();
+                            });
+
+                            // Cập nhật trạng thái đơn hàng
+                            viewModel.updateOrderStatusRefund(order.getOrderId(), "canceled", new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+                                @Override
+                                public void onSuccess(String message) {
+                                    order.setStatus("canceled");
+                                    viewModel.getData("pending");
+                                }
+
+                                @Override
+                                public void onError(String errorMessage) {
+                                    new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                        Toast.makeText(OrderInformationActivity.this, "Không thể hủy đơn hàng: " + errorMessage, Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            });
+
+                        } else {
+                            //nếu hoàn tiền không thành công
+                            new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                                Toast.makeText(this, "Không thể hoàn tiền: " + response, Toast.LENGTH_SHORT).show();
+                            });
+                            Log.println(Log.ERROR, "Vnpayreturn", response);
+                        }
+                    } catch (Exception e) {
+                        new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                            Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }).start();
+            } else {
+                Toast.makeText(this, "Đơn hàng không tồn tại", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    public static String formatTimestampToVnpayDate(Long timestamp) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
+        Date date = new Date(timestamp);
+        return formatter.format(date);
+    }
+    
 }

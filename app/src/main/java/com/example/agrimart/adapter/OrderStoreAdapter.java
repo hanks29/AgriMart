@@ -189,29 +189,34 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                     holder.btnDetail.setVisibility(View.VISIBLE);
                     holder.btnDetail.setText("Trả hàng/Hoàn tiền");
                 }
-
                 break;
             case "return":
-                translatedStatus = "Chờ giao hàng";
-                holder.btnBuy.setText("Đã nhận hàng");
+                holder.btnBuy.setVisibility(View.GONE);
+                if(order.isRefund())
+                {
+                    translatedStatus = "Đã hoàn tiền";
+                }
+                else {
+                    translatedStatus = "Chờ hoàn tiền";
+                }
+
                 break;
             case "delivered":
                 translatedStatus = "Hoàn thành";
-                if (order.isCheckRating()) {
-                    holder.btnDetail.setVisibility(View.VISIBLE);
-                } else {
-                    if (!order.isCheckRating() && order.getPaymentMethod().equals("VNPay")) {
-                        holder.btnBuy.setText("Đánh giá");
-                        if (order.checkTime())
-                        {
-                            holder.txtThongBao.setVisibility(View.VISIBLE);
-                            holder.btnDetail.setVisibility(View.VISIBLE);
-                            holder.btnDetail.setText("Trả hàng/Hoàn tiền");
-                        }
-                    } else {
-                        holder.btnBuy.setText("Đánh giá");
+                if (!order.isCheckRating()) {
+                    holder.btnBuy.setText("Đánh giá");
+                    if (order.checkTime() && order.getPaymentMethod().equals("VNPay")) {
+                        holder.txtThongBao.setVisibility(View.VISIBLE);
+                        holder.btnDetail.setVisibility(View.VISIBLE);
+                        holder.btnDetail.setText("Trả hàng/Hoàn tiền");
                     }
+                } else {
+                    holder.btnDetail.setVisibility(View.VISIBLE);
+                    holder.txtThongBao.setVisibility(View.GONE);
+                    holder.btnDetail.setText("Xem đánh giá");
+                    holder.btnBuy.setText("Mua lại");
                 }
+
                 break;
             case "canceled":
                 if (order.isRefund()) {
@@ -231,7 +236,8 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             @Override
             public void onSuccess(String message) {
                 // Cập nhật trạng thái của item trong adapter
-                order.setStatus("pending");
+                order.setStatus("canceled");
+                viewModel.getData("pending");
                 notifyItemChanged(position); // Chỉ cập nhật item tại vị trí hiện tại
                 Toast.makeText(holder.itemView.getContext(), "Đơn hàng đã hủy!", Toast.LENGTH_SHORT).show();
             }
@@ -278,6 +284,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                                 @Override
                                 public void onSuccess(String message) {
                                     order.setStatus("canceled");
+                                    viewModel.getData("pending");
                                     notifyItemChanged(position);
                                 }
 

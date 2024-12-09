@@ -2,6 +2,8 @@ package com.example.agrimart.ui.Cart;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -106,12 +108,13 @@ public class CheckoutActivity extends AppCompatActivity {
         tvPhoneNumber = findViewById(R.id.tvPhoneNumber1);
         tvAddress = findViewById(R.id.tvAddress1);
         tvChangeAddress = findViewById(R.id.tvChangeAddress);
-        paymentMethodGroup = findViewById(R.id.radGroupPayment);
+//        paymentMethodGroup = findViewById(R.id.radGroupPayment);
         radVNPay = findViewById(R.id.radVNPay);
         radCOD = findViewById(R.id.radCOD);
         btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
         linearLayout = findViewById(R.id.lnGHN);
     }
+
 
     private void setupRecyclerView() {
         rvProduct.setLayoutManager(new LinearLayoutManager(this));
@@ -131,15 +134,19 @@ public class CheckoutActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        paymentMethodGroup.setOnCheckedChangeListener((group, checkId) -> {
-            if (checkId == R.id.radVNPay) {
-                radCOD.setChecked(false);
-            } else if (checkId == R.id.radCOD) {
+        radCOD.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
                 radVNPay.setChecked(false);
             }
         });
 
+        radVNPay.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                radCOD.setChecked(false);
+            }
+        });
         btnPlaceOrder.setOnClickListener(v -> placeOrder());
+
     }
 
     private void calculateShippingFee() {
@@ -191,71 +198,113 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void handleCODPayment(String address, String storeId, String username, String phonenumber) {
-        new AlertDialog.Builder(this)
-                .setTitle("Xác nhận đặt hàng")
-                .setMessage("Bạn có chắc chắn muốn đặt hàng?")
-                .setPositiveButton("Đặt hàng", (dialog, which) -> {
-                    double totalPrice = Double.parseDouble(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
-                    String expectedDeliveryTime = "3-5 ngày";
-                    double shippingFee = 0;
-                    String paymentMethod = "COD";
-                    String shippingName = "Giao hàng nhanh";
-                    List<String> productIds = selectedProducts.stream()
-                            .map(Product::getProduct_id)
-                            .collect(Collectors.toList());
-                    checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, storeId, selectedProducts, username, phonenumber, new CheckoutViewModel.OrderCallback() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_confirm, null);
+        builder.setView(dialogView);
+
+        TextView tvDialogTitle = dialogView.findViewById(R.id.tvDialogTitle);
+        TextView tvDialogMessage = dialogView.findViewById(R.id.tvDialogMessage);
+        Button btnDialogCancel = dialogView.findViewById(R.id.btnDialogCancel);
+        Button btnDialogConfirm = dialogView.findViewById(R.id.btnDialogConfirm);
+
+        tvDialogTitle.setText("Xác nhận đặt hàng");
+        tvDialogMessage.setText("Bạn có chắc chắn muốn đặt hàng?");
+
+        AlertDialog alertDialog = builder.create();
+
+        btnDialogCancel.setOnClickListener(v -> alertDialog.dismiss());
+
+        btnDialogConfirm.setOnClickListener(v -> {
+            double totalPrice = Double.parseDouble(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
+            String expectedDeliveryTime = "3-5 ngày";
+            double shippingFee = 0;
+            String paymentMethod = "COD";
+            String shippingName = "Giao hàng nhanh";
+            List<String> productIds = selectedProducts.stream()
+                    .map(Product::getProduct_id)
+                    .collect(Collectors.toList());
+            checkoutViewModel.placeOrder(totalPrice, expectedDeliveryTime, shippingFee, paymentMethod, shippingName, productIds, address, storeId, selectedProducts, username, phonenumber, new CheckoutViewModel.OrderCallback() {
+                @Override
+                public void onSuccess(String orderId) {
+                    checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {
                         @Override
                         public void onSuccess(String orderId) {
-                            checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {
-                                @Override
-                                public void onSuccess(String orderId) {
-                                    Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
-                                    intent.putExtra("orderId", orderId);
-                                    checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
+                            Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
+                            intent.putExtra("orderId", orderId);
+                            checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
 
-                                    int shippingFee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll("[^0-9]", ""));
-                                    checkoutViewModel.updateStatusOrder(orderId, shippingFee);
+                            int shippingFee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll("[^0-9]", ""));
+                            checkoutViewModel.updateStatusOrder(orderId, shippingFee);
 
-                                    startActivity(intent);
-                                }
-
-                                @Override
-                                public void onFailure(Exception e) {
-                                    Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
-                                }
-                            }, orderId);
+                            startActivity(intent);
                         }
 
                         @Override
                         public void onFailure(Exception e) {
                             Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
                         }
-                    });
-                })
-                .setNegativeButton("Hủy", (dialog, which) -> {
-                })
-                .show();
+                    }, orderId);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
+                }
+            });
+            alertDialog.dismiss();
+        });
+
+        alertDialog.show();
     }
 
     private void showPaymentMethodDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Chọn phương thức thanh toán")
-                .setMessage("Vui lòng chọn phương thức thanh toán")
-                .setPositiveButton("OK", (dialog, which) -> {
-                })
-                .show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_confirm, null);
+        builder.setView(dialogView);
+
+        TextView tvDialogTitle = dialogView.findViewById(R.id.tvDialogTitle);
+        TextView tvDialogMessage = dialogView.findViewById(R.id.tvDialogMessage);
+        Button btnDialogCancel = dialogView.findViewById(R.id.btnDialogCancel);
+        Button btnDialogConfirm = dialogView.findViewById(R.id.btnDialogConfirm);
+
+        tvDialogTitle.setText("Chọn phương thức thanh toán");
+        tvDialogMessage.setText("Vui lòng chọn phương thức thanh toán");
+
+        AlertDialog alertDialog = builder.create();
+
+        btnDialogCancel.setVisibility(View.GONE);
+        btnDialogConfirm.setText("OK");
+        btnDialogConfirm.setOnClickListener(v -> alertDialog.dismiss());
+
+        alertDialog.show();
     }
 
     private void showNoAddressDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Không có địa chỉ nhận hàng")
-                .setMessage("Vui lòng thêm địa chỉ nhận hàng")
-                .setPositiveButton("Thêm địa chỉ", (dialog, which) -> {
-                    Intent intent = new Intent(CheckoutActivity.this, MyAddressActivity.class);
-                    startActivity(intent);
-                })
-                .setNegativeButton("Thoát", (dialog, which) -> finish())
-                .show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_confirm, null);
+        builder.setView(dialogView);
+
+        TextView tvDialogTitle = dialogView.findViewById(R.id.tvDialogTitle);
+        TextView tvDialogMessage = dialogView.findViewById(R.id.tvDialogMessage);
+        Button btnDialogCancel = dialogView.findViewById(R.id.btnDialogCancel);
+        Button btnDialogConfirm = dialogView.findViewById(R.id.btnDialogConfirm);
+
+        tvDialogTitle.setText("Không có địa chỉ nhận hàng");
+        tvDialogMessage.setText("Vui lòng thêm địa chỉ nhận hàng");
+
+        AlertDialog alertDialog = builder.create();
+
+        btnDialogCancel.setText("Thoát");
+        btnDialogCancel.setOnClickListener(v -> finish());
+
+        btnDialogConfirm.setText("Thêm địa chỉ");
+        btnDialogConfirm.setOnClickListener(v -> {
+            Intent intent = new Intent(CheckoutActivity.this, MyAddressActivity.class);
+            startActivity(intent);
+            alertDialog.dismiss();
+        });
+
+        alertDialog.show();
     }
 
     private void updatePrices() {

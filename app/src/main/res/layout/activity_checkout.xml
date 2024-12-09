@@ -209,86 +209,67 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <RadioGroup
-                android:id="@+id/radGroupPayment"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/codIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/cod_icon"/>
+
+                <TextView
+                    android:id="@+id/codText"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:layout_toEndOf="@id/codIcon"
+                    android:layout_centerVertical="true"
+                    android:text="Thanh toán khi nhận hàng"
+                    android:textSize="16sp"
+                    android:textColor="@color/black" />
 
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-
-                        <ImageView
-                            android:id="@+id/codIcon"
-                            android:layout_width="40dp"
-                            android:layout_height="32dp"
-                            android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginEnd="8dp"
-                            android:src="@drawable/cod_icon"/>
-
-                        <TextView
-                            android:id="@+id/codText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_toEndOf="@id/codIcon"
-                            android:layout_centerVertical="true"
-                            android:text="Thanh toán khi nhận hàng"
-                            android:textSize="16sp"
-                            android:textColor="@color/black" />
-                    </RelativeLayout>
-
-                    <RadioButton
-                        android:id="@+id/radCOD"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <RadioButton
+                    android:id="@+id/radCOD"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
 
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                        <ImageView
-                            android:id="@+id/vnpayIcon"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginEnd="8dp"
-                            android:src="@drawable/vnpay_icon"/>
+                <ImageView
+                    android:id="@+id/vnpayIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/vnpay_icon"/>
 
-                        <TextView
-                            android:id="@+id/vnpayText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_toEndOf="@id/vnpayIcon"
-                            android:layout_centerVertical="true"
-                            android:text="Cổng thanh toán VNPAY"
-                            android:textSize="16sp"
-                            android:textColor="@color/black" />
-                    </RelativeLayout>
+                <TextView
+                    android:id="@+id/vnpayText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/vnpayIcon"
+                    android:layout_centerVertical="true"
+                    android:text="Cổng thanh toán VNPAY"
+                    android:textSize="16sp"
+                    android:textColor="@color/black" />
 
-                    <RadioButton
-                        android:id="@+id/radVNPay"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-            </RadioGroup>
+                <RadioButton
+                    android:id="@+id/radVNPay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/tvTotalBreakdownTitle"

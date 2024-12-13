@@ -64,11 +64,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
             }
-//            if (!Valid.validatePass(newPassword,tvPasswordError)) {
-//                tvPasswordError.setVisibility(View.VISIBLE);
-//                Toast.makeText(this, "Thông tin không hợp lệ", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
+
 
             if (!newPassword.equals(confirmPassword)) {
                 Toast.makeText(this, "Thông tin không hợp lệ", Toast.LENGTH_SHORT).show();

@@ -182,19 +182,19 @@ public class MyProfileFragment extends Fragment {
 
     private void navigateToWaitingConfirm() {
         Intent intent = new Intent(requireContext(), PurchasedOrdersActivity.class);
-        intent.putExtra("selectedTab", 0);  // Tab thứ 2 có chỉ số là 1
+        intent.putExtra("selectedTab", 0);
         startActivity(intent);
     }
 
     private void navigateToWaitingGoods() {
         Intent intent = new Intent(requireContext(), PurchasedOrdersActivity.class);
-        intent.putExtra("selectedTab", 1);  // Tab thứ 2 có chỉ số là 1
+        intent.putExtra("selectedTab", 1);
         startActivity(intent);
     }
 
     private void navigateToWaitingDeliverey() {
         Intent intent = new Intent(requireContext(), PurchasedOrdersActivity.class);
-        intent.putExtra("selectedTab", 2);  // Tab thứ 2 có chỉ số là 1
+        intent.putExtra("selectedTab", 2);
         startActivity(intent);
     }
 
@@ -224,7 +224,7 @@ public class MyProfileFragment extends Fragment {
     }
 
     private void navigateToEcaluate() {
-        // Implement navigation to evaluate
+
     }
 
     void showDialog() {

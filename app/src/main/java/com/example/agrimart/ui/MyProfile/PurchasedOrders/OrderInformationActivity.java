@@ -103,22 +103,22 @@ public class OrderInformationActivity extends AppCompatActivity {
     void loadDetail() {
         shippingName.setText(order.getShippingName());
         String userDetail = order.getUsername() + " " + order.getPhonenumber();
-        address.setText("Huy Long 0987654321" + "\n" + order.getAddress());
+        address.setText(userDetail + "\n" + order.getAddress());
 
-        // Format shipping fee and total price
+        // phí vận chuyển và tổng tiền
         shippingFee.setText(formatCurrency(order.getShippingFee()) + " đ");
         totalPrice.setText("Tổng số tiền: " + formatCurrency(order.getTotalPrice()) + " đ");
 
-        // Calculate total product price (excluding shipping fee)
+        // tính tổng tiền không gồm phí vận chuyển
         double priceProduct = order.getTotalPrice() - order.getShippingFee();
         totalPriceProduct.setText(formatCurrency(priceProduct) + " đ");
 
         tvRefund.setText(formatCurrency(order.getTotalPrice()) + " đã được hoàn về tài khoản VNpay của bạn");
 
-        // Format the createdAt date
+        // Format lại ngày
         status.setText(getStatus(order.getStatus()) + order.getFormattedCreatedAtDate());
 
-        // Set up RecyclerView for product details
+        // RecyclerView để biết chi tiết sản phẩm
         List<Product> products = order.getProducts();
         ProductOrderAdapter productOrderAdapter = new ProductOrderAdapter(products);
         recyclerViewDetail.setAdapter(productOrderAdapter);
@@ -130,22 +130,21 @@ public class OrderInformationActivity extends AppCompatActivity {
             Intent resultIntent = new Intent();
             resultIntent.putExtra("order_status", order.getStatus());
             setResult(RESULT_OK, resultIntent);
-            finish();
+            finish(); // cập nhật lại trạng thái sản phẩm mỗi khi quay lại
         });
         btnBuy.setOnClickListener(v -> {
-
             if (order.getStatus().equals("pending")) {
                 if(order.getPaymentMethod().equals("COD"))
                 {
-                    cancelOrderCOD();
+                    cancelOrderCOD(); // mở huỷ hàng khi chọn thanh toán sau khi nhận
                 } else {
-                    cancelOrderVNPay();
+                    cancelOrderVNPay(); // mở huỷ hàng/hoàn tiền khi chọn thanh toán bằng VNPay
                 }
                 
             } else if (order.isCheckRating()) {
-                onCheckoutButtonClicked();
+                onCheckoutButtonClicked(); // mở mua lại khi đã đánh giá
             } else {
-                openRating();
+                openRating();// mở đánh giá khi chưa đánh giá
             }
 
         });
@@ -222,7 +221,7 @@ public class OrderInformationActivity extends AppCompatActivity {
 
     }
 
-    // Helper method to format currency
+
     private String formatCurrency(double amount) {
         return NumberFormat.getInstance(Locale.getDefault()).format(amount);
     }

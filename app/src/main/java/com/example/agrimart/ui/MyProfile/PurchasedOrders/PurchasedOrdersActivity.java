@@ -47,7 +47,6 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
     }
 
 
-
     private void loadFragmentAtPosition(int position, String orderStatus) {
         if (position >= 0 && position < fragments.size()) {
             // Lấy Fragment tại vị trí cần load lại

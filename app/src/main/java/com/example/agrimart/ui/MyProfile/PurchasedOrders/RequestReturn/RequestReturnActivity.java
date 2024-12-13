@@ -125,7 +125,6 @@ public class RequestReturnActivity extends AppCompatActivity {
         });
         myReason.setOnClickListener(v -> showReasonDialog((String) reasonText.getText()));
 
-
         imageCamera.setOnClickListener(v -> {
             openImageCamera();
         });
@@ -200,15 +199,13 @@ public class RequestReturnActivity extends AppCompatActivity {
             return;
         }
 
-        viewModel.updateOrderStatusReturn(order.getOrderId(), "return",  reason, describe,imageUris, new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
+        viewModel.updateOrderStatusReturn(order.getOrderId(), "return", reason, describe, imageUris, new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
             @Override
             public void onSuccess(String message) {
                 order.setStatus("return");
-                if(order.getStatus().equals("delivering"))
-                {
+                if (order.getStatus().equals("delivering")) {
                     viewModel.getData("delivering");
-                }
-                else {
+                } else {
                     viewModel.getData("delivered");
                 }
             }

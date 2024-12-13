@@ -49,7 +49,6 @@ import java.util.Calendar;
 public class MyAccountActivity extends AppCompatActivity {
 
     TextView user_name_text, my_phone_number_text, email_text, user_sex_text, user_date_birth_text;
-    //ImageButton btn_back;
     ImageView user_image;
     FrameLayout btn_account_img;
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -129,10 +128,10 @@ public class MyAccountActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> back());
         btn_account_img.setOnClickListener(v -> openImageChooser()); // cập nhật ảnh user
         myUserSex.setOnClickListener(v -> openGenderOptions()); // cập nhật giới tính
-        myUserDateBirth.setOnClickListener(v -> openDatePicker());
-        myUserName.setOnClickListener(v -> openEditUser());
-        changePassword.setOnClickListener(v -> openVerifyAccount());
-        myPhoneNumber.setOnClickListener(v -> openEditNumberPhone());
+        myUserDateBirth.setOnClickListener(v -> openDatePicker()); // cập nhật ngày sinh
+        myUserName.setOnClickListener(v -> openEditUser()); // cập nhật tên
+        changePassword.setOnClickListener(v -> openVerifyAccount());// thay đổi pass
+        myPhoneNumber.setOnClickListener(v -> openEditNumberPhone()); // thay đổi sdt
     }
 
     void openEditNumberPhone()

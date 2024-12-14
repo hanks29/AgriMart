@@ -33,7 +33,12 @@
                 android:layout_marginStart="16dp"
                 android:textColor="@android:color/black"
                 android:text="Sạc nhanh"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:lines="1"
+                android:scrollHorizontally="true" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"

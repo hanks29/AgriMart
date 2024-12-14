@@ -73,6 +73,10 @@ public class SignUpActivity extends AppCompatActivity {
                 String name = edtName.getText().toString().trim();
 
                 viewModel.signUpWithEmail(email, password, name);
+                Intent intent = new Intent(SignUpActivity.this, VerifyActivity.class);
+                intent.putExtra("fullname", name);
+                startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(this, "Thông tin không hợp lệ", Toast.LENGTH_SHORT).show();
             }

@@ -217,7 +217,7 @@ public class CheckoutActivity extends AppCompatActivity {
         btnDialogConfirm.setOnClickListener(v -> {
             double totalPrice = Double.parseDouble(tvTotalPrice.getText().toString().replaceAll("[^0-9]", ""));
             String expectedDeliveryTime = "3-5 ngày";
-            double shippingFee = 0;
+            double shippingFee = Double.parseDouble(tvTotalShippingPrice.getText().toString().replaceAll("[^0-9]", ""));
             String paymentMethod = "COD";
             String shippingName = "Giao hàng nhanh";
             List<String> productIds = selectedProducts.stream()
@@ -229,14 +229,6 @@ public class CheckoutActivity extends AppCompatActivity {
                     checkoutViewModel.removeOrderedProductsFromCart(FirebaseAuth.getInstance().getCurrentUser().getUid(), new CheckoutViewModel.OrderCallback() {
                         @Override
                         public void onSuccess(String orderId) {
-                            Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
-                            intent.putExtra("orderId", orderId);
-                            checkoutViewModel.loadUserData(tvUserName, tvPhoneNumber, tvAddress);
-
-                            int shippingFee = Integer.parseInt(tvTotalShippingPrice.getText().toString().replaceAll("[^0-9]", ""));
-                            checkoutViewModel.updateStatusOrder(orderId, shippingFee);
-
-                            startActivity(intent);
                         }
 
                         @Override
@@ -251,6 +243,10 @@ public class CheckoutActivity extends AppCompatActivity {
                     Toast.makeText(CheckoutActivity.this, "Đặt hàng thất bại", Toast.LENGTH_SHORT).show();
                 }
             });
+            Intent intent = new Intent(CheckoutActivity.this, PlaceOrderActivity.class);
+            intent.putExtra("orderId", orderId);
+            startActivity(intent);
+            finish();
             alertDialog.dismiss();
         });
 
@@ -364,7 +360,6 @@ public class CheckoutActivity extends AppCompatActivity {
 
                             int price = Integer.parseInt(tvTotalProductPrice.getText().toString().replaceAll("[^0-9]", ""));
                             int totalPrice = price + Integer.parseInt(String.valueOf(shippingFee));
-
 
                             NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 

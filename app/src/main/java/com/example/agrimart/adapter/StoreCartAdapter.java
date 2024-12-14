@@ -21,7 +21,7 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
 
     private List<Cart> storeCartList;
     CartFragmentViewModel viewModel;
-    ProductCartAdapter productAdapter;
+
 
 
     public StoreCartAdapter(List<Cart> storeCartList, CartFragmentViewModel viewModel) {
@@ -54,6 +54,7 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
     @Override
     public void onBindViewHolder(@NonNull StoreCartViewHolder holder, int position) {
         Cart storeCart = storeCartList.get(position);
+        ProductCartAdapter productAdapter;
         holder.tvStoreName.setText(storeCart.getStore_name());
 
         List<Product> products = storeCart.getProducts();
@@ -72,7 +73,7 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
                 holder.checkbox_store.setTag("unchecked");
             }
 
-            // Cập nhật lại trạng thái trong Firebase nếu cần
+            // Cập nhật lại trạng thái trong Firebase
             viewModel.onlyUpdateStoreCheckedStatusInFirebase(storeCart.getStoreId(), allChecked);
         });
 
@@ -94,29 +95,30 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
 
         holder.checkbox_store.setOnClickListener(v -> {
             boolean newCheckedStatus = !(holder.checkbox_store.getTag() != null && holder.checkbox_store.getTag().equals("checked"));
+
+            // Cập nhật trạng thái của shop
             storeCart.setChecked(newCheckedStatus);
+            updateStoreCheckboxUI(holder.checkbox_store, newCheckedStatus);
 
-            for (Product product : products) {
-                product.setChecked(newCheckedStatus);
+            // Cập nhật trạng thái của các sản phẩm
+            if (storeCart.getProducts() != null) {
+                for (Product product : storeCart.getProducts()) {
+                    product.setChecked(newCheckedStatus);
+                }
             }
 
-            if (newCheckedStatus) {
-                holder.checkbox_store.setImageResource(R.drawable.checkbox_checked);
-                holder.checkbox_store.setTag("checked");
-
-            } else {
-                holder.checkbox_store.setImageResource(R.drawable.checkbox_empty);
-                holder.checkbox_store.setTag("unchecked");
-            }
-
+            // Cập nhật trạng thái lên Firebase
             viewModel.updateStoreCheckedStatusInFirebase(storeCart.getStoreId(), newCheckedStatus);
 
-            // Cập nhật lại UI của tất cả sản phẩm trong RecyclerView con
+            // Làm mới UI chỉ cho shop và các sản phẩm thuộc shop
             productAdapter.notifyDataSetChanged();
+
+            // Thông báo cập nhật giá tổng và trạng thái "Chọn tất cả"
             notifyTotalPriceChanged();
             notifyCheckAll();
-
         });
+
+
 
         productAdapter.setOnProductCheckedChangeListener(() -> {
             notifyTotalPriceChanged(); // Cập nhật tổng tiền
@@ -125,7 +127,7 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
     }
 
 
-    // StoreCartAdapter.java
+    // StoreCartAdapter
     public void setCheckedAll(boolean isChecked) {
         for (int i = 0; i < storeCartList.size(); i++) {
             Cart storeCart = storeCartList.get(i);
@@ -134,13 +136,22 @@ public class StoreCartAdapter extends RecyclerView.Adapter<StoreCartAdapter.Stor
                 product.setChecked(isChecked);
             }
             viewModel.updateStoreCheckedStatusInFirebase(storeCart.getStoreId(), isChecked);
-            notifyItemChanged(i); // Cập nhật từng item thay vì toàn bộ
+            notifyItemChanged(i); // Cập nhật từng item
         }
         notifyTotalPriceChanged();
         notifyCheckAll();
     }
 
 
+    private void updateStoreCheckboxUI(ImageView checkbox, boolean isChecked) {
+        if (isChecked) {
+            checkbox.setImageResource(R.drawable.checkbox_checked);
+            checkbox.setTag("checked");
+        } else {
+            checkbox.setImageResource(R.drawable.checkbox_empty);
+            checkbox.setTag("unchecked");
+        }
+    }
 
 
     @Override

@@ -202,25 +202,26 @@ public class RequestReturnActivity extends AppCompatActivity {
         viewModel.updateOrderStatusReturn(order.getOrderId(), "return", reason, describe, imageUris, new OrderStatusFragmentViewModel.OnStatusUpdateListener() {
             @Override
             public void onSuccess(String message) {
-                order.setStatus("return");
+
                 if (order.getStatus().equals("delivering")) {
                     viewModel.getData("delivering");
                 } else {
                     viewModel.getData("delivered");
                 }
+
+                Toast.makeText(RequestReturnActivity.this, "Đã yêu cầu trả hàng thành công ", Toast.LENGTH_SHORT).show();
+                finish();
             }
 
             @Override
             public void onError(String errorMessage) {
                 new android.os.Handler(Looper.getMainLooper()).post(() -> {
-                    Toast.makeText(RequestReturnActivity.this, "Không thể hủy đơn hàng: ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RequestReturnActivity.this, "Không thể trả đơn hàng: ", Toast.LENGTH_SHORT).show();
                 });
             }
         });
-        Intent resultIntent = new Intent();
-        setResult(RESULT_OK, resultIntent);
 
-        finish();
+
     }
 
 

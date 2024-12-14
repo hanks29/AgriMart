@@ -46,6 +46,9 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="Móc khóa"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 

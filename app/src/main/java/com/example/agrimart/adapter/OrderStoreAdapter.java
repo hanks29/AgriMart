@@ -183,7 +183,7 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
             case "delivering":
                 translatedStatus = "Chờ giao hàng";
                 holder.btnBuy.setText("Đã nhận hàng");
-                if (order.checkTime())
+                if (order.checkTime() && order.getPaymentMethod().equals("VNPay"))
                 {
                     holder.txtThongBao.setVisibility(View.VISIBLE);
                     holder.btnDetail.setVisibility(View.VISIBLE);
@@ -199,7 +199,6 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                 else {
                     translatedStatus = "Chờ hoàn tiền";
                 }
-
                 break;
             case "delivered":
                 translatedStatus = "Hoàn thành";
@@ -210,13 +209,13 @@ public class OrderStoreAdapter extends RecyclerView.Adapter<OrderStoreAdapter.Or
                         holder.btnDetail.setVisibility(View.VISIBLE);
                         holder.btnDetail.setText("Trả hàng/Hoàn tiền");
                     }
-                } else {
-                    holder.btnDetail.setVisibility(View.VISIBLE);
-                    holder.txtThongBao.setVisibility(View.GONE);
-                    holder.btnDetail.setText("Xem đánh giá");
-                    holder.btnBuy.setText("Mua lại");
+                    else {
+                        holder.btnDetail.setVisibility(View.VISIBLE);
+                        holder.txtThongBao.setVisibility(View.GONE);
+                        holder.btnDetail.setText("Xem đánh giá");
+                        holder.btnBuy.setText("Mua lại");
+                    }
                 }
-
                 break;
             case "canceled":
                 if (order.isRefund()) {

@@ -295,11 +295,9 @@ public class OrderInformationActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String message) {
                 // Cập nhật trạng thái của item trong adapter
-                order.setStatus("pending");
                 viewModel.getData("pending");
                 Toast.makeText(OrderInformationActivity.this, "Đơn hàng đã hủy!", Toast.LENGTH_SHORT).show();
                 Intent resultIntent = new Intent();
-                resultIntent.putExtra("order_status", "pending");
                 setResult(RESULT_OK, resultIntent);
                 finish();
             }
@@ -376,6 +374,7 @@ public class OrderInformationActivity extends AppCompatActivity {
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Lỗi khi lấy thông tin đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         });
+        finish();
     }
 
     public static String formatTimestampToVnpayDate(Long timestamp) {

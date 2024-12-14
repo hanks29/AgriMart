@@ -18,11 +18,11 @@
 
         <ImageView
             android:id="@+id/checkbox_store"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_gravity="center"
             android:layout_marginEnd="15dp"
-            android:src="@drawable/checkbox_empty"/>
+            android:src="@drawable/checkbox_empty" />
 
 
         <ImageView

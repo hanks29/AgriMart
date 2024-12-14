@@ -38,7 +38,7 @@ public class ProductRatingActivityViewModel extends ViewModel {
                 updateCheckRating(oderId);
             } else {
                 // Nếu tài liệu không tồn tại, tạo mới
-                createNewRating(productRef, newRating, review);
+                createNewRating(productRef, newRating, review, productId);
                 updateCheckRating(oderId);
             }
         }).addOnFailureListener(e -> {
@@ -96,11 +96,13 @@ public class ProductRatingActivityViewModel extends ViewModel {
         saveRatingToSubcollection(productRef, newRating, review);
     }
 
-    private void createNewRating(DocumentReference productRef, double newRating, String review) {
+    private void createNewRating(DocumentReference productRef, double newRating, String review, String productId) {
         // Tạo dữ liệu mới cho tài liệu
         Map<String, Object> newProductData = new HashMap<>();
         newProductData.put("quantity", 1);
         newProductData.put("rating", newRating);
+        newProductData.put("product_id", productId);
+
 
         // Thêm tài liệu mới vào collection rating
         productRef.set(newProductData)

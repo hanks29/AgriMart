@@ -120,6 +120,9 @@ public class ProductCartAdapter extends RecyclerView.Adapter<ProductCartAdapter.
         }
         return true; // Nếu tất cả sản phẩm đều được chọn, trả về true
     }
+
+
+
     public interface OnDecreaseButtonClickListener {
         void onDecreaseButtonClicked(Product product);
     }

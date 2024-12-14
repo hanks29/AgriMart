@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -28,22 +29,27 @@ import java.util.List;
 
 public class NotificationViewModel extends AndroidViewModel {
     private static final String TAG = "NotificationViewModel";
+    private static final String CHANNEL_ID = "default_channel";
     private final MutableLiveData<List<Notification>> notificationsLiveData = new MutableLiveData<>();
     private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private static final int REQUEST_NOTIFICATION_PERMISSION = 1;
+    private ListenerRegistration userListenerRegistration;
+    private ListenerRegistration sellerListenerRegistration;
 
     public NotificationViewModel(@NonNull Application application) {
         super(application);
     }
 
     public void createNotificationsForUser() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        if (userListenerRegistration != null) {
+            userListenerRegistration.remove();
+        }
 
-        db.collection("orders")
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        userListenerRegistration = db.collection("orders")
                 .whereEqualTo("userId", FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addSnapshotListener((snapshots, e) -> {
                     if (e != null) {
-                        Log.e("FirebaseError", "Error listening to orders", e);
                         return;
                     }
 
@@ -56,8 +62,12 @@ public class NotificationViewModel extends AndroidViewModel {
     }
 
     public void createNotificationsForSeller() {
+        if (sellerListenerRegistration != null) {
+            sellerListenerRegistration.remove();
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("orders")
+        sellerListenerRegistration = db.collection("orders")
                 .whereEqualTo("storeId", FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addSnapshotListener((snapshots, e) -> {
                     if (e != null) {
@@ -113,9 +123,15 @@ public class NotificationViewModel extends AndroidViewModel {
                 message = "Yêu cầu trả hàng của đơn hàng " + orderId + " đã được gửi. Vui lòng chờ yêu cầu được phê duyệt.";
                 break;
             case "return":
-                title = "Yêu cầu trả hàng đã được chấp nhận";
-                message = "Yêu cầu trả hàng của đơn hàng " + orderId + " đã được chấp nhận. Vui lòng chờ trong thời gian sớm nhất.";
+                title = "Trả hàng thành công";
+                message = "Yêu cầu trả đơn hàng " + orderId + " thành công. Số tiền đã thanh toán sẽ được hoàn trả trong thời gian sớm nhất.";
                 break;
+        }
+
+        Boolean isRefund = dc.getDocument().getBoolean("refund");
+        if (isRefund != null && isRefund) {
+            title = "Hoàn tiền thành công";
+            message = "Số tiền thuộc về đơn hàng " + orderId + " đã được hoàn lại vào tài khoản của bạn.";
         }
 
         if (!title.isEmpty() && !message.isEmpty()) {
@@ -124,9 +140,7 @@ public class NotificationViewModel extends AndroidViewModel {
             saveNotificationToFirestore(notification);
 
             db.collection("orders").document(dc.getDocument().getId())
-                    .update("notifiedStatuses", FieldValue.arrayUnion(status))
-                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Updated notifiedStatuses"))
-                    .addOnFailureListener(e -> Log.e("FirestoreError", "Error updating notifiedStatuses", e));
+                    .update("notifiedStatuses", FieldValue.arrayUnion(status));
         }
     }
 
@@ -177,14 +191,12 @@ public class NotificationViewModel extends AndroidViewModel {
             saveNotificationToFirestore(notification);
 
             db.collection("orders").document(dc.getDocument().getId())
-                    .update("notifiedStatuses", FieldValue.arrayUnion(status))
-                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Updated notifiedStatuses"))
-                    .addOnFailureListener(e -> Log.e("FirestoreError", "Error updating notifiedStatuses", e));
+                    .update("notifiedStatuses", FieldValue.arrayUnion(status));
         }
     }
 
     public void sendNotification(String title, String message) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplication(), "default_channel")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplication(), CHANNEL_ID)
                 .setSmallIcon(R.drawable.logo_icon)
                 .setContentTitle(title)
                 .setContentText(message)
@@ -215,23 +227,18 @@ public class NotificationViewModel extends AndroidViewModel {
                         if (task.isSuccessful() && task.getResult() != null && task.getResult().isEmpty()) {
                             db.collection("notifications").add(notification)
                                     .addOnSuccessListener(documentReference -> {
-                                        Log.d("Firestore", "Notification saved successfully");
                                     })
                                     .addOnFailureListener(e -> {
-                                        Log.e("FirestoreError", "Error saving notification", e);
                                     });
                         } else {
-                            Log.d("Firestore", "Notification already exists, not saving again");
                         }
                     })
                     .addOnFailureListener(e -> {
-                        Log.e("FirestoreError", "Error checking for existing notification", e);
                     });
         }
     }
 
     public void getNotifications(String userId) {
-        Log.d(TAG, "Fetching notifications for user ID: " + userId);
         firestore.collection("notifications")
                 .whereEqualTo("userId", userId)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -243,10 +250,8 @@ public class NotificationViewModel extends AndroidViewModel {
                             Notification notification = doc.toObject(Notification.class);
                             notifications.add(notification);
                         }
-                        Log.d(TAG, "Fetched " + notifications.size() + " notifications");
                         notificationsLiveData.setValue(notifications);
                     } else {
-                        Log.e(TAG, "Error fetching notifications", task.getException());
                     }
                 });
     }

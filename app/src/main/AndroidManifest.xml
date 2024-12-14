@@ -40,9 +40,6 @@
             android:name=".ui.MyProfile.MyRating.ProductRatingActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ui.MyProfile.MyRating.MyRatingActivity"
-            android:exported="false" />
 
         <service
             android:name=".data.service.FirebaseNotificationService"

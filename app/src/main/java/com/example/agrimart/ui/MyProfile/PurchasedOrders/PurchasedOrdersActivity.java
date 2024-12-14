@@ -104,7 +104,7 @@ public class PurchasedOrdersActivity extends AppCompatActivity {
             case "pending": return 0;
             case "approved": return 1;
             case "delivery": return 2;
-            case "refund": return 3;
+            case "return": return 3;
             case "delivered": return 4;
             case "canceled" : return 5;
         }

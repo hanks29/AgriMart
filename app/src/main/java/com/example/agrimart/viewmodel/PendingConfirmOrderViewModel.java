@@ -76,7 +76,7 @@ public class PendingConfirmOrderViewModel extends ViewModel{
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<Order> orders = queryDocumentSnapshots.toObjects(Order.class);
                         orderListPicked.setValue(orders);
-                        Log.d("PrintOrderAdapter111", "onSuccess: "+orders.size());
+                        Log.d("PrintOrderAdapter111", "Dang van chuyen onSuccess: "+orders.size());
                     }
                 })
                 .addOnFailureListener(e -> {

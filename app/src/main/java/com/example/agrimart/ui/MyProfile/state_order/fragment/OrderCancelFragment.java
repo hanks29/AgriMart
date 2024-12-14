@@ -95,4 +95,16 @@ public class OrderCancelFragment extends Fragment {
         });
         return binding.getRoot();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.orderListCancel.observe(getViewLifecycleOwner(), orders -> {
+            if(orders != null){
+                orderList.clear();
+                orderList.addAll(orders);
+                cancelAdapter.notifyDataSetChanged();
+            }
+        });
+    }
 }

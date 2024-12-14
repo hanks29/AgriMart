@@ -91,4 +91,16 @@ public class AwaitingPickupFragment extends Fragment {
 
         return binding.getRoot();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        PendingConfirmOrderViewModel viewHolder=new ViewModelProvider(this).get(PendingConfirmOrderViewModel.class);
+        viewHolder.getOrderWithStatusApproved();
+        viewHolder.orderListApproved.observe(getViewLifecycleOwner(), orders -> {
+            orderList.clear();
+            orderList.addAll(orders);
+            adapter.notifyDataSetChanged();
+        });
+    }
 }

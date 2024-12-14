@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,10 @@ import com.example.agrimart.adapter.ShippingAdapter;
 import com.example.agrimart.data.model.Order;
 import com.example.agrimart.databinding.FragmentInTransitBinding;
 import com.example.agrimart.viewmodel.PendingConfirmOrderViewModel;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,14 +90,41 @@ public class InTransitFragment extends Fragment {
         binding.rvOrder.setAdapter(shippingAdapter);
         binding.rvOrder.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        viewModel.getOrderWithStatusDelivering();
 
         viewModel.orderListPicked.observe(getViewLifecycleOwner(), orders -> {
             orderList.clear();
             orderList.addAll(orders);
+            Log.d("PrintOrderAdapter111", "onSuccess12: "+orders.size()+" "+orderList.size());
             shippingAdapter.notifyDataSetChanged();
         });
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getDeliveringOrders();
+    }
+
+    public void getDeliveringOrders(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("orders")
+                .whereEqualTo("status", "delivering")
+                .whereEqualTo("storeId", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<Order> orders = queryDocumentSnapshots.toObjects(Order.class);
+                        orderList.clear();
+                        orderList.addAll(orders);
+                        shippingAdapter.notifyDataSetChanged();
+                        Log.d("PrintOrderAdapter111", "onSuccess: "+orders.size());
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    orderList.clear();
+                });
     }
 }

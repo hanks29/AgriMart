@@ -205,6 +205,7 @@ public class OrderStatusFragmentViewModel extends ViewModel {
         updates.put("describe", describe); // Add describe field
         updates.put("created_at", FieldValue.serverTimestamp());
         updates.put("imageUrls", uploadedImageUrls); // Add image URLs to Firestore
+        updates.put("refund", false);
 
         // Update the document in Firestore
         firestore.collection("orders")

@@ -40,6 +40,7 @@ import com.example.agrimart.viewmodel.OrderStatusFragmentViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -100,9 +101,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Order order = (Order) getIntent().getSerializableExtra("order");
-        if (order != null) {
-            refundOrder(order);
-        }
     }
 
     @Override
@@ -112,7 +110,32 @@ public class MainActivity extends AppCompatActivity {
         notificationViewModel = new NotificationViewModel(getApplication());
         notificationViewModel.createNotificationsForUser();
         notificationViewModel.createNotificationsForSeller();
+        notificationViewModel.createRefundListener();
         createNotificationChannel(this);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("orders").addSnapshotListener((snapshots, e) -> {
+            if (e != null) {
+                Log.w("FirestoreListener", "Listen failed.", e);
+                return;
+            }
+
+            if (snapshots != null && !snapshots.isEmpty()) {
+                for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                    switch (dc.getType()) {
+                        case MODIFIED:
+                            Boolean isRefund = dc.getDocument().getBoolean("refund");
+                            if (isRefund != null && isRefund) {
+                                Order order = dc.getDocument().toObject(Order.class);
+                                refundOrder(order);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        });
     }
 
     private void createNotificationChannel(Context context) {

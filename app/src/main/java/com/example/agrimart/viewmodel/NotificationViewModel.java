@@ -84,18 +84,46 @@ public class NotificationViewModel extends AndroidViewModel {
     }
 
     private void notificationForUser(DocumentChange dc, FirebaseFirestore db) {
-        String status = dc.getDocument().getString("status");
-        List<String> notifiedStatuses = (List<String>) dc.getDocument().get("notifiedStatuses");
-        String imageUrl = "android.resource://" + getApplication().getPackageName() + "/" + R.drawable.bell;
-        long timestamp = System.currentTimeMillis();
-        String orderId = dc.getDocument().getId();
+        if (dc.getType() == DocumentChange.Type.ADDED || dc.getType() == DocumentChange.Type.MODIFIED) {
+            String status = dc.getDocument().getString("status");
+            final String orderId = dc.getDocument().getId();
+
+            db.collection("orders").document(orderId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        List<String> notifiedStatuses = (List<String>) documentSnapshot.get("notifiedStatuses");
+
+                        if (notifiedStatuses == null || !notifiedStatuses.contains(status)) {
+                            createUserAndSendNotification(dc, db, status);
+                        }
+                    });
+        }
+    }
+
+    private void notificationForSeller(DocumentChange dc, FirebaseFirestore db) {
+        if (dc.getType() == DocumentChange.Type.ADDED || dc.getType() == DocumentChange.Type.MODIFIED) {
+            String status = dc.getDocument().getString("status");
+            final String orderId = dc.getDocument().getId();
+
+            db.collection("orders").document(orderId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        List<String> notifiedStatuses = (List<String>) documentSnapshot.get("notifiedStatuses");
+
+                        if (notifiedStatuses == null || !notifiedStatuses.contains(status)) {
+                            createSellerAndSendNotification(dc, db, status);
+                        }
+                    });
+        }
+    }
+
+    private void createUserAndSendNotification(DocumentChange dc, FirebaseFirestore db, String status) {
+        final String imageUrl = "android.resource://" + getApplication().getPackageName() + "/" + R.drawable.bell;
+        final long timestamp = System.currentTimeMillis();
+        final String orderId = dc.getDocument().getId();
 
         String title = "";
         String message = "";
-
-        if (notifiedStatuses != null && notifiedStatuses.contains(status)) {
-            return;
-        }
 
         switch (status) {
             case "pending":
@@ -118,10 +146,6 @@ public class NotificationViewModel extends AndroidViewModel {
                 title = "Đơn hàng đã bị huỷ";
                 message = "Đơn hàng " + orderId + " đã bị huỷ. Nếu bạn đã thanh toán bằng VNPAY số tiền đã thanh toán sẽ sớm được hoàn lại vào tài khoản của bạn.";
                 break;
-            case "waiting":
-                title = "Yêu cầu trả hàng";
-                message = "Yêu cầu trả hàng của đơn hàng " + orderId + " đã được gửi. Vui lòng chờ yêu cầu được phê duyệt.";
-                break;
             case "return":
                 title = "Trả hàng thành công";
                 message = "Yêu cầu trả đơn hàng " + orderId + " thành công. Số tiền đã thanh toán sẽ được hoàn trả trong thời gian sớm nhất.";
@@ -135,63 +159,65 @@ public class NotificationViewModel extends AndroidViewModel {
         }
 
         if (!title.isEmpty() && !message.isEmpty()) {
-            Notification notification = new Notification(title, message, timestamp, imageUrl, "");
-            sendNotification(title, message);
-            saveNotificationToFirestore(notification);
-
-            db.collection("orders").document(dc.getDocument().getId())
-                    .update("notifiedStatuses", FieldValue.arrayUnion(status));
+            // Tạo biến final mới để sử dụng trong lambda
+            final String finalTitle = title;
+            final String finalMessage = message;
+            db.collection("orders").document(orderId)
+                    .update("notifiedStatuses", FieldValue.arrayUnion(status))
+                    .addOnSuccessListener(aVoid -> {
+                        Notification notification = new Notification(finalTitle, finalMessage, timestamp, imageUrl, "");
+                        sendNotification(finalTitle, finalMessage);
+                        saveNotificationToFirestore(notification);
+                    });
         }
     }
 
-    private void notificationForSeller(DocumentChange dc, FirebaseFirestore db) {
-        String status = dc.getDocument().getString("status");
-        List<String> notifiedStatuses = (List<String>) dc.getDocument().get("notifiedStatuses");
-        String imageUrl = "android.resource://" + getApplication().getPackageName() + "/" + R.drawable.bell;
-        long timestamp = System.currentTimeMillis();
-        String orderId = dc.getDocument().getId();
+    private void createSellerAndSendNotification(DocumentChange dc, FirebaseFirestore db, String status) {
+        final String imageUrl = "android.resource://" + getApplication().getPackageName() + "/" + R.drawable.bell;
+        final long timestamp = System.currentTimeMillis();
+        final String orderId = dc.getDocument().getId();
 
         String title = "";
         String message = "";
 
-        if (notifiedStatuses != null && notifiedStatuses.contains(status)) {
-            return;
-        }
-
         switch (status) {
             case "pending":
-                title = "Có đơn hàng mới";
-                message = "Đơn hàng " + orderId + " mới vừa được đặt. Hãy xác nhận đơn hàng.";
+                title = "Bạn có đơn hàng mới!";
+                message = "Đơn hàng " + orderId + " đang chờ bạn xác nhận. Vui lòng kiểm tra và xác nhận đơn hàng sớm nhất.";
                 break;
             case "approved":
-                title = "Chuẩn bị hàng";
-                message = "Chuẩn bị đơn hàng " + orderId + " để giao cho đơn vị vận chuyển.";
+                title = "Chuẩn bị hàng cho đơn hàng";
+                message = "Bạn đã xác nhận đơn hàng " + orderId + ". Vui lòng chuẩn bị và đóng gói sản phẩm để giao cho đơn vị vận chuyển.";
                 break;
             case "delivering":
-                title = "Đơn bán đang trong quá trình vận chuyển";
-                message = "Đơn bán " + orderId + " hiện đang trong quá trình vận chuyển.";
+                title = "Đơn hàng đang được vận chuyển";
+                message = "Đơn hàng " + orderId + " đã được bàn giao cho đơn vị vận chuyển. Bạn có thể theo dõi quá trình vận chuyển.";
                 break;
             case "delivered":
-                title = "Đơn bán đã được giao thành công";
-                message = "Đơn bán " + orderId + " đã được giao thành công cho khách hàng.";
+                title = "Đơn hàng đã giao thành công";
+                message = "Đơn hàng " + orderId + " đã được giao thành công tới người mua. Bạn có thể xem phản hồi từ người mua trong phần đánh giá.";
                 break;
             case "canceled":
                 title = "Đơn hàng đã bị huỷ";
-                message = "Đơn hàng " + orderId + " đã bị huỷ.";
+                message = "Đơn hàng " + orderId + " đã bị huỷ bởi người mua. Nếu bạn đã chuẩn bị hàng, vui lòng kiểm tra và điều chỉnh tồn kho.";
                 break;
             case "return":
-                title = "Trả hàng";
-                message = "Khách hàng yêu cầu trả hàng cho đơn hàng " + orderId + ".";
+                title = "Yêu cầu trả hàng";
+                message = "Đơn hàng " + orderId + " đã được người mua yêu cầu trả hàng. Đơn hàng sẽ được trả về cho bạn trong thời gian sớm nhất.";
                 break;
         }
 
         if (!title.isEmpty() && !message.isEmpty()) {
-            Notification notification = new Notification(title, message, timestamp, imageUrl, "");
-            sendNotification(title, message);
-            saveNotificationToFirestore(notification);
-
-            db.collection("orders").document(dc.getDocument().getId())
-                    .update("notifiedStatuses", FieldValue.arrayUnion(status));
+            // Tạo biến final mới để sử dụng trong lambda
+            final String finalTitle = title;
+            final String finalMessage = message;
+            db.collection("orders").document(orderId)
+                    .update("notifiedStatuses", FieldValue.arrayUnion(status))
+                    .addOnSuccessListener(aVoid -> {
+                        Notification notification = new Notification(finalTitle, finalMessage, timestamp, imageUrl, "");
+                        sendNotification(finalTitle, finalMessage);
+                        saveNotificationToFirestore(notification);
+                    });
         }
     }
 
@@ -254,6 +280,30 @@ public class NotificationViewModel extends AndroidViewModel {
                     } else {
                     }
                 });
+    }
+
+    public void createRefundListener() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("orders").addSnapshotListener((snapshots, e) -> {
+            if (e != null) {
+                return;
+            }
+
+            if (snapshots != null && !snapshots.isEmpty()) {
+                for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                    switch (dc.getType()) {
+                        case MODIFIED:
+                            Boolean isRefund = dc.getDocument().getBoolean("refund");
+                            if (isRefund != null && isRefund) {
+                                notificationForUser(dc, db);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        });
     }
 
     public LiveData<List<Notification>> getNotificationsLiveData() {

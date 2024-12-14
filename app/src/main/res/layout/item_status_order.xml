@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_toStartOf="@id/tvPrice"
         android:textSize="14sp"
-        android:text="Giá thực:" />
+        android:text="Tổng tiền:" />
 
     <TextView
         android:id="@+id/tvPrice"

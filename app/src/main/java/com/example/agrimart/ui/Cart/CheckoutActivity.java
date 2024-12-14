@@ -68,6 +68,11 @@ public class CheckoutActivity extends AppCompatActivity {
         initializeViews();
         setupRecyclerView();
         setupViewModel();
+    }
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
         setupListeners();
         updatePrices();
         calculateShippingFee();

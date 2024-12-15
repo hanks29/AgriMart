@@ -32,6 +32,7 @@ public class CategoryViewModel extends ViewModel {
     public void getProductsByCategory(String categoryID) {
         db.collection("products")
                 .whereEqualTo("category_id", categoryID)
+                .whereEqualTo("status","available")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
